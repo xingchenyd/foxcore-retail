@@ -1,0 +1,31 @@
+@startuml
+left to right direction
+skinparam shadowing false
+actor "销售员" as Seller
+actor "管理员" as Owner
+actor "线下收款/退款渠道" as Cash
+rectangle "Foxcore Retail" {
+  usecase "安排活动、展位与班次" as Plan
+  usecase "接收和调拨库存" as Stock
+  usecase "录入销售草稿" as Draft
+  usecase "准备收款并占用库存" as Prepare
+  usecase "确认线下收款并成交" as Post
+  usecase "授权和登记退货" as Return
+  usecase "准备和登记佣金支付" as Comm
+  usecase "查看销售/库存/佣金报表" as Report
+}
+Owner --> Plan
+Owner --> Stock
+Owner --> Return
+Owner --> Comm
+Owner --> Report
+Seller --> Draft
+Seller --> Prepare
+Seller --> Post
+Seller --> Report
+Cash --> Post
+Cash --> Return
+Cash --> Comm
+Draft ..> Prepare : <<precedes>>
+Prepare ..> Post : <<precedes>>
+@enduml

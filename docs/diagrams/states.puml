@@ -1,0 +1,24 @@
+@startuml
+skinparam shadowing false
+state "销售" as Sale {
+  [*] --> DRAFT
+  DRAFT --> CHECKOUT : prepare / 锁价、占用库存
+  DRAFT --> CANCELLED : cancel
+  CHECKOUT --> POSTED : post / 线下收款已确认
+  CHECKOUT --> CANCELLED : cancel / 已核对
+  POSTED --> [*]
+  CANCELLED --> [*]
+}
+state "退货" as Ret {
+  [*] --> R_DRAFT
+  R_DRAFT --> AUTHORIZED : authorize / 数量与金额校验
+  R_DRAFT --> R_CANCELLED : cancel
+  AUTHORIZED --> R_POSTED : post / 线下退款已确认
+  AUTHORIZED --> R_CANCELLED : cancel / 已核对
+}
+state "佣金结算" as Settle {
+  [*] --> PREPARED
+  PREPARED --> PAID : pay / 登记线下支付依据
+  PREPARED --> S_CANCELLED : cancel / 释放占用
+}
+@enduml

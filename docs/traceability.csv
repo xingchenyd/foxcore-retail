@@ -1,0 +1,23 @@
+id,origin,requirement,implementation,verification,status
+CASE-01,Foxcore A p3 / B p3,Venue address and event relation,venues/events FK,migration and API integration,implemented
+CASE-02,Foxcore A p3 / B p3,Event dates and seven categories,event_categories/events,migration seed and HTTP flow,implemented
+CASE-03,Foxcore A p3 / B p3,Event booth location,booths and event open guard,open without booth returns 409,implemented
+CASE-04,Foxcore A p3 / B p3,Product wholesale cost and minimum sale price,products/sale_lines snapshot,unit and integration price check,implemented
+CASE-05,Foxcore A p3 / B p3,Salesperson identity address phone,salespeople,HTTP creation and schema,implemented
+CASE-06,Foxcore A p3 / B p3,Person multiple shifts each at one booth,shifts with booth/event FK,overlap and start rules,implemented
+CASE-07,Foxcore A p3 / B p3,Sale associated with person's shift and time,sales.shift_id/posted_at,HTTP flow and FK,implemented
+CASE-08,Foxcore A p3 / B p3,Product quantity final price per sale,sale_lines composite PK,transaction integration,implemented
+CASE-09,Foxcore A p3,Analysis by event product salesperson,report endpoint and CSV,report integration,implemented
+CASE-10,Foxcore B p3,Sale links event and shift,composite FK sales(shift_id event_id),schema inspection,implemented
+CASE-11,Foxcore B p3,MariaDB physical implementation,versioned migration,real MariaDB migration,implemented
+CASE-12,Foxcore A p3 / B p3,Barker conceptual model,nine-entity editable SVG and physical PlantUML,document inspection,implemented
+DERIVED-01,Foxcore A p2,Reduce missed paper sales,sales draft checkout posted and audit,HTTP and browser workflow,implemented
+DERIVED-02,Foxcore A p2,Make commission reconciliable,commission entries and settlements,invariant query and integration,implemented
+EXT-01,System design,Real persistent inventory,stock documents ledger holds and balances,20 concurrent requests and 16 invariant checks,implemented
+EXT-02,System design,Authenticate and restrict roles,users sessions CSRF Argon2id,HTTP auth and browser login,implemented
+EXT-03,System design,Reversible returns with original sale,returns and return_lines,HTTP partial return and invariant checks,implemented
+EXT-04,System design,Local one-command startup,Compose db migrate app,compose config static check,container_run_unverified
+NFR-01,System design,Same-origin and persistence,Fastify static/React/MariaDB,browser refresh and DB restart tests,implemented
+NFR-02,System design,Write idempotency and atomic transactions,idempotency_keys and tx wrapper,20 same-key concurrent posts,implemented
+NFR-03,System design,Least-privilege role views,auth guards and restricted DB grants,code review and integration,partially_verified
+NFR-04,System design,Desktop and mobile workbench,React responsive CSS and states,Playwright 2 viewports,implemented

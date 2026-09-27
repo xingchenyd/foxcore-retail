@@ -1,0 +1,22 @@
+@startuml
+hide circle
+skinparam linetype ortho
+entity CATEGORY as event_categories { *id : PK\n--\n*code\n*type }
+entity VENUE as venues { *id : PK\n--\n*name\n*street\n*city\n*province\n*postal_code }
+entity EVENT as events { *id : PK\n--\n*venue_id : FK\n*category_id : FK\n*start_date\n*end_date\n*status }
+entity BOOTH as booths { *id : PK\n--\n*event_id : FK\n*location }
+entity PRODUCT as products { *id : PK\n--\n*sku\n*name\n*wholesale_cost_cents\n*minimum_price_cents }
+entity SALESPERSON as salespeople { *id : PK\n--\n*first_name\n*last_name\n*phone }
+entity SALESPERSON_SHIFT as shifts { *id : PK\n--\n*event_id : FK\n*booth_id : FK\n*salesperson_id : FK\n*starts_at\n*ends_at }
+entity SALE as sales { *id : PK\n--\n*event_id : FK\n*shift_id : FK\n*state\n*posted_at }
+entity PRODUCT_SALE as sale_lines { *sale_id : PK, FK\n*line_no : PK\n--\n*product_id : FK\n*quantity\n*final_unit_price_cents }
+event_categories ||--o{ events
+venues ||--o{ events
+events ||--|{ booths
+events ||--o{ sales
+booths ||--o{ shifts
+salespeople ||--o{ shifts
+shifts ||--o{ sales
+sales ||--|{ sale_lines
+products ||--o{ sale_lines
+@enduml

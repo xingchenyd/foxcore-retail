@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1410 840" role="img" aria-label="Foxcore nine entity Barker conceptual ERD">
+<rect width="1410" height="840" fill="#f8f7f3"/>
+<defs><marker id="one" markerWidth="14" markerHeight="14" refX="2" refY="7" orient="auto-start-reverse"><path d="M3 2 V12 M7 2 V12" stroke="#2c625a" stroke-width="2"/></marker><marker id="many" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto"><path d="M2 2 L12 7 L2 12 M2 7 H12" stroke="#2c625a" stroke-width="2" fill="none"/></marker></defs>
+<text x="40" y="27" font-family="Arial" font-size="18" font-weight="bold" fill="#172f2c">Foxcore Retail · Barker conceptual ERD</text>
+<g stroke="#2c625a" stroke-width="2.5" fill="none">
+<path d="M170 219 L170 252 L245 252 L245 320" marker-start="url(#one)" marker-end="url(#many)"/>
+<path d="M480 219 L480 252 L385 252 L385 320" marker-start="url(#one)" marker-end="url(#many)"/>
+<path d="M455 407 L505 407" marker-start="url(#one)" marker-end="url(#many)"/>
+<path d="M765 407 L825 407" marker-start="url(#one)" marker-end="url(#many)"/>
+<path d="M885 219 L885 320" marker-start="url(#one)" marker-end="url(#many)"/>
+<path d="M955 494 L955 548 L635 548 L635 600" marker-start="url(#one)" marker-end="url(#many)"/>
+<path d="M325 494 L325 548 L585 548 L585 600" marker-start="url(#one)" marker-end="url(#many)"/>
+<path d="M765 687 L970 687" marker-start="url(#one)" marker-end="url(#many)"/>
+<path d="M1220 219 L1220 548 L1100 548 L1100 600" marker-start="url(#one)" marker-end="url(#many)"/>
+</g>
+<g id="category">
+<rect x="40" y="45" width="260" height="174" rx="10" fill="#fff" stroke="#2c625a" stroke-width="2"/>
+<path d="M40 91 H300" stroke="#2c625a" stroke-width="2"/>
+<text x="54" y="74" font-family="Arial" font-size="18" font-weight="bold" fill="#163831">CATEGORY</text>
+<text x="54" y="118" font-family="Arial" font-size="16" fill="#283d39"># id</text>
+<text x="54" y="144" font-family="Arial" font-size="16" fill="#283d39">* code</text>
+<text x="54" y="170" font-family="Arial" font-size="16" fill="#283d39">* type</text>
+</g>
+<g id="venue">
+<rect x="350" y="45" width="260" height="174" rx="10" fill="#fff" stroke="#2c625a" stroke-width="2"/>
+<path d="M350 91 H610" stroke="#2c625a" stroke-width="2"/>
+<text x="364" y="74" font-family="Arial" font-size="18" font-weight="bold" fill="#163831">VENUE</text>
+<text x="364" y="118" font-family="Arial" font-size="16" fill="#283d39"># id</text>
+<text x="364" y="144" font-family="Arial" font-size="16" fill="#283d39">* name</text>
+<text x="364" y="170" font-family="Arial" font-size="16" fill="#283d39">* address</text>
+<text x="364" y="196" font-family="Arial" font-size="16" fill="#283d39">o description</text>
+</g>
+<g id="salesperson">
+<rect x="755" y="45" width="260" height="174" rx="10" fill="#fff" stroke="#2c625a" stroke-width="2"/>
+<path d="M755 91 H1015" stroke="#2c625a" stroke-width="2"/>
+<text x="769" y="74" font-family="Arial" font-size="18" font-weight="bold" fill="#163831">SALESPERSON</text>
+<text x="769" y="118" font-family="Arial" font-size="16" fill="#283d39"># id</text>
+<text x="769" y="144" font-family="Arial" font-size="16" fill="#283d39">* first / last name</text>
+<text x="769" y="170" font-family="Arial" font-size="16" fill="#283d39">o phone</text>
+</g>
+<g id="product">
+<rect x="1090" y="45" width="260" height="174" rx="10" fill="#fff" stroke="#2c625a" stroke-width="2"/>
+<path d="M1090 91 H1350" stroke="#2c625a" stroke-width="2"/>
+<text x="1104" y="74" font-family="Arial" font-size="18" font-weight="bold" fill="#163831">PRODUCT</text>
+<text x="1104" y="118" font-family="Arial" font-size="16" fill="#283d39"># id</text>
+<text x="1104" y="144" font-family="Arial" font-size="16" fill="#283d39">* SKU / name</text>
+<text x="1104" y="170" font-family="Arial" font-size="16" fill="#283d39">* wholesale cost</text>
+<text x="1104" y="196" font-family="Arial" font-size="16" fill="#283d39">* minimum price</text>
+</g>
+<g id="event">
+<rect x="195" y="320" width="260" height="174" rx="10" fill="#fff" stroke="#2c625a" stroke-width="2"/>
+<path d="M195 366 H455" stroke="#2c625a" stroke-width="2"/>
+<text x="209" y="349" font-family="Arial" font-size="18" font-weight="bold" fill="#163831">EVENT</text>
+<text x="209" y="393" font-family="Arial" font-size="16" fill="#283d39"># id</text>
+<text x="209" y="419" font-family="Arial" font-size="16" fill="#283d39">* venue / category</text>
+<text x="209" y="445" font-family="Arial" font-size="16" fill="#283d39">* date / name</text>
+<text x="209" y="471" font-family="Arial" font-size="16" fill="#283d39">o description</text>
+</g>
+<g id="booth">
+<rect x="505" y="320" width="260" height="174" rx="10" fill="#fff" stroke="#2c625a" stroke-width="2"/>
+<path d="M505 366 H765" stroke="#2c625a" stroke-width="2"/>
+<text x="519" y="349" font-family="Arial" font-size="18" font-weight="bold" fill="#163831">BOOTH</text>
+<text x="519" y="393" font-family="Arial" font-size="16" fill="#283d39"># id</text>
+<text x="519" y="419" font-family="Arial" font-size="16" fill="#283d39">* event</text>
+<text x="519" y="445" font-family="Arial" font-size="16" fill="#283d39">* location</text>
+</g>
+<g id="salesperson_shift">
+<rect x="825" y="320" width="300" height="174" rx="10" fill="#fff" stroke="#2c625a" stroke-width="2"/>
+<path d="M825 366 H1125" stroke="#2c625a" stroke-width="2"/>
+<text x="839" y="349" font-family="Arial" font-size="18" font-weight="bold" fill="#163831">SALESPERSON_SHIFT</text>
+<text x="839" y="393" font-family="Arial" font-size="16" fill="#283d39"># id</text>
+<text x="839" y="419" font-family="Arial" font-size="16" fill="#283d39">* booth / salesperson</text>
+<text x="839" y="445" font-family="Arial" font-size="16" fill="#283d39">* start / end</text>
+</g>
+<g id="sale">
+<rect x="505" y="600" width="260" height="174" rx="10" fill="#fff" stroke="#2c625a" stroke-width="2"/>
+<path d="M505 646 H765" stroke="#2c625a" stroke-width="2"/>
+<text x="519" y="629" font-family="Arial" font-size="18" font-weight="bold" fill="#163831">SALE</text>
+<text x="519" y="673" font-family="Arial" font-size="16" fill="#283d39"># id</text>
+<text x="519" y="699" font-family="Arial" font-size="16" fill="#283d39">* event / shift</text>
+<text x="519" y="725" font-family="Arial" font-size="16" fill="#283d39">* sale time</text>
+</g>
+<g id="product_sale">
+<rect x="970" y="600" width="260" height="174" rx="10" fill="#fff" stroke="#2c625a" stroke-width="2"/>
+<path d="M970 646 H1230" stroke="#2c625a" stroke-width="2"/>
+<text x="984" y="629" font-family="Arial" font-size="18" font-weight="bold" fill="#163831">PRODUCT_SALE</text>
+<text x="984" y="673" font-family="Arial" font-size="16" fill="#283d39"># sale id + line no</text>
+<text x="984" y="699" font-family="Arial" font-size="16" fill="#283d39">* product / quantity</text>
+<text x="984" y="725" font-family="Arial" font-size="16" fill="#283d39">* final price</text>
+</g>
+<text x="40" y="802" font-family="Arial" font-size="16" fill="#455c56"># identifier · * mandatory · o optional · parent relationship 1 : child 0..N (EVENT : BOOTH and SALE : PRODUCT_SALE are 1..N after opening/posting)</text>
+<text x="40" y="824" font-family="Arial" font-size="13" fill="#455c56">B Exhibit 1 core entities; physical FK and all fields: db/migrations/001_core.sql. Editable SVG source.</text>
+</svg>

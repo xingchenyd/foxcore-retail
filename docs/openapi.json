@@ -1,0 +1,3434 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Foxcore Retail API",
+    "version": "1.0.0",
+    "description": "同源 JSON API。金额输入为 CAD 十进制字符串，存储/输出为整数分字符串。写命令需要 CSRF；除登录、登出、改密外均需要 UUID 幂等键。请求字段表为静态源码提取，详细业务规则见 SRS/SDD。"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "本地 Compose"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "session": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "foxcore_session"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "requestId"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/v1/categories": {
+      "get": {
+        "operationId": "get_api_v1_categories",
+        "summary": "categories",
+        "tags": [
+          "categories"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      }
+    },
+    "/api/v1/venues": {
+      "get": {
+        "operationId": "get_api_v1_venues",
+        "summary": "venues",
+        "tags": [
+          "venues"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "post_api_v1_venues",
+        "summary": "venues",
+        "tags": [
+          "venues"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "street": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "city": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "province": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "postalCode": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "description": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events": {
+      "get": {
+        "operationId": "get_api_v1_events",
+        "summary": "events",
+        "tags": [
+          "events"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "post_api_v1_events",
+        "summary": "events",
+        "tags": [
+          "events"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "venueId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "categoryId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "name": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "startDate": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "endDate": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "description": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "taxBps": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "policyConfirmed": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/{id}/open": {
+      "post": {
+        "operationId": "post_api_v1_events_id_open",
+        "summary": "events/:id/open",
+        "tags": [
+          "events"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/{id}/close": {
+      "post": {
+        "operationId": "post_api_v1_events_id_close",
+        "summary": "events/:id/close",
+        "tags": [
+          "events"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/booths": {
+      "get": {
+        "operationId": "get_api_v1_booths",
+        "summary": "booths",
+        "tags": [
+          "booths"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "post_api_v1_booths",
+        "summary": "booths",
+        "tags": [
+          "booths"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "eventId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "location": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products": {
+      "get": {
+        "operationId": "get_api_v1_products",
+        "summary": "products",
+        "tags": [
+          "products"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "post_api_v1_products",
+        "summary": "products",
+        "tags": [
+          "products"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "sku": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "name": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "wholesaleCost": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "minPrice": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "suggestedPrice": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products/{id}": {
+      "patch": {
+        "operationId": "patch_api_v1_products_id",
+        "summary": "products/:id",
+        "tags": [
+          "products"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "wholesaleCost": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "minPrice": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "suggestedPrice": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "active": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "version": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/salespeople": {
+      "get": {
+        "operationId": "get_api_v1_salespeople",
+        "summary": "salespeople",
+        "tags": [
+          "salespeople"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "post_api_v1_salespeople",
+        "summary": "salespeople",
+        "tags": [
+          "salespeople"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "firstName": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "lastName": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "street": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "city": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "province": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "postalCode": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "phone": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "description": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "commissionBps": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/shifts": {
+      "get": {
+        "operationId": "get_api_v1_shifts",
+        "summary": "shifts",
+        "tags": [
+          "shifts"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "post_api_v1_shifts",
+        "summary": "shifts",
+        "tags": [
+          "shifts"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "salespersonId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "boothId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "plannedStart": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "plannedEnd": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/shifts/{id}/start": {
+      "post": {
+        "operationId": "post_api_v1_shifts_id_start",
+        "summary": "shifts/:id/start",
+        "tags": [
+          "shifts"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/shifts/{id}/close": {
+      "post": {
+        "operationId": "post_api_v1_shifts_id_close",
+        "summary": "shifts/:id/close",
+        "tags": [
+          "shifts"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/commissions/entries": {
+      "get": {
+        "operationId": "get_api_v1_commissions_entries",
+        "summary": "commissions/entries",
+        "tags": [
+          "commissions"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      }
+    },
+    "/api/v1/commissions/settlements": {
+      "get": {
+        "operationId": "get_api_v1_commissions_settlements",
+        "summary": "commissions/settlements",
+        "tags": [
+          "commissions"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      }
+    },
+    "/api/v1/commissions/prepare": {
+      "post": {
+        "operationId": "post_api_v1_commissions_prepare",
+        "summary": "commissions/prepare",
+        "tags": [
+          "commissions"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "salespersonId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/commissions/{id}/pay": {
+      "post": {
+        "operationId": "post_api_v1_commissions_id_pay",
+        "summary": "commissions/:id/pay",
+        "tags": [
+          "commissions"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "paymentReference": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/commissions/{id}/cancel": {
+      "post": {
+        "operationId": "post_api_v1_commissions_id_cancel",
+        "summary": "commissions/:id/cancel",
+        "tags": [
+          "commissions"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "reason": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "paymentReconciled": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/live": {
+      "get": {
+        "operationId": "get_health_live",
+        "summary": "/health/live",
+        "tags": [
+          "health"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "get_health_ready",
+        "summary": "/health/ready",
+        "tags": [
+          "health"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "post_api_v1_auth_login",
+        "summary": "auth/login",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "username": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "password": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "post_api_v1_auth_logout",
+        "summary": "auth/logout",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/password": {
+      "post": {
+        "operationId": "post_api_v1_auth_password",
+        "summary": "auth/password",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "currentPassword": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "newPassword": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "get_api_v1_auth_me",
+        "summary": "auth/me",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "operationId": "get_api_v1_users",
+        "summary": "users",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "post_api_v1_users",
+        "summary": "users",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "username": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "password": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "salespersonId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{id}/active": {
+      "patch": {
+        "operationId": "patch_api_v1_users_id_active",
+        "summary": "users/:id/active",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "active": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/sales": {
+      "get": {
+        "operationId": "get_api_v1_reports_sales",
+        "summary": "reports/sales",
+        "tags": [
+          "reports"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      }
+    },
+    "/api/v1/reports/sales.csv": {
+      "get": {
+        "operationId": "get_api_v1_reports_sales_csv",
+        "summary": "reports/sales.csv",
+        "tags": [
+          "reports"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      }
+    },
+    "/api/v1/audit": {
+      "get": {
+        "operationId": "get_api_v1_audit",
+        "summary": "audit",
+        "tags": [
+          "audit"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      }
+    },
+    "/api/v1/stock/locations": {
+      "get": {
+        "operationId": "get_api_v1_stock_locations",
+        "summary": "stock/locations",
+        "tags": [
+          "stock"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      }
+    },
+    "/api/v1/stock/balances": {
+      "get": {
+        "operationId": "get_api_v1_stock_balances",
+        "summary": "stock/balances",
+        "tags": [
+          "stock"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      }
+    },
+    "/api/v1/stock/ledger": {
+      "get": {
+        "operationId": "get_api_v1_stock_ledger",
+        "summary": "stock/ledger",
+        "tags": [
+          "stock"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      }
+    },
+    "/api/v1/stock/receive": {
+      "post": {
+        "operationId": "post_api_v1_stock_receive",
+        "summary": "stock/receive",
+        "tags": [
+          "stock"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "productId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "quantity": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "reason": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stock/transfer": {
+      "post": {
+        "operationId": "post_api_v1_stock_transfer",
+        "summary": "stock/transfer",
+        "tags": [
+          "stock"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "productId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "quantity": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "fromLocationId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "toLocationId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "reason": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "handoverConfirmed": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stock/adjust": {
+      "post": {
+        "operationId": "post_api_v1_stock_adjust",
+        "summary": "stock/adjust",
+        "tags": [
+          "stock"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "productId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "locationId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "countedQuantity": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "expectedVersion": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "reason": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stock/documents/{id}": {
+      "get": {
+        "operationId": "get_api_v1_stock_documents_id",
+        "summary": "stock/documents/:id",
+        "tags": [
+          "stock"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/returns": {
+      "get": {
+        "operationId": "get_api_v1_returns",
+        "summary": "returns",
+        "tags": [
+          "returns"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "post_api_v1_returns",
+        "summary": "returns",
+        "tags": [
+          "returns"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "saleId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "reason": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "destinationLocationId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "lines": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/returns/{id}": {
+      "get": {
+        "operationId": "get_api_v1_returns_id",
+        "summary": "returns/:id",
+        "tags": [
+          "returns"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/returns/{id}/authorize": {
+      "post": {
+        "operationId": "post_api_v1_returns_id_authorize",
+        "summary": "returns/:id/authorize",
+        "tags": [
+          "returns"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/returns/{id}/post": {
+      "post": {
+        "operationId": "post_api_v1_returns_id_post",
+        "summary": "returns/:id/post",
+        "tags": [
+          "returns"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "refundReference": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/returns/{id}/cancel": {
+      "post": {
+        "operationId": "post_api_v1_returns_id_cancel",
+        "summary": "returns/:id/cancel",
+        "tags": [
+          "returns"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "reason": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "refundReconciled": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sales": {
+      "get": {
+        "operationId": "get_api_v1_sales",
+        "summary": "sales",
+        "tags": [
+          "sales"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "post_api_v1_sales",
+        "summary": "sales",
+        "tags": [
+          "sales"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "shiftId": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "lines": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sales/{id}": {
+      "get": {
+        "operationId": "get_api_v1_sales_id",
+        "summary": "sales/:id",
+        "tags": [
+          "sales"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "patch_api_v1_sales_id",
+        "summary": "sales/:id",
+        "tags": [
+          "sales"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "version": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "lines": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sales/{id}/prepare": {
+      "post": {
+        "operationId": "post_api_v1_sales_id_prepare",
+        "summary": "sales/:id/prepare",
+        "tags": [
+          "sales"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "version": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sales/{id}/post": {
+      "post": {
+        "operationId": "post_api_v1_sales_id_post",
+        "summary": "sales/:id/post",
+        "tags": [
+          "sales"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "paymentMethod": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "paymentReference": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "cashReceived": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sales/{id}/cancel": {
+      "post": {
+        "operationId": "post_api_v1_sales_id_cancel",
+        "summary": "sales/:id/cancel",
+        "tags": [
+          "sales"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "reason": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "paymentReconciled": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "goodsRecovered": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

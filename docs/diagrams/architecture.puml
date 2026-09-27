@@ -1,0 +1,22 @@
+@startuml
+skinparam shadowing false
+node "本地主机" {
+  artifact "浏览器\nhttp://localhost:3000" as Browser
+  node "Docker Compose" {
+    node "app :3000\nNode 24 / Fastify" as App {
+      component "React + TS + Vite\n生产静态资源" as Web
+      component "Auth / Catalog / Stock / Sale /\nReturn / Commission / Report" as API
+    }
+    node "migrate（一次性）" as Mig
+    database "db\nMariaDB 11.8\nInnoDB" as DB
+    folder "db_data 持久卷" as Data
+    folder "secret 私有卷" as Secret
+  }
+}
+Browser --> Web : 同源 HTTP
+Browser --> API : /api/v1 + Cookie + CSRF
+API --> DB : 受限账号 / 事务
+Mig --> DB : SQL 迁移 + 授权
+DB --> Data
+App --> Secret : 应用密码 / 初始口令
+@enduml

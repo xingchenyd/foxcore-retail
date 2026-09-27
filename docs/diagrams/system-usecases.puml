@@ -1,0 +1,37 @@
+@startuml
+left to right direction
+skinparam shadowing false
+actor OWNER
+actor SALESPERSON
+rectangle "Foxcore API + Browser" {
+  usecase "UC-01 活动和展位" as A
+  usecase "UC-02 商品与员工" as B
+  usecase "UC-03 排班/开班/关班" as C
+  usecase "UC-04 收货/调拨/盘点" as D
+  usecase "UC-05 销售草稿" as E
+  usecase "UC-06 准备收款" as F
+  usecase "UC-07 确认成交" as G
+  usecase "UC-08 取消待成交单" as H
+  usecase "UC-09 退货" as I
+  usecase "UC-10 佣金结算" as J
+  usecase "UC-11 查询报表" as K
+  usecase "UC-12 账户/审计" as L
+}
+OWNER --> A
+OWNER --> B
+OWNER --> C
+OWNER --> D
+OWNER --> E
+OWNER --> F
+OWNER --> G
+OWNER --> H
+OWNER --> I
+OWNER --> J
+OWNER --> K
+OWNER --> L
+SALESPERSON --> C
+SALESPERSON --> E
+SALESPERSON --> F
+SALESPERSON --> G
+SALESPERSON --> K
+@enduml

@@ -1,0 +1,16 @@
+.git
+.github
+.ai
+.playwright-cli
+node_modules
+.env
+.env.*.local
+artifacts
+work
+private_sources
+docs
+tests
+test-results
+portal
+*.pdf
+*.zip

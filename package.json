@@ -1,0 +1,39 @@
+{
+  "name": "foxcore-retail",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": ["apps/server", "apps/web"],
+  "engines": { "node": ">=24 <25" },
+  "scripts": {
+    "dev": "concurrently -k \"npm run dev -w @foxcore/server\" \"npm run dev -w @foxcore/web\"",
+    "build": "npm run build -w @foxcore/web && npm run build -w @foxcore/server",
+    "typecheck": "npm run typecheck -w @foxcore/server && npm run typecheck -w @foxcore/web",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:e2e": "playwright test",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:check": "tsx scripts/check.ts",
+    "owner:init": "tsx scripts/init-owner.ts",
+    "seed:sample": "node scripts/seed.mjs",
+    "setup:local": "tsx scripts/setup-local.ts",
+    "verify": "npm run typecheck && npm run test:unit && npm run test:integration && npm run build && npm run db:check"
+  },
+  "dependencies": {
+    "@fastify/cookie": "11.0.2",
+    "@fastify/static": "10.1.5",
+    "argon2": "0.44.0",
+    "fastify": "5.12.5",
+    "luxon": "3.7.2",
+    "mysql2": "3.24.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "@types/luxon": "3.7.1",
+    "@types/node": "24.9.1",
+    "concurrently": "9.2.4",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  }
+}

@@ -1,0 +1,26 @@
+@startuml
+skinparam shadowing false
+actor 销售员
+participant 浏览器
+participant "Fastify API" as API
+database "MariaDB" as DB
+销售员 -> 浏览器 : 填商品、数量、最终单价
+浏览器 -> API : POST /sales (UUID 幂等键)
+API -> DB : 事务写 DRAFT + 明细 + 审计
+DB --> API : 草稿 ID / version
+API --> 浏览器 : 草稿
+销售员 -> 浏览器 : 准备收款
+浏览器 -> API : POST /sales/{id}/prepare
+API -> DB : READ COMMITTED / 锁单据与余额
+API -> DB : 复查底价、税率、库存
+API -> DB : 写快照、hold、reserved、CHECKOUT
+DB --> API : 提交
+API --> 浏览器 : 固定应收额
+销售员 -> 销售员 : 在线下确认收款
+销售员 -> 浏览器 : 登记现金/终端依据
+浏览器 -> API : POST /sales/{id}/post (原键可重试)
+API -> DB : 同一事务：扣 on_hand/reserved
+API -> DB : 销售过账、库存/佣金流水、审计
+DB --> API : 提交
+API --> 浏览器 : 成交单号
+@enduml
