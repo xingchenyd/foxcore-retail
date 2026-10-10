@@ -1,22 +1,288 @@
 @startuml
+skinparam monochrome true
+' Foxcore Retail — Physical ERD (24 tables, MariaDB 11.8 / InnoDB)
 hide circle
 skinparam linetype ortho
-entity CATEGORY as event_categories { *id : PK\n--\n*code\n*type }
-entity VENUE as venues { *id : PK\n--\n*name\n*street\n*city\n*province\n*postal_code }
-entity EVENT as events { *id : PK\n--\n*venue_id : FK\n*category_id : FK\n*start_date\n*end_date\n*status }
-entity BOOTH as booths { *id : PK\n--\n*event_id : FK\n*location }
-entity PRODUCT as products { *id : PK\n--\n*sku\n*name\n*wholesale_cost_cents\n*minimum_price_cents }
-entity SALESPERSON as salespeople { *id : PK\n--\n*first_name\n*last_name\n*phone }
-entity SALESPERSON_SHIFT as shifts { *id : PK\n--\n*event_id : FK\n*booth_id : FK\n*salesperson_id : FK\n*starts_at\n*ends_at }
-entity SALE as sales { *id : PK\n--\n*event_id : FK\n*shift_id : FK\n*state\n*posted_at }
-entity PRODUCT_SALE as sale_lines { *sale_id : PK, FK\n*line_no : PK\n--\n*product_id : FK\n*quantity\n*final_unit_price_cents }
+skinparam entity {
+  BackgroundColor #FDFDFD
+  BorderColor #333333
+  FontSize 11
+}
+skinparam ArrowColor #444444
+
+entity "event_categories" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * code : VARCHAR(40) UNIQUE
+  * type : VARCHAR(80) UNIQUE
+}
+
+entity "venues" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * name : VARCHAR(120)
+  * street : VARCHAR(200)
+  * city : VARCHAR(120)
+  * province : VARCHAR(120)
+  * postal_code : VARCHAR(20)
+}
+
+entity "events" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * venue_id : BIGINT UNSIGNED <<FK>>
+  * category_id : BIGINT UNSIGNED <<FK>>
+  * start_date : DATE
+  * end_date : DATE
+  * status : ENUM
+}
+
+entity "booths" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * event_id : BIGINT UNSIGNED <<FK>>
+  * location : VARCHAR(160)
+}
+
+entity "products" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * sku : VARCHAR(64) UNIQUE
+  * name : VARCHAR(160)
+  * wholesale_cost_cents : BIGINT UNSIGNED
+  * minimum_price_cents : BIGINT UNSIGNED
+}
+
+entity "salespeople" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * first_name : VARCHAR(80)
+  * last_name : VARCHAR(80)
+  * phone : VARCHAR(40)
+}
+
+entity "shifts" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * event_id : BIGINT UNSIGNED <<FK>>
+  * booth_id : BIGINT UNSIGNED <<FK>>
+  * salesperson_id : BIGINT UNSIGNED <<FK>>
+  * starts_at : DATETIME(3)
+  * ends_at : DATETIME(3)
+}
+
+entity "users" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * username : VARCHAR(80) UNIQUE
+  * password_hash : VARCHAR(255)
+  * role : ENUM(OWNER,SALESPERSON)
+  * salesperson_id : BIGINT UNSIGNED <<FK>>
+  * active : BOOLEAN
+  * must_change_password : BOOLEAN
+  * failed_logins : INT
+  * locked_until : DATETIME(3)
+}
+
+entity "sessions" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * user_id : BIGINT UNSIGNED <<FK>>
+  * token_hash : CHAR(64) UNIQUE
+  * csrf_hash : CHAR(64)
+  * expires_at : DATETIME(3)
+  * revoked_at : DATETIME(3)
+}
+
+entity "sales" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * sale_no : VARCHAR(40) UNIQUE
+  * shift_id : BIGINT UNSIGNED <<FK>>
+  * event_id : BIGINT UNSIGNED <<FK>>
+  * state : ENUM(DRAFT,CHECKOUT,POSTED,CANCELLED)
+  * created_by : BIGINT UNSIGNED <<FK>>
+  * posted_by : BIGINT UNSIGNED <<FK>>
+  * payment_method : ENUM(CASH,TERMINAL)
+  * net_cents / tax_cents / total_cents : BIGINT
+  * version : INT
+}
+
+entity "sale_lines" {
+  * sale_id : BIGINT UNSIGNED <<PK,FK>>
+  * line_no : SMALLINT <<PK>>
+  --
+  * product_id : BIGINT UNSIGNED <<FK>>
+  * quantity : INT UNSIGNED
+  * final_unit_price_cents : BIGINT
+  * line_net_cents / line_tax_cents : BIGINT
+  * line_commission_cents : BIGINT
+  * cost_snapshot_cents : BIGINT
+  * min_snapshot_cents : BIGINT
+  * tax_bps_snapshot : SMALLINT
+  * commission_bps_snapshot : SMALLINT
+  * name_snapshot / sku_snapshot : VARCHAR
+}
+
+entity "stock_locations" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * code : VARCHAR(80) UNIQUE
+  * name : VARCHAR(120)
+  * kind : ENUM(WAREHOUSE,BOOTH)
+  * booth_id : BIGINT UNSIGNED <<FK>>
+  * active : BOOLEAN
+}
+
+entity "stock_balances" {
+  * location_id : BIGINT UNSIGNED <<PK,FK>>
+  * product_id : BIGINT UNSIGNED <<PK,FK>>
+  --
+  * on_hand : BIGINT UNSIGNED
+  * reserved : BIGINT UNSIGNED
+  * version : INT
+}
+
+entity "stock_documents" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * kind : ENUM(RECEIVE,TRANSFER,ADJUST,RETURN)
+  * from_location_id : BIGINT UNSIGNED <<FK>>
+  * to_location_id : BIGINT UNSIGNED <<FK>>
+  * reason : VARCHAR(500)
+  * created_by : BIGINT UNSIGNED <<FK>>
+}
+
+entity "stock_document_lines" {
+  * document_id : BIGINT UNSIGNED <<PK,FK>>
+  * line_no : SMALLINT <<PK>>
+  --
+  * product_id : BIGINT UNSIGNED <<FK>>
+  * quantity : INT (signed, <> 0)
+}
+
+entity "stock_ledger" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * location_id : BIGINT UNSIGNED <<FK>>
+  * product_id : BIGINT UNSIGNED <<FK>>
+  * delta : BIGINT (signed)
+  * source_kind : ENUM(DOCUMENT,SALE,RETURN)
+  * source_id / source_line_no
+}
+
+entity "stock_holds" {
+  * sale_id : BIGINT UNSIGNED <<PK,FK>>
+  * line_no : SMALLINT <<PK,FK>>
+  --
+  * location_id : BIGINT UNSIGNED <<FK>>
+  * product_id : BIGINT UNSIGNED <<FK>>
+  * quantity : INT UNSIGNED
+  * status : ENUM(ACTIVE,CONSUMED,RELEASED)
+}
+
+entity "returns" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * sale_id : BIGINT UNSIGNED <<FK>>
+  * state : ENUM(DRAFT,AUTHORIZED,POSTED,CANCELLED)
+  * reason : VARCHAR(500)
+  * destination_location_id : BIGINT UNSIGNED <<FK>>
+  * created_by : BIGINT UNSIGNED <<FK>>
+  * net_cents / tax_cents / total_cents : BIGINT
+}
+
+entity "return_lines" {
+  * return_id : BIGINT UNSIGNED <<PK,FK>>
+  * line_no : SMALLINT <<PK>>
+  --
+  * sale_line_no : SMALLINT UNIQUE(return,sale_line)
+  * quantity : INT UNSIGNED
+  * disposition : ENUM(RESTOCK,DAMAGED)
+  * net_cents / tax_cents / commission_cents
+}
+
+entity "commission_entries" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * salesperson_id : BIGINT UNSIGNED <<FK>>
+  * amount_cents : BIGINT (signed)
+  * source_kind : ENUM(SALE,RETURN)
+  * source_id / source_line_no
+}
+
+entity "commission_settlements" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * salesperson_id : BIGINT UNSIGNED <<FK>>
+  * state : ENUM(PREPARED,PAID,CANCELLED)
+  * cutoff_at : DATETIME(3)
+  * total_cents : BIGINT
+  * created_by : BIGINT UNSIGNED <<FK>>
+}
+
+entity "commission_settlement_lines" {
+  * settlement_id : BIGINT UNSIGNED <<PK,FK>>
+  * entry_id : BIGINT UNSIGNED <<PK,FK>>
+  --
+  * amount_cents : BIGINT
+}
+
+entity "commission_claims" {
+  * entry_id : BIGINT UNSIGNED <<PK,FK>>
+  --
+  * settlement_id : BIGINT UNSIGNED <<FK>>
+}
+
+entity "idempotency_keys" {
+  * actor_id : BIGINT UNSIGNED <<PK,FK>>
+  * operation : VARCHAR(80) <<PK>>
+  * command_key : CHAR(36) <<PK>>
+  --
+  * request_hash : CHAR(64)
+  * response_json : LONGTEXT
+}
+
+entity "audit_events" {
+  * id : BIGINT UNSIGNED <<PK>>
+  --
+  * actor_id : BIGINT UNSIGNED <<FK>>
+  * action : VARCHAR(100)
+  * subject_type / subject_id
+  * detail_json : LONGTEXT
+}
+
 event_categories ||--o{ events
-venues ||--o{ events
-events ||--|{ booths
-events ||--o{ sales
-booths ||--o{ shifts
-salespeople ||--o{ shifts
-shifts ||--o{ sales
-sales ||--|{ sale_lines
-products ||--o{ sale_lines
+venues         ||--o{ events
+events         ||--|{ booths
+booths         ||--o| stock_locations
+events         ||--o{ shifts
+booths         ||--o{ shifts
+salespeople    ||--o{ shifts
+salespeople    ||--o| users
+users          ||--o{ sessions
+shifts         ||--o{ sales
+users          ||--o{ sales
+sales          ||--|{ sale_lines
+products       ||--o{ sale_lines
+sale_lines     ||--|| stock_holds
+stock_locations ||--o{ stock_balances
+products       ||--o{ stock_balances
+stock_locations ||--o{ stock_documents
+users          ||--o{ stock_documents
+stock_documents ||--|{ stock_document_lines
+products       ||--o{ stock_document_lines
+stock_locations ||--o{ stock_ledger
+products       ||--o{ stock_ledger
+sales          ||--o{ returns
+returns        ||--|{ return_lines
+sale_lines     ||--o{ return_lines
+salespeople    ||--o{ commission_entries
+salespeople    ||--o{ commission_settlements
+commission_entries     ||--o{ commission_settlement_lines
+commission_settlements ||--|{ commission_settlement_lines
+commission_entries     ||--o| commission_claims
+commission_settlements ||--o{ commission_claims
+users          ||--o{ idempotency_keys
+users          ||--o{ audit_events
 @enduml

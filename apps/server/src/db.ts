@@ -22,7 +22,9 @@ export const pool = mysql.createPool({
   bigNumberStrings: true,
   dateStrings: true,
   timezone: 'Z',
-  decimalNumbers: false
+  decimalNumbers: false,
+  // 云端数据库（如 TiDB Cloud）强制 TLS；本地 Docker 部署不设置 DB_SSL，行为保持不变
+  ...(process.env.DB_SSL === 'true' ? { ssl: { minVersion: 'TLSv1.2' as const } } : {})
 });
 
 export type Db = PoolConnection;

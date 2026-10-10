@@ -94,4 +94,9 @@ app.setNotFoundHandler(async(req,reply)=>{
 if(existsSync(join(webRoot,'index.html'))){
   await app.register(staticFiles,{root:webRoot,prefix:'/'});
 }
-await app.listen({host:process.env.HOST??'127.0.0.1',port:Number(process.env.PORT??3000)});
+// 本地/Docker 部署：照常监听端口。Vercel Serverless 环境（VERCEL=1）：不监听，
+// 由 api/index.js 导入本模块后以请求方式调用（见 docs/08-deployment-vercel.md）。
+export default app;
+if(!process.env.VERCEL){
+  await app.listen({host:process.env.HOST??'127.0.0.1',port:Number(process.env.PORT??3000)});
+}

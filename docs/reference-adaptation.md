@@ -13,10 +13,10 @@
 
 | 来源 | 已核对范围 | 采用的方法 | 未搬入的内容 |
 |---|---|---|---|
-| KADA | README、交付目录及七份 PDF 的正文/目录/关键图；SRS、SDD、STD、UI/Flow、Proposal、Conceptual、Logical Design | 分开交付需求、设计、测试、界面流程和概念/逻辑数据设计 | 合作社业务及 PHP 结构 |
+| KADA | README、文档目录及七份 PDF 的正文/目录/关键图；SRS、SDD、STD、UI/Flow、Proposal、Conceptual、Logical Design | 分文档组织需求、设计、测试、界面流程和概念/逻辑数据设计 | 合作社业务及 PHP 结构 |
 | OpenLMIS | Mission and Vision、Functional Documentation、QA Guide 指定页面 | 愿景→用例→质量验收的追踪 | 医疗供应链及微服务 |
 | ERPNext | README、Immutable Ledger、Sales Person 官方文档 | 已过账交易留轨、佣金计提与实际支付分开 | 会计总账、采购、多人分单 |
 | FoodInsight | README、PRD、架构文档前段 | 明确范围、FR/NFR、选型与验收 | 其产品业务、原型技术组合 |
 | Open Mercato | `.ai/specs/AGENTS.md` | 规格优先、变更记录、实现状态须有证据 | 整套企业目录和代理框架 |
 
-KADA PDF 原手册曾因二进制读取失败而留有缺口；本轮已下载七份实际 PDF 并阅读结构及关键页，完成该缺口的补读，但没有声称逐页审计每一行。外部参考只提供文档/设计方法，不提供 Foxcore 税率、定价或用户身份事实。参考站点和课程 PDF 不随交付压缩包分发。
+外部参考仅提供文档结构与设计方法，不提供 Foxcore 的税率、定价或用户身份事实。参考站点与课程 PDF 不随发布包分发。

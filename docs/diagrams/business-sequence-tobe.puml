@@ -1,0 +1,32 @@
+@startuml
+skinparam monochrome true
+title 改进后（TO-BE）业务序列图：系统支持的现场销售与结算流程
+skinparam shadowing false
+actor 顾客 as Customer
+participant "销售员" as Seller
+participant "管理员" as Owner
+boundary "Foxcore Retail 系统" as System
+
+Owner -> System : 建立场地、活动、展位、商品主数据
+System --> Owner : 主数据就绪，活动开放
+Owner -> System : 排班并把库存调拨至展位
+System --> Owner : 展位可售量就绪
+Seller -> System : 登录并开启本人班次
+Customer -> Seller : 选购商品、协商价格
+Seller -> System : 录入销售草稿（商品、数量、协商单价）
+System --> Seller : 草稿保存（不占用库存）
+Seller -> System : 准备收款
+System -> System : 复核底价、税率、佣金率与展位可售量
+System --> Seller : 固定应收额（冻结金额、占用库存）
+Customer -> Seller : 现金/线下终端支付
+Seller -> System : 登记收款依据并确认成交
+System -> System : 原子写入成交、库存负流水、佣金流水、审计
+System --> Seller : 成交凭证（单号可追溯）
+note right of System : 何人、何时、何地、\n以何价格售出何商品——\n每笔成交沿活动→展位→班次→销售→明细可追溯
+Customer -> Seller : 现场或事后退货
+Seller -> Owner : 转交退货与退款凭证
+Owner -> System : 先授权退货，线下退款后登记
+System --> Owner : 原单保留，生成退货记录与负佣金流水
+Owner -> System : 占用未结佣金流水并登记线下支付
+System --> Owner : 结算完成，报表实时更新
+@enduml

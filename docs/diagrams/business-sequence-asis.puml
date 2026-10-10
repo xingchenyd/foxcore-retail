@@ -1,0 +1,25 @@
+@startuml
+skinparam monochrome true
+title 现状（AS-IS）业务序列图：活动日销售与日终汇总（纸笔流程）
+skinparam shadowing false
+actor 顾客 as Customer
+participant "销售员" as Seller
+database "纸质销售单据" as Paper
+participant "管理员" as Owner
+database "电子表格\n（分散文件）" as Sheet
+
+Customer -> Seller : 选购商品、协商价格
+Seller -> Paper : 手写商品、数量、成交价
+Customer -> Seller : 现金/线下终端支付
+Seller -> Paper : 手工标注收款方式
+note right of Paper : 易漏记、字迹难辨\n无价格与底价核对\n无库存占用概念
+Seller -> Owner : 活动结束后上交全部单据
+Owner -> Sheet : 人工逐行转抄
+note right of Sheet : 转抄错漏无法自动校验\n销售归属依赖记忆与签字
+Owner -> Sheet : 手工汇总销量、推算库存
+Owner -> Sheet : 手工按费率计算佣金
+note over Owner, Sheet : 库存为估计值，缺货/超卖事后才发现\n佣金与归属易起争议\n跨活动、跨商品分析需重新合并多份表格
+Customer <-- Seller : 现场退货（无系统记录）
+Seller -> Paper : 另纸备注退货，划改原单
+note right of Paper : 原单被划改，历史不可追溯\n佣金不作冲回，事后手工调账
+@enduml
