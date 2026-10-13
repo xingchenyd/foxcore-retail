@@ -1,6 +1,4 @@
-<!-- foxcore-fixes-current -->
-> 本轮修复：实现与验证状态以 [修复说明](fixes/README.md)、[决策](fixes/decisions.md)、[验证记录](fixes/verification.md) 和 `use-cases.json` 为准。下文未更新的历史运行统计不代表本轮通过。PDF/既有图片是旧基线派生物，尚未重新生成；修复后以 Markdown、源码及新合同为准。
-<!-- /foxcore-fixes-current -->
+> 作业文档与图纸仓库：https://github.com/xingchenyd/foxcore-retail —— 文档位于 `docs/`，图纸位于 [docs/diagrams](https://github.com/xingchenyd/foxcore-retail/tree/main/docs/diagrams)（实体类图 class-diagram.png/svg、物理 ERD physical-erd.png、概念 ERD core-barker.png/svg、架构图、业务序列图、用例图、状态图等全套 .puml/.svg/.png）。
 
 # 02 软件需求规格说明书（SRS）
 
