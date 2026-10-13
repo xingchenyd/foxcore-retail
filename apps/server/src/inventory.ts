@@ -4,6 +4,8 @@ import { pool, exec, first, rows, tx, type Db } from './db.js';
 import { actor, owner, writable } from './auth.js';
 import { audit, bad, body, command, conflict, id, missing, nonempty, positiveInt, requireKey } from './core.js';
 
+import { listPage } from './pagination.js';
+
 interface Balance extends RowDataPacket { on_hand: string; reserved: string; version: number }
 interface Location extends RowDataPacket { id: string; kind: string; active: number; booth_id: string | null }
 async function location(db: Db, value: string): Promise<Location> {
@@ -45,17 +47,21 @@ const params = (req: FastifyRequest) => req.params as Record<string, unknown>;
 
 export function registerInventory(app: FastifyInstance): void {
   app.get('/api/v1/stock/locations', async req => {
-    const a=await actor(req); owner(a); const db=await pool.getConnection(); try { return {items:await rows<RowDataPacket>(db,'SELECT * FROM stock_locations ORDER BY id')}; } finally {db.release();}
+    const a=await actor(req); owner(a);
+    return listPage('SELECT l.*,b.active AS booth_active,b.event_id,e.status AS event_status FROM stock_locations l LEFT JOIN booths b ON b.id=l.booth_id LEFT JOIN events e ON e.id=b.event_id ORDER BY l.id',[],req.query as Record<string,unknown>,100);
   });
   app.get('/api/v1/stock/balances', async req => {
-    const a=await actor(req); const db=await pool.getConnection();
-    try {
-      const scope=a.role==='OWNER'?'':' WHERE l.booth_id IN (SELECT booth_id FROM shifts WHERE salesperson_id=? AND status=\'ACTIVE\')';
-      return {items:await rows<RowDataPacket>(db,`SELECT b.*,l.name AS location_name,l.kind,p.name AS product_name,p.sku FROM stock_balances b JOIN stock_locations l ON l.id=b.location_id JOIN products p ON p.id=b.product_id${scope} ORDER BY l.id,p.id LIMIT 100`,a.role==='OWNER'?[]:[a.salespersonId])};
-    } finally {db.release();}
+    const a=await actor(req),q=req.query as Record<string,unknown>,conditions:string[]=[],values:unknown[]=[];
+    if(a.role!=='OWNER'){
+      conditions.push("l.booth_id IN (SELECT booth_id FROM shifts WHERE salesperson_id=? AND status='ACTIVE')");values.push(a.salespersonId);
+    }
+    if(q.locationId!==undefined){conditions.push('b.location_id=?');values.push(id(q.locationId));}
+    const where=conditions.length?' WHERE '+conditions.join(' AND '):'';
+    return listPage(`SELECT b.*,l.name AS location_name,l.kind,p.name AS product_name,p.sku FROM stock_balances b JOIN stock_locations l ON l.id=b.location_id JOIN products p ON p.id=b.product_id${where} ORDER BY b.location_id,b.product_id`,values,q,100);
   });
   app.get('/api/v1/stock/ledger', async req => {
-    const a=await actor(req); owner(a); const db=await pool.getConnection(); try {return {items:await rows<RowDataPacket>(db,'SELECT * FROM stock_ledger ORDER BY id DESC LIMIT 100')};} finally {db.release();}
+    const a=await actor(req); owner(a);
+    return listPage('SELECT * FROM stock_ledger ORDER BY id DESC',[],req.query as Record<string,unknown>,100);
   });
   app.post('/api/v1/stock/receive', async req => {
     const a=await actor(req); owner(a); writable(req,a); const d=body(req.body,['productId','quantity','reason']); const k=requireKey(req.headers['idempotency-key']);

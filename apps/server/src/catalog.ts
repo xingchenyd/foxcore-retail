@@ -5,20 +5,14 @@ import { pool, exec, first, rows, tx } from './db.js';
 import { actor, owner, writable, type Actor } from './auth.js';
 import { audit, bad, body, bps, command, conflict, id, missing, money, nonempty, opt, positiveInt, requireKey } from './core.js';
 
+import { listPage } from './pagination.js';
+import { lockShiftEvent } from './catalog-updates.js';
+
 interface Basic extends RowDataPacket { id: string; event_id?: string; status?: string; version?: number; start_date?: string; end_date?: string; planned_start?: string; planned_end?: string; salesperson_id?: string; active?: number; policy_confirmed?: number; tax_bps?: number | null }
 const params = (req: FastifyRequest) => req.params as Record<string, unknown>;
 async function ownerWrite(req: FastifyRequest): Promise<Actor> { const a = await actor(req); owner(a); writable(req, a); return a; }
-function page(req: FastifyRequest): [number, number] {
-  const q = req.query as Record<string, unknown>;
-  const limit = q.limit === undefined ? 20 : Number(q.limit);
-  const offset = q.offset === undefined ? 0 : Number(q.offset);
-  if (!Number.isInteger(limit) || limit < 1 || limit > 100 || !Number.isInteger(offset) || offset < 0) throw bad('分页参数无效');
-  return [limit, offset];
-}
 async function list(sql: string, values: unknown[], req: FastifyRequest): Promise<unknown> {
-  const db = await pool.getConnection();
-  try { const [limit, offset] = page(req); return { items: await rows(db, sql + ' LIMIT ? OFFSET ?', [...values, limit, offset]), limit, offset }; }
-  finally { db.release(); }
+  return listPage(sql, values, req.query as Record<string, unknown>);
 }
 const utc = (value: unknown): string => {
   if (typeof value !== 'string') throw bad('时间必须是带 UTC 偏移的 ISO 格式');
@@ -67,7 +61,7 @@ export function registerCatalog(app: FastifyInstance): void {
       const pending=await first<RowDataPacket>(db,"SELECT COUNT(*) AS n FROM shifts WHERE event_id=? AND status IN ('PLANNED','ACTIVE')",[eventId]);
       const sales=await first<RowDataPacket>(db,"SELECT COUNT(*) AS n FROM sales WHERE event_id=? AND state IN ('DRAFT','CHECKOUT')",[eventId]);
       const stock=await first<RowDataPacket>(db,"SELECT COUNT(*) AS n FROM stock_balances b JOIN stock_locations l ON l.id=b.location_id JOIN booths bo ON bo.id=l.booth_id WHERE bo.event_id=? AND b.on_hand>0",[eventId]);
-      const returns=await first<RowDataPacket>(db,"SELECT COUNT(*) AS n FROM returns r JOIN sales s ON s.id=r.sale_id JOIN stock_locations l ON l.id=r.destination_location_id JOIN booths b ON b.id=l.booth_id WHERE s.event_id=? AND r.state='AUTHORIZED' AND b.event_id=?",[eventId,eventId]);
+      const returns=await first<RowDataPacket>(db,"SELECT COUNT(*) AS n FROM returns r JOIN stock_locations l ON l.id=r.destination_location_id JOIN booths b ON b.id=l.booth_id WHERE r.state='AUTHORIZED' AND b.event_id=? AND EXISTS (SELECT 1 FROM return_lines rl WHERE rl.return_id=r.id AND rl.disposition='RESTOCK')",[eventId]);
       if(Number(pending?.n)||Number(sales?.n)||Number(stock?.n)||Number(returns?.n)) throw conflict('仍有班次、未结账销售、展位库存或待处理入展位退货');
       await exec(db,"UPDATE events SET status='CLOSED',version=version+1 WHERE id=?",[eventId]); await audit(db,a.id,'EVENT_CLOSED','EVENT',eventId); return {id:eventId,status:'CLOSED'};
     }));
@@ -122,8 +116,15 @@ export function registerCatalog(app: FastifyInstance): void {
     }));
   });
   app.get('/api/v1/shifts', async req => {
-    const a=await actor(req); const q=req.query as Record<string,unknown>; const filter=a.role==='SALESPERSON'?' WHERE s.salesperson_id=?':q.salespersonId?' WHERE s.salesperson_id=?':'';
-    const values=a.role==='SALESPERSON'?[a.salespersonId]:q.salespersonId?[id(q.salespersonId)]:[];
+    const a=await actor(req); const q=req.query as Record<string,unknown>; const conditions:string[]=[],values:unknown[]=[];
+    if(a.role==='SALESPERSON'){conditions.push('s.salesperson_id=?');values.push(a.salespersonId);}
+    else if(q.salespersonId!==undefined){conditions.push('s.salesperson_id=?');values.push(id(q.salespersonId));}
+    if(q.eventId!==undefined){conditions.push('s.event_id=?');values.push(id(q.eventId));}
+    if(q.status!==undefined){
+      if(typeof q.status!=='string'||!['PLANNED','ACTIVE','CLOSED','CANCELLED'].includes(q.status)) throw bad('班次状态筛选无效');
+      conditions.push('s.status=?');values.push(q.status);
+    }
+    const filter=conditions.length?' WHERE '+conditions.join(' AND '):'';
     return list('SELECT s.*,b.location AS booth_location,e.name AS event_name,sp.first_name,sp.last_name FROM shifts s JOIN booths b ON b.id=s.booth_id JOIN events e ON e.id=s.event_id JOIN salespeople sp ON sp.id=s.salesperson_id'+filter+' ORDER BY s.id DESC',values,req);
   });
   app.post('/api/v1/shifts', async req => {
@@ -131,6 +132,8 @@ export function registerCatalog(app: FastifyInstance): void {
     const start=utc(d.plannedStart); const end=utc(d.plannedEnd); if(end<=start) throw bad('班次结束必须晚于开始');
     return tx(db => command(db,a.id,'shift.create',k,d,async () => {
       const salespersonId=id(d.salespersonId),boothId=id(d.boothId);
+      const pre=await first<Basic>(db,'SELECT event_id FROM booths WHERE id=?',[boothId]);if(!pre) throw missing();
+      await first<Basic>(db,'SELECT id FROM events WHERE id=? FOR UPDATE',[pre.event_id]);
       const booth=await first<Basic>(db,'SELECT b.*,e.start_date,e.end_date,e.status FROM booths b JOIN events e ON e.id=b.event_id WHERE b.id=? FOR UPDATE',[boothId]); if(!booth||!booth.active) throw missing();
       if(booth.status==='CLOSED'||booth.status==='CANCELLED') throw conflict('活动已结束');
       const sp=await first<Basic>(db,'SELECT * FROM salespeople WHERE id=? FOR UPDATE',[salespersonId]); if(!sp||!sp.active) throw missing();
@@ -144,10 +147,12 @@ export function registerCatalog(app: FastifyInstance): void {
   app.post('/api/v1/shifts/:id/start', async req => {
     const a=await actor(req); writable(req,a); const shiftId=id(params(req).id); const k=requireKey(req.headers['idempotency-key']);
     return tx(db => command(db,a.id,'shift.start',k,{shiftId},async () => {
+      await lockShiftEvent(db,shiftId);
       const shift=await first<Basic>(db,'SELECT s.*,e.status AS event_status FROM shifts s JOIN events e ON e.id=s.event_id WHERE s.id=? FOR UPDATE',[shiftId]); if(!shift) throw missing();
       if(a.role!=='OWNER'&&shift.salesperson_id!==a.salespersonId) throw missing();
       if(shift.status!=='PLANNED'||shift.event_status!=='OPEN') throw conflict('活动未开放或班次不在计划状态');
       const now=nowSql(); if(now<shift.planned_start!||now>=shift.planned_end!) throw conflict('当前不在计划班次时间内');
+      await first<RowDataPacket>(db,'SELECT id FROM salespeople WHERE id=? FOR UPDATE',[shift.salesperson_id]);
       const other=await first<RowDataPacket>(db,"SELECT id FROM shifts WHERE salesperson_id=? AND status='ACTIVE' LIMIT 1",[shift.salesperson_id]); if(other) throw conflict('员工已有进行中班次');
       await exec(db,"UPDATE shifts SET status='ACTIVE',actual_start=UTC_TIMESTAMP(3),version=version+1 WHERE id=?",[shiftId]); await audit(db,a.id,'SHIFT_STARTED','SHIFT',shiftId); return {id:shiftId,status:'ACTIVE'};
     }));
@@ -155,6 +160,7 @@ export function registerCatalog(app: FastifyInstance): void {
   app.post('/api/v1/shifts/:id/close', async req => {
     const a=await actor(req); writable(req,a); const shiftId=id(params(req).id); const k=requireKey(req.headers['idempotency-key']);
     return tx(db => command(db,a.id,'shift.close',k,{shiftId},async () => {
+      await lockShiftEvent(db,shiftId);
       const shift=await first<Basic>(db,'SELECT * FROM shifts WHERE id=? FOR UPDATE',[shiftId]); if(!shift) throw missing(); if(a.role!=='OWNER'&&shift.salesperson_id!==a.salespersonId) throw missing(); if(shift.status!=='ACTIVE') throw conflict('班次未开始');
       const open=await first<RowDataPacket>(db,"SELECT id FROM sales WHERE shift_id=? AND state IN ('DRAFT','CHECKOUT') LIMIT 1",[shiftId]); if(open) throw conflict('班次仍有待处理销售');
       await exec(db,"UPDATE shifts SET status='CLOSED',actual_end=UTC_TIMESTAMP(3),version=version+1 WHERE id=?",[shiftId]); await audit(db,a.id,'SHIFT_CLOSED','SHIFT',shiftId); return {id:shiftId,status:'CLOSED'};

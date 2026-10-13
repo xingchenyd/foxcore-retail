@@ -1,0 +1,60 @@
+# Dedicated, disposable verification stack. The normal compose.yaml is not changed.
+# Invoke via npm run verify:full, which generates the project/run identity and checks ownership.
+services:
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    labels: {foxcore.verify.run: "${FOXCORE_VERIFY_RUN:?use verify-full.mjs}"}
+    environment: {TZ: UTC}
+    volumes:
+      - verify_db:/var/lib/mysql
+      - verify_root:/run/foxcore-root
+      - verify_app:/run/foxcore-app
+    healthcheck:
+      test: [CMD-SHELL, 'mariadb-admin ping --host=127.0.0.1 --user=root --password="$$(cat /run/foxcore-root/password)" --silent']
+      interval: 3s
+      timeout: 5s
+      retries: 60
+    networks: [backend]
+  migrate:
+    build: {context: ., dockerfile: Dockerfile}
+    labels: {foxcore.verify.run: "${FOXCORE_VERIFY_RUN:?use verify-full.mjs}"}
+    user: '0:0'
+    entrypoint: [node, scripts/runtime-migrate.mjs]
+    environment:
+      DB_HOST: db
+      DB_NAME: foxcore
+      DB_USER: foxcore
+      DB_ROOT_PASSWORD_FILE: /run/foxcore-root/password
+    volumes: [verify_root:/run/foxcore-root:ro]
+    depends_on: {db: {condition: service_healthy}}
+    networks: [backend]
+  app:
+    build: {context: ., dockerfile: Dockerfile}
+    labels: {foxcore.verify.run: "${FOXCORE_VERIFY_RUN:?use verify-full.mjs}"}
+    entrypoint: [/bin/sh, -ec, 'node scripts/runtime-owner.mjs && exec node apps/server/dist/index.js']
+    environment:
+      APP_ENV: production
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: '3000'
+      # Local random loopback port; no Origin allowlist is set in this isolated stack.
+      # Session and CSRF checks remain enabled; normal deployment settings are untouched.
+      COOKIE_SECURE: 'false'
+      DB_HOST: db
+      DB_NAME: foxcore
+      DB_USER: foxcore
+      DB_PASSWORD_FILE: /run/foxcore-app/db_password
+      OWNER_PASSWORD_FILE: /run/foxcore-app/owner_initial_password
+    volumes: [verify_app:/run/foxcore-app]
+    ports: ['127.0.0.1::3000']
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    networks: [backend, frontend]
+volumes:
+  verify_db:
+  verify_root:
+  verify_app:
+networks:
+  backend: {internal: true}
+  frontend:

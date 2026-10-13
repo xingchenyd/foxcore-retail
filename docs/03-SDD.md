@@ -1,3 +1,7 @@
+<!-- foxcore-fixes-current -->
+> 本轮修复：实现与验证状态以 [修复说明](fixes/README.md)、[决策](fixes/decisions.md)、[验证记录](fixes/verification.md) 和 `use-cases.json` 为准。下文未更新的历史运行统计不代表本轮通过。PDF/既有图片是旧基线派生物，尚未重新生成；修复后以 Markdown、源码及新合同为准。
+<!-- /foxcore-fixes-current -->
+
 # 03 系统设计说明（SDD）
 
 **Foxcore Retail — 现场零售运营管理系统 · 系统设计文档**
@@ -134,13 +138,13 @@
 
 | 编号 | 系统特性 | 实现构件 | 对应需求 | 持久化主要表 |
 |---|---|---|---|---|
-| SF-01 | 身份认证与会话管理 | `auth.ts` | FR-AUTH, UC-01, NFR-SEC | `users`, `sessions`, `idempotency_keys`, `audit_events` |
-| SF-02 | 主数据管理（场地/活动/展位/商品/员工/班次） | `catalog.ts` | UC-02~UC-05 | `venues`, `events`, `booths`, `products`, `salespeople`, `shifts`, `event_categories` |
-| SF-03 | 库存与库内作业（收货/调拨/盘点/占用） | `inventory.ts` | UC-06, UC-07 | `stock_locations`, `stock_documents`, `stock_document_lines`, `stock_balances`, `stock_ledger`, `stock_holds` |
-| SF-04 | 销售交易（草稿/准备收款/过账/取消） | `sales.ts` | UC-08, UC-09 | `sales`, `sale_lines`, `stock_holds`, `commission_entries` |
-| SF-05 | 退货与退款 | `returns.ts` | UC-10 | `returns`, `return_lines`, `commission_entries` |
-| SF-06 | 佣金计提与结算 | `commissions.ts` | UC-11 | `commission_entries`, `commission_settlements`, `commission_settlement_lines`, `commission_claims` |
-| SF-07 | 报表、审计与导出 | `catalog.ts`（报表）、`core.ts`（审计） | UC-12 | 只读查询 + `audit_events` |
+| SF-01 | 身份认证与会话管理 | `auth.ts` | UC-13（认证扩展） | `users`, `sessions`, `idempotency_keys`, `audit_events` |
+| SF-02 | 主数据管理（场地/活动/展位/商品/员工/班次） | `catalog.ts`, `catalog-updates.ts` | UC-01, UC-02, UC-03 | `venues`, `events`, `booths`, `products`, `salespeople`, `shifts`, `event_categories` |
+| SF-03 | 库存与库内作业（收货/调拨/盘点/占用） | `inventory.ts` | UC-04 | `stock_locations`, `stock_documents`, `stock_document_lines`, `stock_balances`, `stock_ledger`, `stock_holds` |
+| SF-04 | 销售交易（草稿/准备收款/过账/取消） | `sales.ts` | UC-05, UC-06, UC-07, UC-08 | `sales`, `sale_lines`, `stock_holds`, `commission_entries` |
+| SF-05 | 退货与退款 | `returns.ts`, `return-target.ts` | UC-09 | `returns`, `return_lines`, `commission_entries` |
+| SF-06 | 佣金计提与结算 | `commissions.ts` | UC-10 | `commission_entries`, `commission_settlements`, `commission_settlement_lines`, `commission_claims` |
+| SF-07 | 报表、审计与导出 | `reports.ts`（报表）、`index.ts`（审计查询）、`core.ts`（审计写入） | UC-11, UC-12 | 只读查询 + `audit_events` |
 | SF-08 | 平台服务（事务、金额、幂等、审计、错误） | `db.ts`, `amounts.ts`, `core.ts` | NFR-PERF, NFR-REL, NFR-SEC | `idempotency_keys`, `audit_events` |
 
 ### 2.3 系统特性设计
@@ -180,7 +184,7 @@
 - **两类库位**：`WAREHOUSE`（主仓，不关联展位）与 `BOOTH`（展位库位，必关联展位），由 `CHECK (kind='WAREHOUSE' AND booth_id IS NULL) OR (kind='BOOTH' AND booth_id IS NOT NULL)` 强制。
 - **余额与流水分离**：`stock_balances` 是**可重算的缓存**（`on_hand`, `reserved`），`stock_ledger` 是**只增不改的权威流水**（`delta` 带符号，`CHECK (delta <> 0)`）。二者由不变量 I-02 约束一致。
 - **可售量定义**：`available = on_hand − reserved`；`CHECK (on_hand >= reserved)` 保证可售量非负。
-- **单据驱动**：收货（RECEIVE）、调拨（TRANSFER）、盘点（ADJUST）、退货（RETURN）四类库存单据均需理由文本；调拨为**两段式**——创建单据即生成流水与目标库位在途记录，实物交接后由接收方确认才计入可用余额。
+- **单据驱动**：收货（RECEIVE）、调拨（TRANSFER）、盘点（ADJUST）、退货（RETURN）四类库存单据均需理由文本；调拨按当前实现为**已完成实物交接后的原子登记**：请求必须包含 `handoverConfirmed=true`，同一事务扣来源余额、加目标余额并写双向流水；不存在在途库存和二次接收接口。
 - **占用（hold）**：销售准备收款阶段创建 `stock_holds`，状态 `ACTIVE`；过账时转 `CONSUMED` 并使 `on_hand` 与 `reserved` 同量下降；取消时转 `RELEASED` 并归还 `reserved`。
 
 **事务与错误处理**

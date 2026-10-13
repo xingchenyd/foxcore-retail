@@ -4,15 +4,17 @@ import { pool, exec, first, rows, tx } from './db.js';
 import { actor, owner, writable } from './auth.js';
 import { audit, bad, body, command, conflict, id, missing, nonempty, requireKey } from './core.js';
 
+import { listPage } from './pagination.js';
+
 interface Settlement extends RowDataPacket { id:string; salesperson_id:string; state:string; total_cents:string }
 const params=(req:FastifyRequest)=>req.params as Record<string,unknown>;
 async function ownerWrite(req:FastifyRequest){const a=await actor(req);owner(a);writable(req,a);return a;}
 export function registerCommissions(app:FastifyInstance):void {
   app.get('/api/v1/commissions/entries',async req=>{
-    const a=await actor(req),db=await pool.getConnection();try{return {items:await rows<RowDataPacket>(db,'SELECT * FROM commission_entries'+(a.role==='OWNER'?'':' WHERE salesperson_id=?')+' ORDER BY id DESC LIMIT 100',a.role==='OWNER'?[]:[a.salespersonId])};}finally{db.release();}
+    const a=await actor(req);return listPage('SELECT * FROM commission_entries'+(a.role==='OWNER'?'':' WHERE salesperson_id=?')+' ORDER BY id DESC',a.role==='OWNER'?[]:[a.salespersonId],req.query as Record<string,unknown>,100);
   });
   app.get('/api/v1/commissions/settlements',async req=>{
-    const a=await actor(req),db=await pool.getConnection();try{return {items:await rows<RowDataPacket>(db,'SELECT * FROM commission_settlements'+(a.role==='OWNER'?'':' WHERE salesperson_id=?')+' ORDER BY id DESC LIMIT 100',a.role==='OWNER'?[]:[a.salespersonId])};}finally{db.release();}
+    const a=await actor(req);return listPage('SELECT * FROM commission_settlements'+(a.role==='OWNER'?'':' WHERE salesperson_id=?')+' ORDER BY id DESC',a.role==='OWNER'?[]:[a.salespersonId],req.query as Record<string,unknown>,100);
   });
   app.post('/api/v1/commissions/prepare',async req=>{
     const a=await ownerWrite(req),d=body(req.body,['salespersonId']),salespersonId=id(d.salespersonId),k=requireKey(req.headers['idempotency-key']);

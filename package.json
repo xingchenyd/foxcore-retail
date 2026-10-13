@@ -3,8 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "workspaces": ["apps/server", "apps/web"],
-  "engines": { "node": ">=24 <25" },
+  "workspaces": [
+    "apps/server",
+    "apps/web"
+  ],
+  "engines": {
+    "node": ">=24 <25"
+  },
   "scripts": {
     "dev": "concurrently -k \"npm run dev -w @foxcore/server\" \"npm run dev -w @foxcore/web\"",
     "build": "npm run build -w @foxcore/web && npm run build -w @foxcore/server",
@@ -17,7 +22,12 @@
     "owner:init": "tsx scripts/init-owner.ts",
     "seed:sample": "node scripts/seed.mjs",
     "setup:local": "tsx scripts/setup-local.ts",
-    "verify": "npm run typecheck && npm run test:unit && npm run test:integration && npm run build && npm run db:check"
+    "verify": "npm run typecheck && npm run test:unit && npm run test:integration && npm run build && npm run db:check",
+    "test:pure": "node scripts/run-pure-tests.mjs",
+    "docs:sync": "node scripts/sync-fix-docs.mjs",
+    "docs:check": "node scripts/check-fix-docs.mjs",
+    "verify:static": "npm run docs:check && npm run typecheck && npm run test:unit && npm run test:pure && npm run build",
+    "verify:full": "node scripts/verify-full.mjs"
   },
   "dependencies": {
     "@fastify/cookie": "11.0.2",

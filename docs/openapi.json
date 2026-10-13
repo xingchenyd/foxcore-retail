@@ -3,7 +3,7 @@
   "info": {
     "title": "Foxcore Retail API",
     "version": "1.0.0",
-    "description": "同源 JSON API。金额输入为 CAD 十进制字符串，存储/输出为整数分字符串。写命令需要 CSRF；除登录、登出、改密外均需要 UUID 幂等键。请求字段表为静态源码提取，详细业务规则见 SRS/SDD。"
+    "description": "同源 JSON API。金额输入为 CAD 十进制字符串，存储/输出为整数分字符串。写命令需要 CSRF；除登录、登出、改密外均需要 UUID 幂等键。请求字段表为静态源码提取，详细业务规则见 SRS/SDD。\nF01–F08 repair overlay applied. Runtime inputs are explicitly validated in handlers; this document is not automatic AJV registration. Full execution is not yet verified."
   },
   "servers": [
     {
@@ -36,6 +36,37 @@
           },
           "requestId": {
             "type": "string"
+          }
+        }
+      },
+      "FixPage": {
+        "type": "object",
+        "required": [
+          "items",
+          "limit",
+          "offset",
+          "total",
+          "hasMore"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "offset": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "hasMore": {
+            "type": "boolean"
           }
         }
       }
@@ -947,33 +978,76 @@
     },
     "/api/v1/shifts": {
       "get": {
-        "operationId": "get_api_v1_shifts",
-        "summary": "shifts",
-        "tags": [
-          "shifts"
+        "summary": "Paged shifts",
+        "description": "Existing endpoint role scope retained. Filter before count/page. Server default limit is 100 except shifts (20). Each request is snapshot-consistent; cross-request pagination is not a historical snapshot. See route source for full item fields.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000,
+              "default": 0
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PLANNED",
+                "ACTIVE",
+                "CLOSED",
+                "CANCELLED"
+              ]
+            }
+          },
+          {
+            "name": "salespersonId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "eventId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
-            "description": "成功；详细响应字段见 SRS 与实现",
+            "description": "Scoped page",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/FixPage"
                 }
               }
             }
           },
           "400": {
-            "description": "输入无效"
+            "description": "Invalid pagination/filter"
           },
           "401": {
-            "description": "未登录"
+            "description": "Session required"
           },
           "403": {
-            "description": "权限或 CSRF 拒绝"
-          },
-          "409": {
-            "description": "状态、版本或约束冲突"
+            "description": "Role not allowed"
           }
         },
         "security": [
@@ -1218,33 +1292,49 @@
     },
     "/api/v1/commissions/entries": {
       "get": {
-        "operationId": "get_api_v1_commissions_entries",
-        "summary": "commissions/entries",
-        "tags": [
-          "commissions"
+        "summary": "Paged entries",
+        "description": "Existing endpoint role scope retained. Filter before count/page. Server default limit is 100 except shifts (20). Each request is snapshot-consistent; cross-request pagination is not a historical snapshot. See route source for full item fields.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000,
+              "default": 0
+            }
+          }
         ],
         "responses": {
           "200": {
-            "description": "成功；详细响应字段见 SRS 与实现",
+            "description": "Scoped page",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/FixPage"
                 }
               }
             }
           },
           "400": {
-            "description": "输入无效"
+            "description": "Invalid pagination/filter"
           },
           "401": {
-            "description": "未登录"
+            "description": "Session required"
           },
           "403": {
-            "description": "权限或 CSRF 拒绝"
-          },
-          "409": {
-            "description": "状态、版本或约束冲突"
+            "description": "Role not allowed"
           }
         },
         "security": [
@@ -1256,33 +1346,49 @@
     },
     "/api/v1/commissions/settlements": {
       "get": {
-        "operationId": "get_api_v1_commissions_settlements",
-        "summary": "commissions/settlements",
-        "tags": [
-          "commissions"
+        "summary": "Paged settlements",
+        "description": "Existing endpoint role scope retained. Filter before count/page. Server default limit is 100 except shifts (20). Each request is snapshot-consistent; cross-request pagination is not a historical snapshot. See route source for full item fields.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000,
+              "default": 0
+            }
+          }
         ],
         "responses": {
           "200": {
-            "description": "成功；详细响应字段见 SRS 与实现",
+            "description": "Scoped page",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/FixPage"
                 }
               }
             }
           },
           "400": {
-            "description": "输入无效"
+            "description": "Invalid pagination/filter"
           },
           "401": {
-            "description": "未登录"
+            "description": "Session required"
           },
           "403": {
-            "description": "权限或 CSRF 拒绝"
-          },
-          "409": {
-            "description": "状态、版本或约束冲突"
+            "description": "Role not allowed"
           }
         },
         "security": [
@@ -1806,33 +1912,49 @@
     },
     "/api/v1/users": {
       "get": {
-        "operationId": "get_api_v1_users",
-        "summary": "users",
-        "tags": [
-          "users"
+        "summary": "Paged users",
+        "description": "Existing endpoint role scope retained. Filter before count/page. Server default limit is 100 except shifts (20). Each request is snapshot-consistent; cross-request pagination is not a historical snapshot. See route source for full item fields.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000,
+              "default": 0
+            }
+          }
         ],
         "responses": {
           "200": {
-            "description": "成功；详细响应字段见 SRS 与实现",
+            "description": "Scoped page",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/FixPage"
                 }
               }
             }
           },
           "400": {
-            "description": "输入无效"
+            "description": "Invalid pagination/filter"
           },
           "401": {
-            "description": "未登录"
+            "description": "Session required"
           },
           "403": {
-            "description": "权限或 CSRF 拒绝"
-          },
-          "409": {
-            "description": "状态、版本或约束冲突"
+            "description": "Role not allowed"
           }
         },
         "security": [
@@ -2001,33 +2123,67 @@
     },
     "/api/v1/reports/sales": {
       "get": {
-        "operationId": "get_api_v1_reports_sales",
-        "summary": "reports/sales",
-        "tags": [
-          "reports"
+        "summary": "Paged original-event net sales",
+        "description": "POSTED sales less POSTED returns; original event attribution. eventId intersects authenticated salesperson scope. Staff response excludes estimated_margin_cents. Stable net amount DESC, ID ASC. Count and page share one DB snapshot; separate requests do not share a snapshot.",
+        "parameters": [
+          {
+            "name": "group",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "event",
+                "product",
+                "salesperson"
+              ],
+              "default": "event"
+            }
+          },
+          {
+            "name": "eventId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000,
+              "default": 0
+            }
+          }
         ],
         "responses": {
           "200": {
-            "description": "成功；详细响应字段见 SRS 与实现",
+            "description": "Paged groups, not sales-line count",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/FixPage"
                 }
               }
             }
           },
           "400": {
-            "description": "输入无效"
+            "description": "Invalid group/event/paging"
           },
           "401": {
-            "description": "未登录"
-          },
-          "403": {
-            "description": "权限或 CSRF 拒绝"
-          },
-          "409": {
-            "description": "状态、版本或约束冲突"
+            "description": "Authentication required"
           }
         },
         "security": [
@@ -2039,33 +2195,70 @@
     },
     "/api/v1/reports/sales.csv": {
       "get": {
-        "operationId": "get_api_v1_reports_sales_csv",
-        "summary": "reports/sales.csv",
-        "tags": [
-          "reports"
+        "summary": "OWNER full filtered CSV, not current page",
+        "description": "Maximum 10000 groups; exceed limit returns 413 with no partial successful CSV. Same original-event facts. UTF-8 BOM and quoted cells; dangerous text prefixed with apostrophe; numeric negative values retained. limit/offset validated if supplied but not applied to export.",
+        "parameters": [
+          {
+            "name": "group",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "event",
+                "product",
+                "salesperson"
+              ],
+              "default": "event"
+            }
+          },
+          {
+            "name": "eventId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000,
+              "default": 0
+            }
+          }
         ],
         "responses": {
           "200": {
-            "description": "成功；详细响应字段见 SRS 与实现",
+            "description": "foxcore-report.csv",
             "content": {
-              "application/json": {
+              "text/csv": {
                 "schema": {
-                  "type": "object"
+                  "type": "string"
                 }
               }
             }
           },
           "400": {
-            "description": "输入无效"
-          },
-          "401": {
-            "description": "未登录"
+            "description": "Invalid filters/paging"
           },
           "403": {
-            "description": "权限或 CSRF 拒绝"
+            "description": "OWNER required"
           },
-          "409": {
-            "description": "状态、版本或约束冲突"
+          "413": {
+            "description": "Over 10000 groups; narrow event scope"
           }
         },
         "security": [
@@ -2077,33 +2270,49 @@
     },
     "/api/v1/audit": {
       "get": {
-        "operationId": "get_api_v1_audit",
-        "summary": "audit",
-        "tags": [
-          "audit"
+        "summary": "Paged audit",
+        "description": "Existing endpoint role scope retained. Filter before count/page. Server default limit is 100 except shifts (20). Each request is snapshot-consistent; cross-request pagination is not a historical snapshot. See route source for full item fields.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000,
+              "default": 0
+            }
+          }
         ],
         "responses": {
           "200": {
-            "description": "成功；详细响应字段见 SRS 与实现",
+            "description": "Scoped page",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/FixPage"
                 }
               }
             }
           },
           "400": {
-            "description": "输入无效"
+            "description": "Invalid pagination/filter"
           },
           "401": {
-            "description": "未登录"
+            "description": "Session required"
           },
           "403": {
-            "description": "权限或 CSRF 拒绝"
-          },
-          "409": {
-            "description": "状态、版本或约束冲突"
+            "description": "Role not allowed"
           }
         },
         "security": [
@@ -2115,33 +2324,49 @@
     },
     "/api/v1/stock/locations": {
       "get": {
-        "operationId": "get_api_v1_stock_locations",
-        "summary": "stock/locations",
-        "tags": [
-          "stock"
+        "summary": "Paged locations",
+        "description": "Existing endpoint role scope retained. Filter before count/page. Server default limit is 100 except shifts (20). Each request is snapshot-consistent; cross-request pagination is not a historical snapshot. See route source for full item fields.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000,
+              "default": 0
+            }
+          }
         ],
         "responses": {
           "200": {
-            "description": "成功；详细响应字段见 SRS 与实现",
+            "description": "Scoped page",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/FixPage"
                 }
               }
             }
           },
           "400": {
-            "description": "输入无效"
+            "description": "Invalid pagination/filter"
           },
           "401": {
-            "description": "未登录"
+            "description": "Session required"
           },
           "403": {
-            "description": "权限或 CSRF 拒绝"
-          },
-          "409": {
-            "description": "状态、版本或约束冲突"
+            "description": "Role not allowed"
           }
         },
         "security": [
@@ -2153,33 +2378,56 @@
     },
     "/api/v1/stock/balances": {
       "get": {
-        "operationId": "get_api_v1_stock_balances",
-        "summary": "stock/balances",
-        "tags": [
-          "stock"
+        "summary": "Paged balances",
+        "description": "Existing endpoint role scope retained. Filter before count/page. Server default limit is 100 except shifts (20). Each request is snapshot-consistent; cross-request pagination is not a historical snapshot. See route source for full item fields.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000,
+              "default": 0
+            }
+          },
+          {
+            "name": "locationId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
-            "description": "成功；详细响应字段见 SRS 与实现",
+            "description": "Scoped page",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/FixPage"
                 }
               }
             }
           },
           "400": {
-            "description": "输入无效"
+            "description": "Invalid pagination/filter"
           },
           "401": {
-            "description": "未登录"
+            "description": "Session required"
           },
           "403": {
-            "description": "权限或 CSRF 拒绝"
-          },
-          "409": {
-            "description": "状态、版本或约束冲突"
+            "description": "Role not allowed"
           }
         },
         "security": [
@@ -2191,33 +2439,49 @@
     },
     "/api/v1/stock/ledger": {
       "get": {
-        "operationId": "get_api_v1_stock_ledger",
-        "summary": "stock/ledger",
-        "tags": [
-          "stock"
+        "summary": "Paged ledger",
+        "description": "Existing endpoint role scope retained. Filter before count/page. Server default limit is 100 except shifts (20). Each request is snapshot-consistent; cross-request pagination is not a historical snapshot. See route source for full item fields.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000,
+              "default": 0
+            }
+          }
         ],
         "responses": {
           "200": {
-            "description": "成功；详细响应字段见 SRS 与实现",
+            "description": "Scoped page",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/FixPage"
                 }
               }
             }
           },
           "400": {
-            "description": "输入无效"
+            "description": "Invalid pagination/filter"
           },
           "401": {
-            "description": "未登录"
+            "description": "Session required"
           },
           "403": {
-            "description": "权限或 CSRF 拒绝"
-          },
-          "409": {
-            "description": "状态、版本或约束冲突"
+            "description": "Role not allowed"
           }
         },
         "security": [
@@ -2527,33 +2791,49 @@
     },
     "/api/v1/returns": {
       "get": {
-        "operationId": "get_api_v1_returns",
-        "summary": "returns",
-        "tags": [
-          "returns"
+        "summary": "Paged returns",
+        "description": "Existing endpoint role scope retained. Filter before count/page. Server default limit is 100 except shifts (20). Each request is snapshot-consistent; cross-request pagination is not a historical snapshot. See route source for full item fields.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000,
+              "default": 0
+            }
+          }
         ],
         "responses": {
           "200": {
-            "description": "成功；详细响应字段见 SRS 与实现",
+            "description": "Scoped page",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/FixPage"
                 }
               }
             }
           },
           "400": {
-            "description": "输入无效"
+            "description": "Invalid pagination/filter"
           },
           "401": {
-            "description": "未登录"
+            "description": "Session required"
           },
           "403": {
-            "description": "权限或 CSRF 拒绝"
-          },
-          "409": {
-            "description": "状态、版本或约束冲突"
+            "description": "Role not allowed"
           }
         },
         "security": [
@@ -3428,6 +3708,366 @@
             }
           }
         }
+      }
+    },
+    "/api/v1/shifts/{id}/cancel": {
+      "post": {
+        "summary": "Cancel an unstarted PLANNED shift",
+        "description": "OWNER only. Session cookie and X-CSRF-Token required. Same idempotency key with same canonical request replays; different request conflicts. Explicit runtime validation, not auto-registered JSON Schema.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "version",
+                  "reason"
+                ],
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 4294967294
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Committed or replayed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "status",
+                    "version"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "CANCELLED"
+                      ]
+                    },
+                    "version": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 4294967294
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Invalid/expired session"
+          },
+          "403": {
+            "description": "Role/CSRF restriction"
+          },
+          "404": {
+            "description": "Missing resource"
+          },
+          "409": {
+            "description": "State/version/idempotency conflict"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      }
+    },
+    "/api/v1/events/{id}": {
+      "patch": {
+        "summary": "Complete DRAFT event tax/policy; at least one changed field required",
+        "description": "OWNER only. Session cookie and X-CSRF-Token required. Same idempotency key with same canonical request replays; different request conflicts. Explicit runtime validation, not auto-registered JSON Schema.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "version"
+                ],
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 4294967294
+                  },
+                  "taxBps": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "policyConfirmed": {
+                    "type": "boolean"
+                  }
+                },
+                "minProperties": 2
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Committed or replayed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "status",
+                    "version",
+                    "taxBps",
+                    "policyConfirmed"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "DRAFT"
+                      ]
+                    },
+                    "version": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 4294967294
+                    },
+                    "taxBps": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 10000
+                    },
+                    "policyConfirmed": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Invalid/expired session"
+          },
+          "403": {
+            "description": "Role/CSRF restriction"
+          },
+          "404": {
+            "description": "Missing resource"
+          },
+          "409": {
+            "description": "State/version/idempotency conflict"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      }
+    },
+    "/api/v1/salespeople/{id}/commission": {
+      "patch": {
+        "summary": "Set commission for future sale.prepare snapshots only",
+        "description": "OWNER only. Session cookie and X-CSRF-Token required. Same idempotency key with same canonical request replays; different request conflicts. Explicit runtime validation, not auto-registered JSON Schema.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "version",
+                  "commissionBps"
+                ],
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 4294967294
+                  },
+                  "commissionBps": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Committed or replayed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "version",
+                    "commissionBps"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 4294967294
+                    },
+                    "commissionBps": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Invalid/expired session"
+          },
+          "403": {
+            "description": "Role/CSRF restriction"
+          },
+          "404": {
+            "description": "Missing resource"
+          },
+          "409": {
+            "description": "State/version/idempotency conflict"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          }
+        ]
       }
     }
   }

@@ -1,0 +1,9 @@
+finding_id,decision_id,implementation,test_file,verification_status,evidence
+F01,DEC-FIX-01,apps/web/src/lib/api.ts;apps/web/src/main.tsx,tests/pure/api.test.mjs;tests/acceptance/bootstrap.spec.ts;tests/acceptance/business.spec.ts,PURE_PARTIAL_PASS_RUNTIME_NOT_RUN,docs/fixes/verification.md
+F02,DEC-FIX-02,apps/server/src/catalog-updates.ts;apps/server/src/catalog.ts,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,PURE_PARTIAL_PASS_RUNTIME_NOT_RUN,docs/fixes/verification.md
+F03,DEC-FIX-03A/03B,apps/server/src/catalog-updates.ts;apps/web/src/components/fix-controls.tsx,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,PURE_PARTIAL_PASS_RUNTIME_NOT_RUN,docs/fixes/verification.md
+F04,DEC-FIX-04,apps/server/src/reports.ts;apps/server/src/report-query.ts,tests/pure/report.test.mjs;tests/acceptance/http.test.mjs;tests/acceptance/business.spec.ts,PURE_PARTIAL_PASS_RUNTIME_NOT_RUN,docs/fixes/verification.md
+F05,DEC-FIX-05,apps/server/src/return-target.ts;apps/server/src/returns.ts;db/preflight-fixes.sql,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,PURE_PARTIAL_PASS_RUNTIME_NOT_RUN,docs/fixes/verification.md
+F06,DEC-FIX-06,scripts/verify-full.mjs;compose.verify.yaml,tests/acceptance/business.spec.ts;scripts/verify-full.mjs,MISSING_RUNTIME_GUARD_PASS_FULL_NOT_RUN,docs/fixes/verification.md
+F07,DEC-FIX-07,apps/server/src/pagination.ts;apps/web/src/lib/api.ts;apps/server/src/csv.ts,tests/pure/api.test.mjs;tests/pure/report.test.mjs;tests/acceptance/http.test.mjs,PURE_PARTIAL_PASS_RUNTIME_NOT_RUN,docs/fixes/verification.md
+F08,DEC-FIX-08,scripts/sync-fix-docs.mjs;scripts/check-fix-docs.mjs;docs/use-cases.json,scripts/sync-fix-docs.mjs;scripts/check-fix-docs.mjs;tests/pure/docs.test.mjs,PURE_PARTIAL_PASS_RUNTIME_NOT_RUN,docs/fixes/verification.md

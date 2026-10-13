@@ -1,3 +1,7 @@
+<!-- foxcore-fixes-current -->
+> 当前任务以 `docs/fixes/README.md` 为唯一修复状态表。F01–F08 有生产代码/测试实现；本次离线环境仅执行了纯逻辑及静态检查。Node 24 完整构建、MariaDB、浏览器和 Docker 验收尚未在作者环境执行。不得沿用旧 PASS。
+<!-- /foxcore-fixes-current -->
+
 # 任务与门禁
 
 - [x] G0 阅读 START_HERE、手册、A/B 原文、B 图；核对九实体和 CASE-01…12

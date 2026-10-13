@@ -1,3 +1,7 @@
+<!-- foxcore-fixes-current -->
+> 本轮修复：实现与验证状态以 [修复说明](docs/fixes/README.md)、[决策](docs/fixes/decisions.md)、[验证记录](docs/fixes/verification.md) 和 `docs/use-cases.json` 为准。下文未更新的历史运行统计不代表本轮通过。PDF/既有图片是旧基线派生物，尚未重新生成；修复后以 Markdown、源码及新合同为准。
+<!-- /foxcore-fixes-current -->
+
 # Foxcore Retail · 现场销售管理系统
 
 Foxcore Retail（Ivey 案例编号 9B18E016 / 9B18E017）的独立教学实现：React + TypeScript + Vite、Node.js + Fastify、MariaDB 和 Docker Compose。覆盖原案例的九个核心实体与真实库存、销售、退货、佣金、权限、审计全流程——系统只记录线下收付款确认，不处理银行卡。
@@ -30,7 +34,7 @@ B/S 单体同源架构：客户端仅需浏览器；服务端为 Node.js 单进�
    │  同源 HTTP :3000
    ▼
 Fastify 应用 ── 静态资源 (apps/web 构建产物)
-   │  └─ /api/v1/*  45 个 REST 端点（JSON Schema 校验）
+   │  └─ /api/v1/*  45 个 REST 端点（显式服务端输入校验）
    │  └─ 会话 Cookie + CSRF；错误处理器：4 类约束冲突 → 409
    ▼
 mysql2 连接池 · READ COMMITTED · 关键行 FOR UPDATE
@@ -97,7 +101,7 @@ MariaDB 11.8（24 张业务表 + 1 张迁移版本表）
 
 ## 测试
 
-按六个层次组织，共 **53 项测试全部通过**（详见 [docs/05-STD.md](docs/05-STD.md)）：
+按六个层次组织，历史基线共列有 **53 项检查（并非本轮运行结果）**（详见 [docs/05-STD.md](docs/05-STD.md)）：
 
 | 层次 | 内容 | 代表场景 |
 |---|---|---|
@@ -171,3 +175,7 @@ foxcore-retail/
 | [diagrams/](docs/diagrams) · [openapi.json](docs/openapi.json) | PlantUML/SVG 架构图源 · 45 个 API 路径契约 |
 
 **实测说明**：真实本地 MariaDB 上业务、并发、数据不变量、生产构建及浏览器测试通过。本机 Docker Desktop 服务无法启动，因此 Compose 静态配置已验证，容器首次启动与备份恢复需要在目标 Docker 环境按 STD 验收。发布包不含案例原件、密码、数据库备份或任何公网部署凭据。
+
+## 本轮修复验收入口
+
+`npm run verify:static` 为快速检查；`npm run verify:full` 使用独立一次性 Compose 实例执行完整验证。需要 Node 24、锁定依赖、Docker Compose 和 Playwright Chromium；任何前提/阶段失败均非零退出，不计为通过。旧 `npm run verify` 保留兼容，但不代表完整浏览器验收。先阅读 `docs/fixes/verification.md`。

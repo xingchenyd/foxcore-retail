@@ -1,0 +1,70 @@
+acceptance_id,scenario,status,related_files,scope_note
+FX-F01-01,JSON 请求，无自定义头,PASS_PURE_SCOPE,tests/pure/api.test.mjs;tests/acceptance/bootstrap.spec.ts;tests/acceptance/business.spec.ts,实际生产请求构造纯测试通过；不扩展为浏览器/数据库结果。
+FX-F01-02,JSON 请求，带 CSRF 和幂等头的普通对象,PASS_PURE_SCOPE,tests/pure/api.test.mjs;tests/acceptance/bootstrap.spec.ts;tests/acceptance/business.spec.ts,实际生产请求构造纯测试通过；不扩展为浏览器/数据库结果。
+FX-F01-03,`Headers` 实例与键值对数组分别传入,PASS_PURE_SCOPE,tests/pure/api.test.mjs;tests/acceptance/bootstrap.spec.ts;tests/acceptance/business.spec.ts,实际生产请求构造纯测试通过；不扩展为浏览器/数据库结果。
+FX-F01-04,混合大小写的 Content-Type/自定义头,PASS_PURE_SCOPE,tests/pure/api.test.mjs;tests/acceptance/bootstrap.spec.ts;tests/acceptance/business.spec.ts,实际生产请求构造纯测试通过；不扩展为浏览器/数据库结果。
+FX-F01-05,真实网页提交初始密码变更,NOT_RUN_RUNTIME,tests/pure/api.test.mjs;tests/acceptance/bootstrap.spec.ts;tests/acceptance/business.spec.ts,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F01-06,真实网页创建业务记录并刷新读取,NOT_RUN_RUNTIME,tests/pure/api.test.mjs;tests/acceptance/bootstrap.spec.ts;tests/acceptance/business.spec.ts,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F02-01,已过期、未开班、无销售的 PLANNED 班次,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F02-02,取消 ACTIVE 或 CLOSED 班次,PARTIAL_COVERAGE_NOT_RUN,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-F02-03,销售员取消班次,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F02-04,使用相同幂等键重试；同键不同原因,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F02-05,取消与开班同时争用同一合法班次,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F02-06,版本过期及异常关联记录,PARTIAL_COVERAGE_NOT_RUN,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-F03-01,未确认政策、空税率的活动草稿,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F03-02,草稿配置为 0 bps，明确确认政策,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F03-03,修改 OPEN/CLOSED 活动税率,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F03-04,员工佣金为 null，随后配置有效费率,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F03-05,已 CHECKOUT 销售后再修改佣金率，然后过账/退货,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F03-06,过期版本、非法费率、销售员越权、同键重试,PARTIAL_COVERAGE_NOT_RUN,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-F03-07,员工佣金设置为 0 bps,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F04-01,同一商品分别在 A/B 成交 3/7 件,NOT_RUN_RUNTIME,tests/pure/report.test.mjs;tests/acceptance/http.test.mjs;tests/acceptance/business.spec.ts,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F04-02,A 退 1 件并完成过账,NOT_RUN_RUNTIME,tests/pure/report.test.mjs;tests/acceptance/http.test.mjs;tests/acceptance/business.spec.ts,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F04-03,退货只授权未过账、销售只 CHECKOUT,PARTIAL_COVERAGE_NOT_RUN,tests/pure/report.test.mjs;tests/acceptance/http.test.mjs;tests/acceptance/business.spec.ts,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-F04-04,销售员查询同一活动,NOT_RUN_RUNTIME,tests/pure/report.test.mjs;tests/acceptance/http.test.mjs;tests/acceptance/business.spec.ts,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F04-05,UI 与 CSV 使用同一筛选,NOT_RUN_RUNTIME,tests/pure/report.test.mjs;tests/acceptance/http.test.mjs;tests/acceptance/business.spec.ts,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F04-06,非法活动 ID、非法 group、无匹配数据,NOT_RUN_RUNTIME,tests/pure/report.test.mjs;tests/acceptance/http.test.mjs;tests/acceptance/business.spec.ts,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F05-01,原活动 OPEN，目标为另一 CLOSED 活动展位,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F05-02,目标为另一 OPEN 活动展位,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F05-03,原活动 OPEN，合法目标为同活动有效展位,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F05-04,原活动已 CLOSED，目标为 MAIN,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F05-05,同活动展位已有 AUTHORIZED 良品退货，再尝试闭场,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F05-06,授权与闭场竞争,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F05-07,已授权回展位的过账与闭场竞争,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F05-08,并发重复过账同退货单、同幂等键,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F05-09,全部 DAMAGED，合法目标,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F05-10,测试库中预置旧版非法目标的待授权/已授权记录,NOT_RUN_RUNTIME,tests/pure/rules.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F06-01,E2E-A：首次改密至完整成交,NOT_RUN_RUNTIME,tests/acceptance/business.spec.ts;scripts/verify-full.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F06-02,E2E-B：销售员业务与越权,NOT_RUN_RUNTIME,tests/acceptance/business.spec.ts;scripts/verify-full.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F06-03,E2E-C：退货、正余额佣金结算、异常班次恢复,PARTIAL_COVERAGE_NOT_RUN,tests/acceptance/business.spec.ts;scripts/verify-full.mjs,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-F06-04,移动视口下改密/销售等关键写入,NOT_RUN_RUNTIME,tests/acceptance/business.spec.ts;scripts/verify-full.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F06-05,完整验收入口的子任务失败或环境缺失,PASS_MISSING_NODE_GUARD_ONLY,tests/acceptance/business.spec.ts;scripts/verify-full.mjs,非 Node24 下非零退出已验证；其他子阶段失败传递未全部注入测试。
+FX-F06-06,报告、截图与 trace 的交付检查,NOT_RUN_RUNTIME,tests/acceptance/business.spec.ts;scripts/verify-full.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F07-01,4 个展位 × 30 种商品，至少 120 个库存余额组合,NOT_RUN_RUNTIME,tests/pure/api.test.mjs;tests/pure/report.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F07-02,报表有至少 101 个有效分组,NOT_RUN_RUNTIME,tests/pure/api.test.mjs;tests/pure/report.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F07-03,商品/展位/员工或班次目标位于第 101 项之后,PARTIAL_COVERAGE_NOT_RUN,tests/pure/api.test.mjs;tests/pure/report.test.mjs;tests/acceptance/http.test.mjs,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-F07-04,活动筛选、本人权限与分页同时使用,NOT_RUN_RUNTIME,tests/pure/api.test.mjs;tests/pure/report.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F07-05,边界页、空页、非法分页参数,NOT_RUN_RUNTIME,tests/pure/api.test.mjs;tests/pure/report.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F07-06,CSV 含逗号、双引号、换行及公式开头文本,NOT_RUN_RUNTIME,tests/pure/api.test.mjs;tests/pure/report.test.mjs;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-F07-07,改变活动/库位筛选时原页码已超范围,PARTIAL_COVERAGE_NOT_RUN,tests/pure/api.test.mjs;tests/pure/report.test.mjs;tests/acceptance/http.test.mjs,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-F08-01,UC-01/10/11 跨文档语义核对,PARTIAL_COVERAGE_NOT_RUN,scripts/sync-fix-docs.mjs;scripts/check-fix-docs.mjs;tests/pure/docs.test.mjs,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-F08-02,编号注册表和引用完整性脚本,PASS_CHECKER_UNIT_SCOPE,scripts/sync-fix-docs.mjs;scripts/check-fix-docs.mjs;tests/pure/docs.test.mjs,检查器正反例通过；完整资料需安装同步后运行 docs:check。
+FX-F08-03,新接口合同与实际请求/响应,PARTIAL_COVERAGE_NOT_RUN,scripts/sync-fix-docs.mjs;scripts/check-fix-docs.mjs;tests/pure/docs.test.mjs,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-F08-04,测试汇总与实际运行报告,PARTIAL_COVERAGE_NOT_RUN,scripts/sync-fix-docs.mjs;scripts/check-fix-docs.mjs;tests/pure/docs.test.mjs,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-REG-01,多个命令争抢最后一件展位库存,NOT_RUN_RUNTIME,tests/integration/workflow.test.ts;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-REG-02,同一过账命令同幂等键并发重试,NOT_RUN_RUNTIME,tests/integration/workflow.test.ts;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-REG-03,同键不同请求体,NOT_RUN_RUNTIME,tests/integration/workflow.test.ts;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-REG-04,成交价低于底价、非法数量,NOT_RUN_RUNTIME,tests/integration/workflow.test.ts;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-REG-05,部分退货多次累计,PARTIAL_COVERAGE_NOT_RUN,tests/integration/workflow.test.ts;tests/acceptance/http.test.mjs,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-REG-06,主数据成本/售价/佣金修改,PARTIAL_COVERAGE_NOT_RUN,tests/integration/workflow.test.ts;tests/acceptance/http.test.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-REG-07,取消待结账销售,PARTIAL_COVERAGE_NOT_RUN,tests/integration/workflow.test.ts;tests/acceptance/http.test.mjs,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-REG-08,佣金准备/取消/支付与并发重试,PARTIAL_COVERAGE_NOT_RUN,tests/integration/workflow.test.ts;tests/acceptance/http.test.mjs,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-REG-09,一笔业务事务中途失败,PARTIAL_COVERAGE_NOT_RUN,tests/integration/workflow.test.ts;tests/acceptance/http.test.mjs,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-REG-10,修改密码、停用账户和会话限制,PARTIAL_COVERAGE_NOT_RUN,tests/integration/workflow.test.ts;tests/acceptance/http.test.mjs,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-DEP-01,空测试库应用全部迁移,NOT_RUN_RUNTIME,scripts/verify-full.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-DEP-02,有基线结构与合成业务数据的旧测试库升级,PARTIAL_COVERAGE_NOT_RUN,scripts/verify-full.mjs,相关逻辑/部分用例已提供，但此条的全部边界尚未完整脚本覆盖或验证；保留待办，不标成仅差环境。
+FX-DEP-03,重复执行迁移/初始化,NOT_RUN_RUNTIME,scripts/verify-full.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-DEP-04,独立 Compose project 全新构建启动,NOT_RUN_RUNTIME,scripts/verify-full.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-DEP-05,不删除数据卷的重启,NOT_RUN_RUNTIME,scripts/verify-full.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-DEP-06,备份并恢复到另一套空测试资源,NOT_RUN_RUNTIME,scripts/verify-full.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。
+FX-DEP-07,应用使用正常运行账号而非 root 执行业务,NOT_RUN_RUNTIME,scripts/verify-full.mjs,新增/保留相关脚本；尚未在支持的完整环境执行。映射不代表完全覆盖此条所有分支。

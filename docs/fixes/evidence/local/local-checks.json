@@ -1,0 +1,25 @@
+{
+  "executedAt": "2026-10-13T02:55:56.553Z",
+  "node": "v22.16.0",
+  "typescript": "5.8.3",
+  "syntaxTranspilation": {
+    "sourceFiles": 19,
+    "diagnostics": []
+  },
+  "mjsSyntaxFiles": 11,
+  "jsonParsedFiles": 4,
+  "strictPureModuleCheck": {
+    "files": [
+      "apps/web/src/lib/api.ts",
+      "apps/server/src/fix-rules.ts",
+      "apps/server/src/report-query.ts",
+      "apps/server/src/csv.ts"
+    ],
+    "exitCode": 0,
+    "output": ""
+  },
+  "overlayRoutePresence": "PASS",
+  "notFullTypecheck": true,
+  "notDatabaseOrBrowserTest": true,
+  "composeYaml": "parsed; loopback app mapping; DB has no ports; NOT docker compose validation"
+}

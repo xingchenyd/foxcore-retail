@@ -1,24 +1,19 @@
 {
-  "release": "foxcore-retail-v1.0.0",
-  "scope": "local-deployment-and-acceptance-only",
-  "url": "http://localhost:3000",
-  "start_command": "docker compose up -d --build",
-  "database": "MariaDB 11.8.9 / InnoDB",
-  "tests": {
-    "typescript": "pass",
-    "production_build": "pass",
-    "unit": "10/10 pass",
-    "integration": "1 compound scenario pass; 20-way stock and idempotency races",
-    "browser": "2/2 pass desktop and mobile",
-    "database_invariants": "16/16 zero differences",
-    "compose_static_config": "pass",
-    "clean_zip_extraction": "pass: per-file checksum, npm ci, typecheck, build, unit, compose config",
-    "runtime_migration_and_owner_scripts": "pass on isolated real MariaDB",
-    "docker_image_tag_manifests": "pass for pinned Node and MariaDB tags",
-    "docker_compose_runtime": "not executed: Docker Desktop service unavailable to current Windows process",
-    "backup_restore": "not executed"
-  },
-  "sample_data": "not imported automatically; private synthetic data used only for testing",
-  "public_deployment": "out of scope",
-  "caveat": "Run the first container startup and acceptance checklist in docs/05-STD.md on a Docker-capable machine."
+  "status": "REPAIR_CANDIDATE_RUNTIME_UNVERIFIED",
+  "baseCommit": "f5d79e193605ea71a45ff44fc1b6e4e1a2d67768",
+  "productionChanges": "F01-F08",
+  "verifiedHere": [
+    "pure production-logic tests",
+    "syntax and documentation-checker fixture checks",
+    "patch integrity"
+  ],
+  "notRunHere": [
+    "Node 24 full typecheck/build",
+    "MariaDB HTTP/concurrency/invariants",
+    "browser E2E",
+    "Docker installation/restart/backup/restore",
+    "cloud deployment"
+  ],
+  "evidence": "docs/fixes/verification.md",
+  "pdfDerivatives": "not regenerated"
 }

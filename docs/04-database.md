@@ -1,3 +1,7 @@
+<!-- foxcore-fixes-current -->
+> 本轮修复：实现与验证状态以 [修复说明](fixes/README.md)、[决策](fixes/decisions.md)、[验证记录](fixes/verification.md) 和 `use-cases.json` 为准。下文未更新的历史运行统计不代表本轮通过。PDF/既有图片是旧基线派生物，尚未重新生成；修复后以 Markdown、源码及新合同为准。
+<!-- /foxcore-fixes-current -->
+
 # 04 数据库设计与 ERD
 
 **Foxcore Retail — 数据库设计说明（概念 / 逻辑 / 物理三层）**

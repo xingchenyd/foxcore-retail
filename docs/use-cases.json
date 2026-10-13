@@ -1,0 +1,221 @@
+{
+  "baseCommit": "f5d79e193605ea71a45ff44fc1b6e4e1a2d67768",
+  "note": "Preserves SRS UC01–12 meanings; adds authentication as UC13. A module may serve several cases. Presence of a mapping does not prove it was executed.",
+  "useCases": [
+    {
+      "id": "UC-01",
+      "name": "管理活动与展位",
+      "roles": [
+        "OWNER"
+      ],
+      "source": "CASE/DERIVED: A p3; B p3",
+      "requirement": "FIX-UC-01",
+      "implementation": [
+        "apps/server/src/catalog.ts"
+      ],
+      "tests": [
+        "tests/acceptance/business.spec.ts"
+      ],
+      "verification": "NOT_RUN_DATABASE_BROWSER"
+    },
+    {
+      "id": "UC-02",
+      "name": "维护商品、员工和账户",
+      "roles": [
+        "OWNER"
+      ],
+      "source": "CASE/DERIVED: A p3; B p3",
+      "requirement": "FIX-UC-02",
+      "implementation": [
+        "apps/server/src/catalog.ts"
+      ],
+      "tests": [
+        "tests/acceptance/business.spec.ts"
+      ],
+      "verification": "NOT_RUN_DATABASE_BROWSER"
+    },
+    {
+      "id": "UC-03",
+      "name": "排班、开班和关班",
+      "roles": [
+        "OWNER",
+        "SALESPERSON"
+      ],
+      "source": "CASE/DERIVED: A p3; B p3",
+      "requirement": "FIX-UC-03",
+      "implementation": [
+        "apps/server/src/catalog-updates.ts"
+      ],
+      "tests": [
+        "tests/acceptance/business.spec.ts"
+      ],
+      "verification": "NOT_RUN_DATABASE_BROWSER"
+    },
+    {
+      "id": "UC-04",
+      "name": "收货、调拨和盘点",
+      "roles": [
+        "OWNER"
+      ],
+      "source": "EXT/DEC: project workflow (not a direct A/B requirement)",
+      "requirement": "FIX-UC-04",
+      "implementation": [
+        "apps/server/src/inventory.ts"
+      ],
+      "tests": [
+        "tests/acceptance/business.spec.ts"
+      ],
+      "verification": "NOT_RUN_DATABASE_BROWSER"
+    },
+    {
+      "id": "UC-05",
+      "name": "录入销售草稿",
+      "roles": [
+        "OWNER",
+        "SALESPERSON"
+      ],
+      "source": "CASE/DERIVED: A p3; B p3",
+      "requirement": "FIX-UC-05",
+      "implementation": [
+        "apps/server/src/sales.ts"
+      ],
+      "tests": [
+        "tests/acceptance/business.spec.ts"
+      ],
+      "verification": "NOT_RUN_DATABASE_BROWSER"
+    },
+    {
+      "id": "UC-06",
+      "name": "准备收款",
+      "roles": [
+        "OWNER",
+        "SALESPERSON"
+      ],
+      "source": "EXT/DEC: project workflow (not a direct A/B requirement)",
+      "requirement": "FIX-UC-06",
+      "implementation": [
+        "apps/server/src/sales.ts"
+      ],
+      "tests": [
+        "tests/acceptance/business.spec.ts"
+      ],
+      "verification": "NOT_RUN_DATABASE_BROWSER"
+    },
+    {
+      "id": "UC-07",
+      "name": "确认成交",
+      "roles": [
+        "OWNER",
+        "SALESPERSON"
+      ],
+      "source": "CASE/DERIVED: A p3; B p3",
+      "requirement": "FIX-UC-07",
+      "implementation": [
+        "apps/server/src/sales.ts"
+      ],
+      "tests": [
+        "tests/acceptance/business.spec.ts"
+      ],
+      "verification": "NOT_RUN_DATABASE_BROWSER"
+    },
+    {
+      "id": "UC-08",
+      "name": "取消与核对待成交单",
+      "roles": [
+        "OWNER",
+        "SALESPERSON"
+      ],
+      "source": "EXT/DEC: project workflow (not a direct A/B requirement)",
+      "requirement": "FIX-UC-08",
+      "implementation": [
+        "apps/server/src/sales.ts"
+      ],
+      "tests": [
+        "tests/acceptance/business.spec.ts"
+      ],
+      "verification": "NOT_RUN_DATABASE_BROWSER"
+    },
+    {
+      "id": "UC-09",
+      "name": "退货与更正",
+      "roles": [
+        "OWNER"
+      ],
+      "source": "EXT/DEC: project workflow (not a direct A/B requirement)",
+      "requirement": "FIX-UC-09",
+      "implementation": [
+        "apps/server/src/returns.ts"
+      ],
+      "tests": [
+        "tests/acceptance/business.spec.ts"
+      ],
+      "verification": "NOT_RUN_DATABASE_BROWSER"
+    },
+    {
+      "id": "UC-10",
+      "name": "佣金结算",
+      "roles": [
+        "OWNER"
+      ],
+      "source": "EXT/DEC: project workflow (not a direct A/B requirement)",
+      "requirement": "FIX-UC-10",
+      "implementation": [
+        "apps/server/src/commissions.ts"
+      ],
+      "tests": [
+        "tests/acceptance/business.spec.ts"
+      ],
+      "verification": "NOT_RUN_DATABASE_BROWSER"
+    },
+    {
+      "id": "UC-11",
+      "name": "查询与导出报表",
+      "roles": [
+        "OWNER",
+        "SALESPERSON"
+      ],
+      "source": "CASE/DERIVED: A p3; B p3",
+      "requirement": "FIX-UC-11",
+      "implementation": [
+        "apps/server/src/reports.ts"
+      ],
+      "tests": [
+        "tests/acceptance/business.spec.ts"
+      ],
+      "verification": "NOT_RUN_DATABASE_BROWSER"
+    },
+    {
+      "id": "UC-12",
+      "name": "账户与审计",
+      "roles": [
+        "OWNER"
+      ],
+      "source": "EXT/DEC: project workflow (not a direct A/B requirement)",
+      "requirement": "FIX-UC-12",
+      "implementation": [
+        "apps/server/src/index.ts"
+      ],
+      "tests": [
+        "tests/acceptance/http.test.mjs"
+      ],
+      "verification": "NOT_RUN_DATABASE_BROWSER"
+    },
+    {
+      "id": "UC-13",
+      "name": "身份认证与会话管理",
+      "roles": [
+        "OWNER",
+        "SALESPERSON"
+      ],
+      "source": "EXT/DEC: project workflow (not a direct A/B requirement)",
+      "requirement": "FIX-UC-13",
+      "implementation": [
+        "apps/server/src/auth.ts"
+      ],
+      "tests": [
+        "tests/acceptance/business.spec.ts"
+      ],
+      "verification": "NOT_RUN_DATABASE_BROWSER"
+    }
+  ]
+}

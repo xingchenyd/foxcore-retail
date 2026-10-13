@@ -4,9 +4,12 @@ import { pool, exec, first, rows, tx } from './db.js';
 import { actor, owner, writable } from './auth.js';
 import { audit, bad, body, command, conflict, halfUp, id, missing, nonempty, positiveInt, requireKey } from './core.js';
 
+import { listPage } from './pagination.js';
+import { lockReturnEvents, validateReturnTarget } from './return-target.js';
+
 interface Sale extends RowDataPacket { id:string; state:string; event_id:string; salesperson_id:string }
 interface SaleLine extends RowDataPacket { line_no:number; product_id:string; quantity:number; final_unit_price_cents:string; line_tax_cents:string; line_commission_cents:string }
-interface ReturnRow extends RowDataPacket { id:string; sale_id:string; state:string; destination_location_id:string; net_cents:string; tax_cents:string; total_cents:string }
+interface ReturnRow extends RowDataPacket { id:string; sale_id:string; state:string; destination_location_id:string|null; net_cents:string; tax_cents:string; total_cents:string }
 interface ReturnLine extends RowDataPacket { line_no:number; sale_line_no:number; quantity:number; disposition:string; net_cents:string; tax_cents:string; commission_cents:string }
 const params=(req:FastifyRequest)=>req.params as Record<string,unknown>;
 async function ownerWrite(req:FastifyRequest){const a=await actor(req);owner(a);writable(req,a);return a;}
@@ -16,13 +19,15 @@ function inputLines(value:unknown){
 }
 
 export function registerReturns(app:FastifyInstance):void {
-  app.get('/api/v1/returns',async req=>{const a=await actor(req);owner(a);const db=await pool.getConnection();try{return {items:await rows<RowDataPacket>(db,'SELECT * FROM returns ORDER BY id DESC LIMIT 100')};}finally{db.release();}});
+  app.get('/api/v1/returns',async req=>{const a=await actor(req);owner(a);return listPage('SELECT * FROM returns ORDER BY id DESC',[],req.query as Record<string,unknown>,100);});
   app.get('/api/v1/returns/:id',async req=>{const a=await actor(req);owner(a);const returnId=id(params(req).id),db=await pool.getConnection();try{const r=await first<ReturnRow>(db,'SELECT * FROM returns WHERE id=?',[returnId]);if(!r) throw missing();return {return:r,lines:await rows<ReturnLine>(db,'SELECT * FROM return_lines WHERE return_id=? ORDER BY line_no',[returnId])};}finally{db.release();}});
   app.post('/api/v1/returns',async req=>{
     const a=await ownerWrite(req),d=body(req.body,['saleId','reason','destinationLocationId','lines']),saleId=id(d.saleId),reason=nonempty(d.reason,500),dest=id(d.destinationLocationId),lines=inputLines(d.lines),k=requireKey(req.headers['idempotency-key']);
     return tx(db=>command(db,a.id,'return.create',k,d,async()=>{
-      const sale=await first<Sale>(db,'SELECT sa.*,sh.salesperson_id FROM sales sa JOIN shifts sh ON sh.id=sa.shift_id WHERE sa.id=?',[saleId]);if(!sale||sale.state!=='POSTED') throw conflict('只能退已成交销售');
-      const location=await first<RowDataPacket>(db,'SELECT id FROM stock_locations WHERE id=? AND active=TRUE',[dest]);if(!location) throw missing();
+      const source=await first<RowDataPacket>(db,'SELECT event_id FROM sales WHERE id=?',[saleId]);if(!source) throw missing();
+      const lockedEvents=await lockReturnEvents(db,String(source.event_id),dest);
+      const sale=await first<Sale>(db,'SELECT sa.*,sh.salesperson_id FROM sales sa JOIN shifts sh ON sh.id=sa.shift_id WHERE sa.id=? FOR UPDATE',[saleId]);if(!sale||sale.state!=='POSTED') throw conflict('只能退已成交销售');
+      await validateReturnTarget(db,sale.event_id,dest,lockedEvents);
       const r=await exec(db,'INSERT INTO returns(sale_id,reason,destination_location_id,created_by) VALUES(?,?,?,?)',[saleId,reason,dest,a.id]);const returnId=String(r.insertId);
       for(const [i,line] of lines.entries()){
         const original=await first<SaleLine>(db,'SELECT * FROM sale_lines WHERE sale_id=? AND line_no=?',[saleId,line.lineNo]);if(!original) throw missing();
@@ -36,15 +41,14 @@ export function registerReturns(app:FastifyInstance):void {
     return tx(db=>command(db,a.id,'return.authorize',k,{returnId},async()=>{
       const pre=await first<ReturnRow>(db,'SELECT * FROM returns WHERE id=?',[returnId]);if(!pre) throw missing();
       const source=await first<RowDataPacket>(db,'SELECT event_id FROM sales WHERE id=?',[pre.sale_id]);if(!source) throw missing();
-      const event=await first<RowDataPacket>(db,'SELECT status FROM events WHERE id=? FOR UPDATE',[source.event_id]);
+      const lockedEvents=await lockReturnEvents(db,String(source.event_id),pre.destination_location_id);
       const sale=await first<Sale>(db,'SELECT sa.*,sh.salesperson_id FROM sales sa JOIN shifts sh ON sh.id=sa.shift_id WHERE sa.id=? FOR UPDATE',[pre.sale_id]);if(!sale||sale.state!=='POSTED') throw conflict('原销售状态无效');
       const r=await first<ReturnRow>(db,'SELECT * FROM returns WHERE id=? FOR UPDATE',[returnId]);if(!r||r.state!=='DRAFT') throw conflict('退货状态已变化');
-      if(event?.status==='CLOSED'){
-        const destination=await first<RowDataPacket>(db,'SELECT kind FROM stock_locations WHERE id=?',[r.destination_location_id]);
-        if(destination?.kind!=='WAREHOUSE') throw conflict('已关闭活动的退货须回主仓');
-      }
+      if(r.sale_id!==pre.sale_id||r.destination_location_id!==pre.destination_location_id) throw conflict('退货关联已变化，请核对后重试');
+      await validateReturnTarget(db,sale.event_id,r.destination_location_id,lockedEvents);
       const other=await first<RowDataPacket>(db,"SELECT id FROM returns WHERE sale_id=? AND state='AUTHORIZED' AND id<>? LIMIT 1",[sale.id,returnId]);if(other) throw conflict('原销售已有待处理退款授权');
       const lines=await rows<ReturnLine>(db,'SELECT * FROM return_lines WHERE return_id=? ORDER BY sale_line_no FOR UPDATE',[returnId]);
+      if(!lines.length) throw conflict('退货没有明细，请核对');
       let net=0n,tax=0n;
       for(const line of lines){
         const original=await first<SaleLine>(db,'SELECT * FROM sale_lines WHERE sale_id=? AND line_no=? FOR UPDATE',[sale.id,line.sale_line_no]);if(!original) throw missing();
@@ -65,10 +69,16 @@ export function registerReturns(app:FastifyInstance):void {
     return tx(db=>command(db,a.id,'return.post',k,{returnId,reference},async()=>{
       const pre=await first<ReturnRow>(db,'SELECT * FROM returns WHERE id=?',[returnId]);if(!pre) throw missing();
       const source=await first<RowDataPacket>(db,'SELECT event_id FROM sales WHERE id=?',[pre.sale_id]);if(!source) throw missing();
-      await first<RowDataPacket>(db,'SELECT status FROM events WHERE id=? FOR UPDATE',[source.event_id]);
-      const sale=await first<Sale>(db,'SELECT sa.*,sh.salesperson_id FROM sales sa JOIN shifts sh ON sh.id=sa.shift_id WHERE sa.id=? FOR UPDATE',[pre.sale_id]);if(!sale) throw missing();
+      const lockedEvents=await lockReturnEvents(db,String(source.event_id),pre.destination_location_id);
+      const sale=await first<Sale>(db,'SELECT sa.*,sh.salesperson_id FROM sales sa JOIN shifts sh ON sh.id=sa.shift_id WHERE sa.id=? FOR UPDATE',[pre.sale_id]);if(!sale||sale.state!=='POSTED') throw conflict('原销售状态无效');
       const r=await first<ReturnRow>(db,'SELECT * FROM returns WHERE id=? FOR UPDATE',[returnId]);if(!r||r.state!=='AUTHORIZED') throw conflict('退款授权不存在或已处理');
+      if(r.sale_id!==pre.sale_id||r.destination_location_id!==pre.destination_location_id) throw conflict('退货关联已变化，请核对后重试');
       const lines=await rows<ReturnLine>(db,'SELECT * FROM return_lines WHERE return_id=? ORDER BY line_no FOR UPDATE',[returnId]);
+      if(!lines.length) throw conflict('退货没有明细，请核对');
+      // Match receiving/transfer product-before-location order, including first balance-row creation.
+      const products=await rows<RowDataPacket>(db,'SELECT DISTINCT sl.product_id FROM return_lines rl JOIN sale_lines sl ON sl.sale_id=? AND sl.line_no=rl.sale_line_no WHERE rl.return_id=? ORDER BY sl.product_id',[sale.id,returnId]);
+      for(const product of products) await first<RowDataPacket>(db,'SELECT id FROM products WHERE id=? FOR UPDATE',[product.product_id]);
+      await validateReturnTarget(db,sale.event_id,r.destination_location_id,lockedEvents);
       for(const line of lines){
         const original=await first<SaleLine>(db,'SELECT * FROM sale_lines WHERE sale_id=? AND line_no=?',[sale.id,line.sale_line_no]);if(!original) throw missing();
         if(line.disposition==='RESTOCK'){
@@ -86,6 +96,10 @@ export function registerReturns(app:FastifyInstance):void {
   app.post('/api/v1/returns/:id/cancel',async req=>{
     const a=await ownerWrite(req),returnId=id(params(req).id),d=body(req.body,['reason','refundReconciled']),reason=nonempty(d.reason,500),k=requireKey(req.headers['idempotency-key']);
     return tx(db=>command(db,a.id,'return.cancel',k,{returnId,...d},async()=>{
+      const pre=await first<ReturnRow>(db,'SELECT * FROM returns WHERE id=?',[returnId]);if(!pre) throw missing();
+      const source=await first<RowDataPacket>(db,'SELECT event_id FROM sales WHERE id=?',[pre.sale_id]);if(!source) throw missing();
+      // Do not apply the target policy here: legacy invalid targets must remain cancellable.
+      await lockReturnEvents(db,String(source.event_id),pre.destination_location_id);
       const r=await first<ReturnRow>(db,'SELECT * FROM returns WHERE id=? FOR UPDATE',[returnId]);if(!r||!['DRAFT','AUTHORIZED'].includes(r.state)) throw conflict('退货不可取消');
       if(r.state==='AUTHORIZED'&&d.refundReconciled!==true) throw bad('须先确认线下退款未执行或已撤销');
       await exec(db,"UPDATE returns SET state='CANCELLED' WHERE id=?",[returnId]);await audit(db,a.id,'RETURN_CANCELLED','RETURN',returnId,{reason});return {id:returnId,state:'CANCELLED'};

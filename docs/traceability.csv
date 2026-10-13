@@ -21,3 +21,11 @@ NFR-01,System design,Same-origin and persistence,Fastify static/React/MariaDB,br
 NFR-02,System design,Write idempotency and atomic transactions,idempotency_keys and tx wrapper,20 same-key concurrent posts,implemented
 NFR-03,System design,Least-privilege role views,auth guards and restricted DB grants,code review and integration,partially_verified
 NFR-04,System design,Desktop and mobile workbench,React responsive CSS and states,Playwright 2 viewports,implemented
+FIX-F01,S-TASK DEC-FIX,Repair F01,docs/fixes/requirements-tests.csv,docs/fixes/verification.md,implementation_added_full_runtime_not_run
+FIX-F02,S-TASK DEC-FIX,Repair F02,docs/fixes/requirements-tests.csv,docs/fixes/verification.md,implementation_added_full_runtime_not_run
+FIX-F03,S-TASK DEC-FIX,Repair F03,docs/fixes/requirements-tests.csv,docs/fixes/verification.md,implementation_added_full_runtime_not_run
+FIX-F04,S-TASK DEC-FIX,Repair F04,docs/fixes/requirements-tests.csv,docs/fixes/verification.md,implementation_added_full_runtime_not_run
+FIX-F05,S-TASK DEC-FIX,Repair F05,docs/fixes/requirements-tests.csv,docs/fixes/verification.md,implementation_added_full_runtime_not_run
+FIX-F06,S-TASK DEC-FIX,Repair F06,docs/fixes/requirements-tests.csv,docs/fixes/verification.md,implementation_added_full_runtime_not_run
+FIX-F07,S-TASK DEC-FIX,Repair F07,docs/fixes/requirements-tests.csv,docs/fixes/verification.md,implementation_added_full_runtime_not_run
+FIX-F08,S-TASK DEC-FIX,Repair F08,docs/fixes/requirements-tests.csv,docs/fixes/verification.md,implementation_added_full_runtime_not_run

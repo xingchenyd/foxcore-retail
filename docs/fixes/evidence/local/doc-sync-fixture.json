@@ -1,0 +1,9 @@
+{
+  "fixtureOnly": true,
+  "notFullOriginalDocs": true,
+  "plan": "PASS",
+  "twoRunIdempotence": "PASS",
+  "unaffectedOpenApiPreserved": "PASS",
+  "unknownSourceFailsBeforeWrites": "PASS",
+  "notRuntimeVerification": true
+}

@@ -1,0 +1,17 @@
+{
+  "runId": "65da935c297f",
+  "startedAt": "2026-10-13T02:54:58.370Z",
+  "endedAt": "2026-10-13T02:54:58.372Z",
+  "outcome": "FAIL",
+  "error": "Node 24 is required by this repository; full verification refuses another major version.",
+  "environment": {
+    "node": "v22.16.0",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "sourceDigest": "44c617577858469f7e06260459259b1642c8718332ecde5ca0fa2d6519e4923a",
+  "baseCommit": "f5d79e193605ea71a45ff44fc1b6e4e1a2d67768",
+  "stages": [],
+  "privateLogs": "/tmp/foxcore-verify-A9ye9A",
+  "note": "PASS applies only to executed stages in this isolated stack. Original taskbook acceptance checklist is broader; see verification.md."
+}

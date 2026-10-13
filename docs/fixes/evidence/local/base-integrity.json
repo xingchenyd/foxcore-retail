@@ -1,0 +1,42 @@
+[
+  {
+    "path": "apps/web/src/main.tsx",
+    "blobSha": "59a55f27a111415caa19b7a8817c39a445c4fec3",
+    "matchesGitHub": true
+  },
+  {
+    "path": "apps/server/src/catalog.ts",
+    "blobSha": "d7e61c62bea2c022e61260433895eb53950c4542",
+    "matchesGitHub": true
+  },
+  {
+    "path": "apps/server/src/inventory.ts",
+    "blobSha": "4de484bed333c1768d9fa02ab52edc2ab0d1811d",
+    "matchesGitHub": true
+  },
+  {
+    "path": "apps/server/src/db.ts",
+    "blobSha": "b7e8bb25204f3fa8231bf3041d7803f49032d76f",
+    "matchesGitHub": true
+  },
+  {
+    "path": "apps/server/src/returns.ts",
+    "blobSha": "9e30e43b58e440bca9c4b8d49d80b60532b91080",
+    "matchesGitHub": true
+  },
+  {
+    "path": "apps/server/src/index.ts",
+    "blobSha": "cef03d80783a672fcda92f4b2ef65be5c141d7ad",
+    "matchesGitHub": true
+  },
+  {
+    "path": "apps/server/src/commissions.ts",
+    "blobSha": "1daf57d4947b14623306cd9ec96276182585d616",
+    "matchesGitHub": true
+  },
+  {
+    "path": "package.json",
+    "blobSha": "61ab7b0662b55e9353f127d37d493f524e9d042c",
+    "matchesGitHub": true
+  }
+]
