@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520" height="1010" viewBox="0 0 1520 1010">
+<rect width="1520" height="1010" fill="white"/>
+<rect x="640" y="50" width="230" height="176" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<rect x="640" y="50" width="230" height="34" fill="#d8e7ff" stroke="#1a1a1a" stroke-width="2"/>
+<line x1="640" y1="188" x2="870" y2="188" stroke="#1a1a1a" stroke-width="2"/>
+<text x="755" y="73" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="16" font-weight="bold" fill="#1a1a1a">职员</text>
+<text x="652" y="107" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">姓名: string</text>
+<text x="652" y="129" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">工号: string</text>
+<text x="652" y="151" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">联系电话: string</text>
+<text x="652" y="173" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">佣金率: decimal</text>
+<rect x="445" y="265" width="180" height="110" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<rect x="445" y="265" width="180" height="34" fill="#fff2b8" stroke="#1a1a1a" stroke-width="2"/>
+<line x1="445" y1="337" x2="625" y2="337" stroke="#1a1a1a" stroke-width="2"/>
+<text x="535" y="288" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="16" font-weight="bold" fill="#1a1a1a">管理员</text>
+<rect x="880" y="265" width="180" height="110" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<rect x="880" y="265" width="180" height="34" fill="#fff2b8" stroke="#1a1a1a" stroke-width="2"/>
+<line x1="880" y1="337" x2="1060" y2="337" stroke="#1a1a1a" stroke-width="2"/>
+<text x="970" y="288" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="16" font-weight="bold" fill="#1a1a1a">销售员</text>
+<rect x="30" y="265" width="200" height="220" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<rect x="30" y="265" width="200" height="34" fill="#d8e7ff" stroke="#1a1a1a" stroke-width="2"/>
+<line x1="30" y1="447" x2="230" y2="447" stroke="#1a1a1a" stroke-width="2"/>
+<text x="130" y="288" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="16" font-weight="bold" fill="#1a1a1a">场地</text>
+<text x="42" y="322" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">名称: string</text>
+<text x="42" y="344" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">街道: string</text>
+<text x="42" y="366" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">城市: string</text>
+<text x="42" y="388" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">省份: string</text>
+<text x="42" y="410" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">邮编: string</text>
+<text x="42" y="432" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">说明: string</text>
+<rect x="30" y="530" width="200" height="132" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<rect x="30" y="530" width="200" height="34" fill="#d9f2d3" stroke="#1a1a1a" stroke-width="2"/>
+<line x1="30" y1="624" x2="230" y2="624" stroke="#1a1a1a" stroke-width="2"/>
+<text x="130" y="553" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="16" font-weight="bold" fill="#1a1a1a">活动类别</text>
+<text x="42" y="587" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">代码: string</text>
+<text x="42" y="609" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">名称: string</text>
+<rect x="320" y="530" width="230" height="176" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<rect x="320" y="530" width="230" height="34" fill="#ffd9e2" stroke="#1a1a1a" stroke-width="2"/>
+<line x1="320" y1="668" x2="550" y2="668" stroke="#1a1a1a" stroke-width="2"/>
+<text x="435" y="553" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="16" font-weight="bold" fill="#1a1a1a">活动</text>
+<text x="332" y="587" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">名称: string</text>
+<text x="332" y="609" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">日期: DateTime</text>
+<text x="332" y="631" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">税率: decimal</text>
+<text x="332" y="653" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">说明: string</text>
+<text x="332" y="691" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">+ 计算含税总额(): decimal</text>
+<rect x="620" y="530" width="190" height="110" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<rect x="620" y="530" width="190" height="34" fill="#d8e7ff" stroke="#1a1a1a" stroke-width="2"/>
+<line x1="620" y1="602" x2="810" y2="602" stroke="#1a1a1a" stroke-width="2"/>
+<text x="715" y="553" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="16" font-weight="bold" fill="#1a1a1a">展位</text>
+<text x="632" y="587" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">位置: string</text>
+<rect x="870" y="530" width="210" height="154" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<rect x="870" y="530" width="210" height="34" fill="#ffd9e2" stroke="#1a1a1a" stroke-width="2"/>
+<line x1="870" y1="646" x2="1080" y2="646" stroke="#1a1a1a" stroke-width="2"/>
+<text x="975" y="553" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="16" font-weight="bold" fill="#1a1a1a">班次</text>
+<text x="882" y="587" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">业务日期: DateTime</text>
+<text x="882" y="609" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">开始时间: DateTime</text>
+<text x="882" y="631" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">结束时间: DateTime</text>
+<rect x="1235" y="530" width="250" height="198" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<rect x="1235" y="530" width="250" height="34" fill="#d9f2d3" stroke="#1a1a1a" stroke-width="2"/>
+<line x1="1235" y1="690" x2="1485" y2="690" stroke="#1a1a1a" stroke-width="2"/>
+<text x="1360" y="553" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="16" font-weight="bold" fill="#1a1a1a">商品说明</text>
+<text x="1247" y="587" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">SKU: string</text>
+<text x="1247" y="609" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">名称: string</text>
+<text x="1247" y="631" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">成本价: decimal</text>
+<text x="1247" y="653" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">底价: decimal</text>
+<text x="1247" y="675" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">建议价: decimal</text>
+<text x="1247" y="713" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">+ 校验底价(): boolean</text>
+<rect x="330" y="800" width="220" height="154" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<rect x="330" y="800" width="220" height="34" fill="#ffd9e2" stroke="#1a1a1a" stroke-width="2"/>
+<line x1="330" y1="916" x2="550" y2="916" stroke="#1a1a1a" stroke-width="2"/>
+<text x="440" y="823" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="16" font-weight="bold" fill="#1a1a1a">支付</text>
+<text x="342" y="857" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">支付金额: decimal</text>
+<text x="342" y="879" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">找零金额: decimal</text>
+<text x="342" y="901" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">支付方式: string</text>
+<rect x="620" y="800" width="230" height="154" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<rect x="620" y="800" width="230" height="34" fill="#ffd9e2" stroke="#1a1a1a" stroke-width="2"/>
+<line x1="620" y1="916" x2="850" y2="916" stroke="#1a1a1a" stroke-width="2"/>
+<text x="735" y="823" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="16" font-weight="bold" fill="#1a1a1a">销售</text>
+<text x="632" y="857" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">流水号: string</text>
+<text x="632" y="879" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">下单时间: DateTime</text>
+<text x="632" y="901" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">总金额: decimal</text>
+<text x="632" y="939" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">+ 合计总价(): void</text>
+<rect x="950" y="800" width="210" height="154" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<rect x="950" y="800" width="210" height="34" fill="#ffd9e2" stroke="#1a1a1a" stroke-width="2"/>
+<line x1="950" y1="916" x2="1160" y2="916" stroke="#1a1a1a" stroke-width="2"/>
+<text x="1055" y="823" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="16" font-weight="bold" fill="#1a1a1a">销售项</text>
+<text x="962" y="857" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">数量: decimal</text>
+<text x="962" y="879" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">成交单价: decimal</text>
+<text x="962" y="901" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">金额: decimal</text>
+<text x="962" y="939" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" fill="#1a1a1a">+ 计算价钱(): void</text>
+<path d="M535,265 V238 H755 V226" fill="none" stroke="#1a1a1a" stroke-width="1.8"/>
+<path d="M970,265 V238 H755" fill="none" stroke="#1a1a1a" stroke-width="1.8"/>
+<path d="M755,226 L746,240 L764,240 Z" fill="white" stroke="#1a1a1a" stroke-width="1.8"/>
+<text x="807" y="252" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#0a58ca">泛化</text>
+<path d="M230,325 H288 V618 H320" fill="none" stroke="#1a1a1a" stroke-width="1.8"/>
+<text x="240" y="319" text-anchor="start" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">1</text>
+<text x="310" y="612" text-anchor="end" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">*</text>
+<text x="300" y="345" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#0a58ca">举办于</text>
+<path d="M230,596 H320" fill="none" stroke="#1a1a1a" stroke-width="1.8"/>
+<text x="240" y="590" text-anchor="start" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">1</text>
+<text x="310" y="590" text-anchor="end" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">*</text>
+<text x="275" y="588" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#0a58ca">归类于</text>
+<path d="M550,618 H620" fill="none" stroke="#1a1a1a" stroke-width="1.8"/>
+<text x="560" y="612" text-anchor="start" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">1</text>
+<text x="610" y="612" text-anchor="end" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">*</text>
+<text x="585" y="610" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#0a58ca">设有</text>
+<path d="M810,585 H870" fill="none" stroke="#1a1a1a" stroke-width="1.8"/>
+<text x="820" y="579" text-anchor="start" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">1</text>
+<text x="860" y="579" text-anchor="end" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">*</text>
+<text x="840" y="577" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#0a58ca">开班</text>
+<path d="M970,375 V530" fill="none" stroke="#1a1a1a" stroke-width="1.8"/>
+<text x="980" y="391" text-anchor="start" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">1</text>
+<text x="989" y="522" text-anchor="start" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">*</text>
+<text x="1022" y="452" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#0a58ca">值班</text>
+<path d="M975,684 V762 H775 V800" fill="none" stroke="#1a1a1a" stroke-width="1.8"/>
+<text x="985" y="700" text-anchor="start" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">1</text>
+<text x="787" y="792" text-anchor="start" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">*</text>
+<text x="909" y="780" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#0a58ca">归属班次</text>
+<path d="M435,706 V782 H695 V800" fill="none" stroke="#1a1a1a" stroke-width="1.8"/>
+<text x="445" y="722" text-anchor="start" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">1</text>
+<text x="683" y="792" text-anchor="start" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">*</text>
+<text x="493" y="800" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#0a58ca">发生于</text>
+<path d="M850,880 H950" fill="none" stroke="#1a1a1a" stroke-width="1.8"/>
+<path d="M850,880 L864,873 L878,880 L864,887 Z" fill="#1a1a1a"/>
+<text x="886" y="872" text-anchor="start" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">1</text>
+<text x="938" y="872" text-anchor="end" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">*</text>
+<text x="900" y="870" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#0a58ca">包含</text>
+<path d="M1055,800 V783 H1360 V728" fill="none" stroke="#1a1a1a" stroke-width="1.8"/>
+<text x="1067" y="792" text-anchor="start" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">*</text>
+<text x="1374" y="742" text-anchor="start" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">1</text>
+<text x="1207" y="778" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#0a58ca">购买</text>
+<path d="M620,895 H550" fill="none" stroke="#1a1a1a" stroke-width="1.8"/>
+<text x="608" y="887" text-anchor="end" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">*</text>
+<text x="538" y="887" text-anchor="end" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">1</text>
+<text x="585" y="885" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#0a58ca">对应收款</text>
+<rect x="30" y="800" width="260" height="165" fill="#fafafa" stroke="#888" stroke-width="1" rx="4"/>
+<text x="42" y="822" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a">图例</text>
+<line x1="42" y1="846" x2="88" y2="846" stroke="#1a1a1a" stroke-width="1.8"/>
+<path d="M100,846 L114,841 L114,851 Z" fill="white" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="122" y="850" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#1a1a1a">泛化（is-a）</text>
+<path d="M42,872 L56,867 L70,872 L56,877 Z" fill="#1a1a1a"/>
+<line x1="70" y1="872" x2="114" y2="872" stroke="#1a1a1a" stroke-width="1.8"/>
+<text x="122" y="876" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#1a1a1a">组合（整体-部分）</text>
+<line x1="42" y1="898" x2="114" y2="898" stroke="#1a1a1a" stroke-width="1.8"/>
+<text x="122" y="902" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#1a1a1a">连接（关联）</text>
+<rect x="42" y="915" width="22" height="14" fill="#ffd9e2" stroke="#1a1a1a" stroke-width="1"/>
+<text x="70" y="927" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#1a1a1a">时刻时段</text>
+<rect x="167" y="915" width="22" height="14" fill="#fff2b8" stroke="#1a1a1a" stroke-width="1"/>
+<text x="195" y="927" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#1a1a1a">角色</text>
+<rect x="42" y="939" width="22" height="14" fill="#d9f2d3" stroke="#1a1a1a" stroke-width="1"/>
+<text x="70" y="951" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#1a1a1a">描述</text>
+<rect x="167" y="939" width="22" height="14" fill="#d8e7ff" stroke="#1a1a1a" stroke-width="1"/>
+<text x="195" y="951" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="12" fill="#1a1a1a">人/地/事物</text>
+<text x="760" y="994" text-anchor="middle" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="15" fill="#333">图 1  Foxcore Retail 分析类图（实体类图）——泛化：管理员/销售员-职员；组合：销售-销售项；连接：销售项-商品说明</text>
+</svg>
