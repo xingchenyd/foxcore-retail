@@ -350,13 +350,16 @@
 
 **依赖规则**：领域服务之间**不互相直接调用数据库以外的私有状态**；跨模块共享逻辑必须下沉到平台层；表现层只能通过 HTTP API 访问领域逻辑。
 
+![图 4-3　Foxcore Retail 实体类图（分析类图：泛化 / 组合 / 连接，架构型四色标注）](diagrams/class-diagram.svg)
+
+
 ### 4.3 交互视图（Interaction / Process View 中的时序）
 
 关键交易——**准备收款并过账销售**的时序如下。
 
 ![销售时序图](diagrams/sale-sequence.svg)
 
-**图 4-3 销售准备收款与过账时序**（源：`diagrams/sale-sequence.puml`）
+**图 4-4 销售准备收款与过账时序**（源：`diagrams/sale-sequence.puml`）
 
 时序要点：
 
@@ -383,7 +386,7 @@
 
 ![状态图](diagrams/states.svg)
 
-**图 4-4 核心实体状态机**（源：`diagrams/states.puml`）
+**图 4-5 核心实体状态机**（源：`diagrams/states.puml`）
 
 - 活动：`DRAFT → OPEN → CLOSED`
 - 班次：`PLANNED → ACTIVE → CLOSED`
