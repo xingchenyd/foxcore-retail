@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="650" height="448" viewBox="0 0 650 448" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif">
+<rect width="650" height="448" fill="white"/>
+<text x="325" y="30" text-anchor="middle" font-size="17" font-weight="bold" fill="#1f2430">UC-12 账户与审计</text>
+<text x="325" y="52" text-anchor="middle" font-size="13" fill="#5b6472">UC-12（基本路径）</text>
+<circle cx="62" cy="62" r="11" fill="white" stroke="#1f2430" stroke-width="2"/>
+<line x1="62" y1="73" x2="62" y2="102" stroke="#1f2430" stroke-width="2"/>
+<line x1="46" y1="84" x2="78" y2="84" stroke="#1f2430" stroke-width="2"/>
+<line x1="62" y1="102" x2="49" y2="126" stroke="#1f2430" stroke-width="2"/>
+<line x1="62" y1="102" x2="75" y2="126" stroke="#1f2430" stroke-width="2"/>
+<text x="62" y="146" text-anchor="middle" font-size="15" font-weight="bold" fill="#1f2430">管理员</text>
+<line x1="62" y1="172" x2="62" y2="408" stroke="#9aa2ad" stroke-width="1.2" stroke-dasharray="5,4"/>
+<rect x="220" y="82" width="140" height="34" rx="5" fill="#d8e7ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="290" y="104" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#1f2430">:职员</text>
+<line x1="290" y1="118" x2="290" y2="408" stroke="#9aa2ad" stroke-width="1.2" stroke-dasharray="5,4"/>
+<rect x="420" y="82" width="140" height="34" rx="5" fill="#fff2b8" stroke="#d9a514" stroke-width="1.5"/>
+<text x="490" y="104" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#1f2430">:销售员</text>
+<line x1="490" y1="118" x2="490" y2="408" stroke="#9aa2ad" stroke-width="1.2" stroke-dasharray="5,4"/>
+<text x="176.0" y="164" text-anchor="middle" font-size="13.5" fill="#1f2430">开设账户(用户名,临时口令)</text>
+<line x1="62" y1="172" x2="290" y2="172" stroke="#1f2430" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="390.0" y="200" text-anchor="middle" font-size="13.5" fill="#1f2430">绑定员工档案()</text>
+<line x1="290" y1="208" x2="490" y2="208" stroke="#1f2430" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="176.0" y="256" text-anchor="middle" font-size="13.5" fill="#1f2430">验证口令并登录()</text>
+<line x1="62" y1="264" x2="290" y2="264" stroke="#1f2430" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M290,312 h66 v16 h-58" fill="none" stroke="#1f2430" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="364" y="322" font-size="13.5" fill="#1f2430">记录审计事件(操作,对象)</text>
+<defs><marker id="arr" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L9,4 L0,8 Z" fill="#1f2430"/></marker></defs>
+<text x="325" y="434" text-anchor="middle" font-size="12.5" fill="#5b6472">口令 argon2id 散列存储；全部写操作留审计</text>
+</svg>
