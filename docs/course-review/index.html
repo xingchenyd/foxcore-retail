@@ -357,7 +357,7 @@
 <tr><td>UC-05 录入销售草稿</td><td>sales.ts</td><td>sales、sale_lines</td><td>integration workflow；acceptance business；UI 金额预估</td></tr>
 <tr><td>UC-06 准备收款</td><td>sales.ts / amounts.ts</td><td>sale_lines 快照、stock_holds、stock_balances</td><td>20 并发争最后 1 件；底价冲突；库存不变量</td></tr>
 <tr><td>UC-07 确认成交</td><td>sales.ts / core.ts / db.ts</td><td>sales、stock_ledger、commission_entries、audit_events</td><td>20 同键过账；同键异体冲突；现金/权限/快照</td></tr>
-<tr><td>UC-08 取消与核对待成交单</td><td>sales.ts</td><td>sales、stock_holds、stock_balances</td><td>HTTP F03 快照取消；资金/商品双确认；UI 受控入口</td></tr>
+<tr><td>UC-08 取消与核对待成交单</td><td>sales.ts</td><td>sales、stock_holds、stock_balances</td><td>完整表单业务链的待成交取消；资金/商品双确认；UI 受控入口</td></tr>
 <tr><td>UC-09 退货与更正</td><td>returns.ts / return-target.ts</td><td>returns、return_lines、stock_ledger、commission_entries</td><td>integration workflow；HTTP F05 目标库位/闭场/超退；尾差单元测试</td></tr>
 <tr><td>UC-10 佣金结算</td><td>commissions.ts</td><td>commission_entries、commission_settlements、commission_settlement_lines、commission_claims</td><td>integration workflow；受限权限与不变量；合成演示已支付结算</td></tr>
 <tr><td>UC-11 查询与导出报表</td><td>reports.ts / report-query.ts / csv.ts</td><td>已过账销售、退货及快照汇总</td><td>HTTP F04/F07；CSV 纯逻辑；浏览器真实导出</td></tr>

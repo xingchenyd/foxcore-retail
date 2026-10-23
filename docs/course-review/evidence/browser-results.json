@@ -25,9 +25,9 @@
   "webTypecheck": "PASS",
   "webBuild": "PASS",
   "screenshots": [
-    "outputs/ui-preview/dashboard-desktop.png",
-    "outputs/ui-preview/sales-desktop.png",
-    "outputs/ui-preview/dashboard-mobile.png"
+    "docs/course-review/ui-preview/dashboard-desktop.png",
+    "docs/course-review/ui-preview/sales-desktop.png",
+    "docs/course-review/ui-preview/dashboard-mobile.png"
   ],
   "screenshotPageErrors": 0,
   "screenshotData": "Synthetic data created through real API; other test fixtures remain in the isolated database",
