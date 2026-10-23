@@ -7,6 +7,7 @@ import { audit, bad, body, bps, command, conflict, id, missing, money, nonempty,
 
 import { listPage } from './pagination.js';
 import { lockShiftEvent } from './catalog-updates.js';
+import { parseCalendarDate } from './fix-rules.js';
 
 interface Basic extends RowDataPacket { id: string; event_id?: string; status?: string; version?: number; start_date?: string; end_date?: string; planned_start?: string; planned_end?: string; salesperson_id?: string; active?: number; policy_confirmed?: number; tax_bps?: number | null }
 const params = (req: FastifyRequest) => req.params as Record<string, unknown>;
@@ -37,11 +38,12 @@ export function registerCatalog(app: FastifyInstance): void {
   app.get('/api/v1/events', async req => { await actor(req); return list('SELECT e.*,v.name AS venue_name,c.type AS category_type FROM events e JOIN venues v ON v.id=e.venue_id JOIN event_categories c ON c.id=e.category_id ORDER BY e.id DESC', [], req); });
   app.post('/api/v1/events', async req => {
     const a = await ownerWrite(req); const d = body(req.body,['venueId','categoryId','name','startDate','endDate','description','taxBps','policyConfirmed']); const k=requireKey(req.headers['idempotency-key']);
-    if (typeof d.startDate !== 'string' || typeof d.endDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(d.startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(d.endDate) || d.endDate < d.startDate) throw bad('活动日期无效');
+    const startDate = parseCalendarDate(d.startDate), endDate = parseCalendarDate(d.endDate);
+    if (endDate < startDate) throw bad('活动结束日期不得早于开始日期');
     if (d.policyConfirmed !== true && d.policyConfirmed !== false) throw bad('须明确确认税务口径');
     return tx(db => command(db,a.id,'event.create',k,d,async () => {
       const r=await exec(db,'INSERT INTO events(venue_id,category_id,name,start_date,end_date,description,tax_bps,policy_confirmed) VALUES(?,?,?,?,?,?,?,?)',
-        [id(d.venueId),id(d.categoryId),nonempty(d.name,120),d.startDate,d.endDate,opt(d.description),d.taxBps === null || d.taxBps === undefined ? null : bps(d.taxBps),d.policyConfirmed]);
+        [id(d.venueId),id(d.categoryId),nonempty(d.name,120),startDate,endDate,opt(d.description),d.taxBps === null || d.taxBps === undefined ? null : bps(d.taxBps),d.policyConfirmed]);
       const result={id:String(r.insertId)}; await audit(db,a.id,'EVENT_CREATED','EVENT',result.id); return result;
     }));
   });

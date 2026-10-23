@@ -1,0 +1,113 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 物理 ERD · 销售与占用
+hide circle
+left to right direction
+entity "sales" as sales {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} sale_no : VARCHAR(40) <<UK>>
+  {field} * shift_id : BIGINT UNSIGNED <<FK>>
+  {field} * event_id : BIGINT UNSIGNED <<FK>>
+  {field} * state : ENUM
+  {field} * created_at : DATETIME(3)
+  {field} prepared_at : DATETIME(3)
+  {field} posted_at : DATETIME(3)
+  {field} * created_by : BIGINT UNSIGNED <<FK>>
+  {field} posted_by : BIGINT UNSIGNED <<FK>>
+  {field} payment_method : ENUM
+  {field} payment_reference : VARCHAR(120)
+  {field} cash_received_cents : BIGINT UNSIGNED
+  {field} * net_cents : BIGINT UNSIGNED
+  {field} * tax_cents : BIGINT UNSIGNED
+  {field} * total_cents : BIGINT UNSIGNED
+  {field} * version : INT UNSIGNED
+}
+entity "sale_lines" as sale_lines {
+  {field} * sale_id : BIGINT UNSIGNED <<PK,FK>>
+  {field} * line_no : SMALLINT UNSIGNED <<PK>>
+  {field} * product_id : BIGINT UNSIGNED <<FK>>
+  {field} * quantity : INT UNSIGNED
+  {field} * final_unit_price_cents : BIGINT UNSIGNED
+  {field} * line_net_cents : BIGINT UNSIGNED
+  {field} * line_tax_cents : BIGINT UNSIGNED
+  {field} * line_commission_cents : BIGINT UNSIGNED
+  {field} cost_snapshot_cents : BIGINT UNSIGNED
+  {field} min_snapshot_cents : BIGINT UNSIGNED
+  {field} tax_bps_snapshot : SMALLINT UNSIGNED
+  {field} commission_bps_snapshot : SMALLINT UNSIGNED
+  {field} name_snapshot : VARCHAR(160)
+  {field} sku_snapshot : VARCHAR(64)
+}
+entity "stock_holds" as stock_holds {
+  {field} * sale_id : BIGINT UNSIGNED <<PK,FK>>
+  {field} * line_no : SMALLINT UNSIGNED <<PK,FK>>
+  {field} * location_id : BIGINT UNSIGNED <<FK>>
+  {field} * product_id : BIGINT UNSIGNED <<FK>>
+  {field} * quantity : INT UNSIGNED
+  {field} * status : ENUM
+}
+entity "shifts" as shifts {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * salesperson_id : BIGINT UNSIGNED <<FK>>
+  {field} * booth_id : BIGINT UNSIGNED <<FK>>
+  {field} * event_id : BIGINT UNSIGNED <<FK>>
+  {field} * business_date : DATE
+  {field} * planned_start : DATETIME(3)
+  {field} * planned_end : DATETIME(3)
+  {field} actual_start : DATETIME(3)
+  {field} actual_end : DATETIME(3)
+  {field} * status : ENUM
+  {field} * version : INT UNSIGNED
+}
+entity "products" as products {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * sku : VARCHAR(64) <<UK>>
+  {field} * name : VARCHAR(160)
+  {field} * wholesale_cost_cents : BIGINT UNSIGNED
+  {field} * min_price_cents : BIGINT UNSIGNED
+  {field} suggested_price_cents : BIGINT UNSIGNED
+  {field} * active : BOOLEAN
+  {field} * version : INT UNSIGNED
+}
+entity "stock_locations" as stock_locations {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * code : VARCHAR(80) <<UK>>
+  {field} * name : VARCHAR(120)
+  {field} * kind : ENUM
+  {field} booth_id : BIGINT UNSIGNED <<FK,UK>>
+  {field} * active : BOOLEAN
+}
+shifts ||--o{ sales : "shift_id,event_id"
+sales ||--o{ sale_lines : "sale_id"
+products ||--o{ sale_lines : "product_id"
+sale_lines ||--o| stock_holds : "sale_id,line_no"
+stock_locations ||--o{ stock_holds : "location_id"
+products ||--o{ stock_holds : "product_id"
+legend bottom
+星号 (*) 表示 NOT NULL；PK 主键；FK 外键；UK 单列唯一。
+实线只表示迁移中真实 FK；标注字段为子表列（含复合 FK）。
+父端 1 / 0..1 由子 FK 可空性决定；子端 0..N / 0..1 由唯一性决定。
+跨域外键及复合 UNIQUE/CHECK 全文见数据字典；图中 ENUM 值缩写。
+endlegend
+@enduml

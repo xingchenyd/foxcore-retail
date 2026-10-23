@@ -1,0 +1,109 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 分析类图 · 核心领域概念（不是现有 TypeScript 类）
+hide circle
+class "活动类别" as Category  {
++id: Identifier
++code: String
+}
+class "场地" as Venue  {
++id: Identifier
++address: Address
+}
+class "活动" as Event  {
++id: Identifier
++status: EventStatus
++taxBps: Integer
++open()
++close()
+}
+class "展位" as Booth  {
++id: Identifier
++location: String
+}
+class "销售顾问" as Person  {
++id: Identifier
++commissionBps: Integer
+}
+class "班次" as Shift  {
++id: Identifier
++plannedStart: Instant
++status: ShiftStatus
++start()
++close()
++cancel()
+}
+class "商品" as Product  {
++id: Identifier
++sku: String
++minPrice: Money
+}
+class "销售单" as Sale  {
++id: Identifier
++state: SaleState
++total: Money
++prepare()
++post()
++cancel()
+}
+class "销售行" as Line  {
++lineNo: Integer
++quantity: Integer
++unitPrice: Money
++taxBpsSnapshot: Integer
++commissionBpsSnapshot: Integer
+}
+class "Money" as Money <<value object>>  {
++cents: BigInt
++currency: CAD
++add()
++halfUpBps()
+}
+class "账号" as User  {
++id: Identifier
++role: OWNER | SALESPERSON
++active: Boolean
+}
+Category "1" -- "0..*" Event
+Venue "1" -- "0..*" Event
+Event "1" -- "0..*" Booth
+Booth "1" -- "0..*" Shift
+Person "1" -- "0..*" Shift
+Shift "1" -- "0..*" Sale
+Event "1" -- "0..*" Sale : 归属一致
+Sale "1" *-- "1..*" Line : 领域单据组成
+Product "1" -- "0..*" Line
+User "0..1" -- "0..1" Person : 角色条件关联
+Sale ..> Money
+Line ..> Money
+note bottom of User
+OWNER 不关联销售顾问；SALESPERSON 必须关联一人。
+实际用 role 判别并用 CHECK 约束，无管理员继承职员表。
+end note
+note bottom of Sale
+操作为分析职责：现由路由内事务脚本执行。
+系统没有独立 Payment 类/表，付款信息保存在 sales。
+概念类的组合关系不代表数据库 ON DELETE CASCADE。
+end note
+@enduml

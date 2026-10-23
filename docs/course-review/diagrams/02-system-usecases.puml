@@ -1,0 +1,74 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 系统用例图 · 13 个用例与权限边界
+left to right direction
+actor "管理员\nOWNER" as Owner
+actor "销售员\nSALESPERSON" as Seller
+rectangle "Foxcore Retail 应用" {
+ usecase "UC-01 管理活动与展位" as U1
+ usecase "UC-02 维护商品、员工和账户" as U2
+ usecase "UC-03 排班、开班和关班" as U3
+ usecase "UC-04 收货、调拨和盘点" as U4
+ usecase "UC-05 录入销售草稿" as U5
+ usecase "UC-06 准备收款" as U6
+ usecase "UC-07 确认成交" as U7
+ usecase "UC-08 取消与核对待成交单" as U8
+ usecase "UC-09 退货与更正" as U9
+ usecase "UC-10 佣金结算" as U10
+ usecase "UC-11 查询与导出报表" as U11
+ usecase "UC-12 账户与审计" as U12
+ usecase "UC-13 身份认证与会话管理" as U13
+}
+Owner -- U1
+Owner -- U2
+Owner -- U3
+Owner -- U4
+Owner -- U5
+Owner -- U6
+Owner -- U7
+Owner -- U8
+Owner -- U9
+Owner -- U10
+Owner -- U11
+Owner -- U12
+Owner -- U13
+Seller -- U3
+Seller -- U5
+Seller -- U6
+Seller -- U7
+Seller -- U8
+Seller -- U11
+Seller -- U13
+note bottom of U3
+销售员仅可开关自己的班次；排班属管理员。
+end note
+note bottom of U11
+销售员仅看本人报表；CSV 导出属管理员。
+佣金只读查询是查询能力，支付操作属管理员。
+end note
+note bottom of U7
+UC-05 → UC-06 → UC-07 是前置状态依赖，
+不是 UML include；线下支付无网关接口。
+end note
+@enduml

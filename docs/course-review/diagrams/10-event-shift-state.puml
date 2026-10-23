@@ -1,0 +1,43 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 状态图 · 活动、班次与闭场守卫
+state "活动" as E {
+ [*] --> E_DRAFT
+ state "DRAFT" as E_DRAFT
+ state "OPEN" as E_OPEN
+ state "CLOSED" as E_CLOSED
+ E_DRAFT --> E_OPEN : open [税率政策已确认 + 有展位]
+ E_OPEN --> E_CLOSED : close [无 PLANNED/ACTIVE 班次\n无待处理销售、展位余额归零\n无待入本活动展位的授权良品退货]
+}
+state "班次" as S {
+ [*] --> PLANNED
+ PLANNED --> ACTIVE : start [活动 OPEN、有效时间与本人归属\n员工无其他 ACTIVE 班次]
+ PLANNED --> CANCELLED : cancel [管理员、版本一致\n未开班且无销售关联、原因]
+ ACTIVE --> CLOSED : close [本人或管理员、无待成交单]
+}
+note bottom of E
+events.status 的 ENUM 含 CANCELLED，
+目前没有活动取消路由；不得把它画成已实现入口。
+end note
+@enduml

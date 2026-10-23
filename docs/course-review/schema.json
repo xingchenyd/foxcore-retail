@@ -1,0 +1,2052 @@
+{
+  "migrationSha256": "dd39132d2b1682d5cd1468127406799e664250e45a4b1349f679d8a7f70f5a67",
+  "businessTableCount": 25,
+  "tables": {
+    "event_categories": {
+      "name": "event_categories",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "code",
+          "type": "VARCHAR(40)",
+          "nullable": false,
+          "sql": "code VARCHAR(40) NOT NULL UNIQUE"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR(80)",
+          "nullable": false,
+          "sql": "type VARCHAR(80) NOT NULL UNIQUE"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [
+        [
+          "code"
+        ],
+        [
+          "type"
+        ]
+      ],
+      "fks": [],
+      "constraints": []
+    },
+    "venues": {
+      "name": "venues",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR(120)",
+          "nullable": false,
+          "sql": "name VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "street",
+          "type": "VARCHAR(120)",
+          "nullable": false,
+          "sql": "street VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "city",
+          "type": "VARCHAR(80)",
+          "nullable": false,
+          "sql": "city VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "province",
+          "type": "VARCHAR(80)",
+          "nullable": false,
+          "sql": "province VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "postal_code",
+          "type": "VARCHAR(16)",
+          "nullable": false,
+          "sql": "postal_code VARCHAR(16) NOT NULL"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR(500)",
+          "nullable": true,
+          "sql": "description VARCHAR(500)"
+        },
+        {
+          "name": "active",
+          "type": "BOOLEAN",
+          "nullable": false,
+          "sql": "active BOOLEAN NOT NULL DEFAULT TRUE"
+        },
+        {
+          "name": "version",
+          "type": "INT UNSIGNED",
+          "nullable": false,
+          "sql": "version INT UNSIGNED NOT NULL DEFAULT 1"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [],
+      "fks": [],
+      "constraints": []
+    },
+    "events": {
+      "name": "events",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "venue_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "venue_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "category_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "category_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR(120)",
+          "nullable": false,
+          "sql": "name VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "start_date",
+          "type": "DATE",
+          "nullable": false,
+          "sql": "start_date DATE NOT NULL"
+        },
+        {
+          "name": "end_date",
+          "type": "DATE",
+          "nullable": false,
+          "sql": "end_date DATE NOT NULL"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR(500)",
+          "nullable": true,
+          "sql": "description VARCHAR(500)"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('DRAFT','OPEN','CLOSED','CANCELLED')",
+          "nullable": false,
+          "sql": "status ENUM('DRAFT','OPEN','CLOSED','CANCELLED') NOT NULL DEFAULT 'DRAFT'"
+        },
+        {
+          "name": "timezone",
+          "type": "VARCHAR(64)",
+          "nullable": false,
+          "sql": "timezone VARCHAR(64) NOT NULL DEFAULT 'America/Toronto'"
+        },
+        {
+          "name": "tax_bps",
+          "type": "SMALLINT UNSIGNED",
+          "nullable": true,
+          "sql": "tax_bps SMALLINT UNSIGNED"
+        },
+        {
+          "name": "policy_confirmed",
+          "type": "BOOLEAN",
+          "nullable": false,
+          "sql": "policy_confirmed BOOLEAN NOT NULL DEFAULT FALSE"
+        },
+        {
+          "name": "version",
+          "type": "INT UNSIGNED",
+          "nullable": false,
+          "sql": "version INT UNSIGNED NOT NULL DEFAULT 1"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [],
+      "fks": [
+        {
+          "name": "fk_events_venue",
+          "columns": [
+            "venue_id"
+          ],
+          "target": "venues",
+          "targetColumns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_events_category",
+          "columns": [
+            "category_id"
+          ],
+          "target": "event_categories",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "CONSTRAINT fk_events_venue FOREIGN KEY (venue_id) REFERENCES venues(id)",
+        "CONSTRAINT fk_events_category FOREIGN KEY (category_id) REFERENCES event_categories(id)",
+        "CONSTRAINT ck_event_dates CHECK (end_date >= start_date)",
+        "CONSTRAINT ck_event_tax CHECK (tax_bps IS NULL OR tax_bps <= 10000)"
+      ]
+    },
+    "booths": {
+      "name": "booths",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "event_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "event_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "location",
+          "type": "VARCHAR(80)",
+          "nullable": false,
+          "sql": "location VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "active",
+          "type": "BOOLEAN",
+          "nullable": false,
+          "sql": "active BOOLEAN NOT NULL DEFAULT TRUE"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [
+        [
+          "event_id",
+          "location"
+        ],
+        [
+          "id",
+          "event_id"
+        ]
+      ],
+      "fks": [
+        {
+          "name": "fk_booths_event",
+          "columns": [
+            "event_id"
+          ],
+          "target": "events",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "UNIQUE KEY uq_booth_event_location (event_id,location)",
+        "UNIQUE KEY uq_booth_id_event (id,event_id)",
+        "CONSTRAINT fk_booths_event FOREIGN KEY (event_id) REFERENCES events(id)"
+      ]
+    },
+    "products": {
+      "name": "products",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR(64)",
+          "nullable": false,
+          "sql": "sku VARCHAR(64) NOT NULL UNIQUE"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR(160)",
+          "nullable": false,
+          "sql": "name VARCHAR(160) NOT NULL"
+        },
+        {
+          "name": "wholesale_cost_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "wholesale_cost_cents BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "min_price_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "min_price_cents BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "suggested_price_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": true,
+          "sql": "suggested_price_cents BIGINT UNSIGNED"
+        },
+        {
+          "name": "active",
+          "type": "BOOLEAN",
+          "nullable": false,
+          "sql": "active BOOLEAN NOT NULL DEFAULT TRUE"
+        },
+        {
+          "name": "version",
+          "type": "INT UNSIGNED",
+          "nullable": false,
+          "sql": "version INT UNSIGNED NOT NULL DEFAULT 1"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [
+        [
+          "sku"
+        ]
+      ],
+      "fks": [],
+      "constraints": [
+        "CONSTRAINT ck_product_prices CHECK (suggested_price_cents IS NULL OR suggested_price_cents >= min_price_cents)"
+      ]
+    },
+    "salespeople": {
+      "name": "salespeople",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "first_name",
+          "type": "VARCHAR(80)",
+          "nullable": false,
+          "sql": "first_name VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "last_name",
+          "type": "VARCHAR(80)",
+          "nullable": false,
+          "sql": "last_name VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "street",
+          "type": "VARCHAR(120)",
+          "nullable": true,
+          "sql": "street VARCHAR(120)"
+        },
+        {
+          "name": "city",
+          "type": "VARCHAR(80)",
+          "nullable": true,
+          "sql": "city VARCHAR(80)"
+        },
+        {
+          "name": "province",
+          "type": "VARCHAR(80)",
+          "nullable": true,
+          "sql": "province VARCHAR(80)"
+        },
+        {
+          "name": "postal_code",
+          "type": "VARCHAR(16)",
+          "nullable": true,
+          "sql": "postal_code VARCHAR(16)"
+        },
+        {
+          "name": "phone",
+          "type": "VARCHAR(32)",
+          "nullable": true,
+          "sql": "phone VARCHAR(32)"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR(500)",
+          "nullable": true,
+          "sql": "description VARCHAR(500)"
+        },
+        {
+          "name": "active",
+          "type": "BOOLEAN",
+          "nullable": false,
+          "sql": "active BOOLEAN NOT NULL DEFAULT TRUE"
+        },
+        {
+          "name": "commission_bps",
+          "type": "SMALLINT UNSIGNED",
+          "nullable": true,
+          "sql": "commission_bps SMALLINT UNSIGNED"
+        },
+        {
+          "name": "version",
+          "type": "INT UNSIGNED",
+          "nullable": false,
+          "sql": "version INT UNSIGNED NOT NULL DEFAULT 1"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [],
+      "fks": [],
+      "constraints": [
+        "CONSTRAINT ck_commission_rate CHECK (commission_bps IS NULL OR commission_bps <= 10000)"
+      ]
+    },
+    "shifts": {
+      "name": "shifts",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "salesperson_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "salesperson_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "booth_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "booth_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "event_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "event_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "business_date",
+          "type": "DATE",
+          "nullable": false,
+          "sql": "business_date DATE NOT NULL"
+        },
+        {
+          "name": "planned_start",
+          "type": "DATETIME(3)",
+          "nullable": false,
+          "sql": "planned_start DATETIME(3) NOT NULL"
+        },
+        {
+          "name": "planned_end",
+          "type": "DATETIME(3)",
+          "nullable": false,
+          "sql": "planned_end DATETIME(3) NOT NULL"
+        },
+        {
+          "name": "actual_start",
+          "type": "DATETIME(3)",
+          "nullable": true,
+          "sql": "actual_start DATETIME(3)"
+        },
+        {
+          "name": "actual_end",
+          "type": "DATETIME(3)",
+          "nullable": true,
+          "sql": "actual_end DATETIME(3)"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('PLANNED','ACTIVE','CLOSED','CANCELLED')",
+          "nullable": false,
+          "sql": "status ENUM('PLANNED','ACTIVE','CLOSED','CANCELLED') NOT NULL DEFAULT 'PLANNED'"
+        },
+        {
+          "name": "version",
+          "type": "INT UNSIGNED",
+          "nullable": false,
+          "sql": "version INT UNSIGNED NOT NULL DEFAULT 1"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [
+        [
+          "id",
+          "event_id"
+        ]
+      ],
+      "fks": [
+        {
+          "name": "fk_shift_salesperson",
+          "columns": [
+            "salesperson_id"
+          ],
+          "target": "salespeople",
+          "targetColumns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_shift_booth_event",
+          "columns": [
+            "booth_id",
+            "event_id"
+          ],
+          "target": "booths",
+          "targetColumns": [
+            "id",
+            "event_id"
+          ]
+        }
+      ],
+      "constraints": [
+        "UNIQUE KEY uq_shift_id_event (id,event_id)",
+        "KEY ix_shift_salesperson_date (salesperson_id,business_date)",
+        "CONSTRAINT fk_shift_salesperson FOREIGN KEY (salesperson_id) REFERENCES salespeople(id)",
+        "CONSTRAINT fk_shift_booth_event FOREIGN KEY (booth_id,event_id) REFERENCES booths(id,event_id)",
+        "CONSTRAINT ck_shift_times CHECK (planned_end > planned_start)"
+      ]
+    },
+    "users": {
+      "name": "users",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "username",
+          "type": "VARCHAR(80)",
+          "nullable": false,
+          "sql": "username VARCHAR(80) NOT NULL UNIQUE"
+        },
+        {
+          "name": "password_hash",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "sql": "password_hash VARCHAR(255) NOT NULL"
+        },
+        {
+          "name": "role",
+          "type": "ENUM('OWNER','SALESPERSON')",
+          "nullable": false,
+          "sql": "role ENUM('OWNER','SALESPERSON') NOT NULL"
+        },
+        {
+          "name": "salesperson_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": true,
+          "sql": "salesperson_id BIGINT UNSIGNED UNIQUE"
+        },
+        {
+          "name": "active",
+          "type": "BOOLEAN",
+          "nullable": false,
+          "sql": "active BOOLEAN NOT NULL DEFAULT TRUE"
+        },
+        {
+          "name": "must_change_password",
+          "type": "BOOLEAN",
+          "nullable": false,
+          "sql": "must_change_password BOOLEAN NOT NULL DEFAULT FALSE"
+        },
+        {
+          "name": "failed_logins",
+          "type": "INT UNSIGNED",
+          "nullable": false,
+          "sql": "failed_logins INT UNSIGNED NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "locked_until",
+          "type": "DATETIME(3)",
+          "nullable": true,
+          "sql": "locked_until DATETIME(3)"
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME(3)",
+          "nullable": false,
+          "sql": "created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [
+        [
+          "username"
+        ],
+        [
+          "salesperson_id"
+        ]
+      ],
+      "fks": [
+        {
+          "name": "fk_user_salesperson",
+          "columns": [
+            "salesperson_id"
+          ],
+          "target": "salespeople",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "CONSTRAINT fk_user_salesperson FOREIGN KEY (salesperson_id) REFERENCES salespeople(id)",
+        "CONSTRAINT ck_user_salesperson_role CHECK ((role='OWNER' AND salesperson_id IS NULL) OR (role='SALESPERSON' AND salesperson_id IS NOT NULL))"
+      ]
+    },
+    "sessions": {
+      "name": "sessions",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "user_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "user_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "token_hash",
+          "type": "CHAR(64)",
+          "nullable": false,
+          "sql": "token_hash CHAR(64) NOT NULL UNIQUE"
+        },
+        {
+          "name": "csrf_hash",
+          "type": "CHAR(64)",
+          "nullable": false,
+          "sql": "csrf_hash CHAR(64) NOT NULL"
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME(3)",
+          "nullable": false,
+          "sql": "created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)"
+        },
+        {
+          "name": "last_seen_at",
+          "type": "DATETIME(3)",
+          "nullable": false,
+          "sql": "last_seen_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)"
+        },
+        {
+          "name": "expires_at",
+          "type": "DATETIME(3)",
+          "nullable": false,
+          "sql": "expires_at DATETIME(3) NOT NULL"
+        },
+        {
+          "name": "revoked_at",
+          "type": "DATETIME(3)",
+          "nullable": true,
+          "sql": "revoked_at DATETIME(3)"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [
+        [
+          "token_hash"
+        ]
+      ],
+      "fks": [
+        {
+          "name": "fk_session_user",
+          "columns": [
+            "user_id"
+          ],
+          "target": "users",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "KEY ix_sessions_user (user_id)",
+        "CONSTRAINT fk_session_user FOREIGN KEY (user_id) REFERENCES users(id)"
+      ]
+    },
+    "sales": {
+      "name": "sales",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "sale_no",
+          "type": "VARCHAR(40)",
+          "nullable": true,
+          "sql": "sale_no VARCHAR(40) UNIQUE"
+        },
+        {
+          "name": "shift_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "shift_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "event_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "event_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "state",
+          "type": "ENUM('DRAFT','CHECKOUT','POSTED','CANCELLED')",
+          "nullable": false,
+          "sql": "state ENUM('DRAFT','CHECKOUT','POSTED','CANCELLED') NOT NULL DEFAULT 'DRAFT'"
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME(3)",
+          "nullable": false,
+          "sql": "created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)"
+        },
+        {
+          "name": "prepared_at",
+          "type": "DATETIME(3)",
+          "nullable": true,
+          "sql": "prepared_at DATETIME(3)"
+        },
+        {
+          "name": "posted_at",
+          "type": "DATETIME(3)",
+          "nullable": true,
+          "sql": "posted_at DATETIME(3)"
+        },
+        {
+          "name": "created_by",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "created_by BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "posted_by",
+          "type": "BIGINT UNSIGNED",
+          "nullable": true,
+          "sql": "posted_by BIGINT UNSIGNED"
+        },
+        {
+          "name": "payment_method",
+          "type": "ENUM('CASH','TERMINAL')",
+          "nullable": true,
+          "sql": "payment_method ENUM('CASH','TERMINAL')"
+        },
+        {
+          "name": "payment_reference",
+          "type": "VARCHAR(120)",
+          "nullable": true,
+          "sql": "payment_reference VARCHAR(120)"
+        },
+        {
+          "name": "cash_received_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": true,
+          "sql": "cash_received_cents BIGINT UNSIGNED"
+        },
+        {
+          "name": "net_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "net_cents BIGINT UNSIGNED NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "tax_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "tax_cents BIGINT UNSIGNED NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "total_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "total_cents BIGINT UNSIGNED NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "version",
+          "type": "INT UNSIGNED",
+          "nullable": false,
+          "sql": "version INT UNSIGNED NOT NULL DEFAULT 1"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [
+        [
+          "sale_no"
+        ]
+      ],
+      "fks": [
+        {
+          "name": "fk_sale_shift_event",
+          "columns": [
+            "shift_id",
+            "event_id"
+          ],
+          "target": "shifts",
+          "targetColumns": [
+            "id",
+            "event_id"
+          ]
+        },
+        {
+          "name": "fk_sale_creator",
+          "columns": [
+            "created_by"
+          ],
+          "target": "users",
+          "targetColumns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_sale_poster",
+          "columns": [
+            "posted_by"
+          ],
+          "target": "users",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "KEY ix_sales_event_posted (event_id,posted_at)",
+        "KEY ix_sales_shift_posted (shift_id,posted_at)",
+        "CONSTRAINT fk_sale_shift_event FOREIGN KEY (shift_id,event_id) REFERENCES shifts(id,event_id)",
+        "CONSTRAINT fk_sale_creator FOREIGN KEY (created_by) REFERENCES users(id)",
+        "CONSTRAINT fk_sale_poster FOREIGN KEY (posted_by) REFERENCES users(id)"
+      ]
+    },
+    "sale_lines": {
+      "name": "sale_lines",
+      "fields": [
+        {
+          "name": "sale_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "sale_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "line_no",
+          "type": "SMALLINT UNSIGNED",
+          "nullable": false,
+          "sql": "line_no SMALLINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "product_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "product_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "quantity",
+          "type": "INT UNSIGNED",
+          "nullable": false,
+          "sql": "quantity INT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "final_unit_price_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "final_unit_price_cents BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "line_net_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "line_net_cents BIGINT UNSIGNED NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "line_tax_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "line_tax_cents BIGINT UNSIGNED NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "line_commission_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "line_commission_cents BIGINT UNSIGNED NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "cost_snapshot_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": true,
+          "sql": "cost_snapshot_cents BIGINT UNSIGNED"
+        },
+        {
+          "name": "min_snapshot_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": true,
+          "sql": "min_snapshot_cents BIGINT UNSIGNED"
+        },
+        {
+          "name": "tax_bps_snapshot",
+          "type": "SMALLINT UNSIGNED",
+          "nullable": true,
+          "sql": "tax_bps_snapshot SMALLINT UNSIGNED"
+        },
+        {
+          "name": "commission_bps_snapshot",
+          "type": "SMALLINT UNSIGNED",
+          "nullable": true,
+          "sql": "commission_bps_snapshot SMALLINT UNSIGNED"
+        },
+        {
+          "name": "name_snapshot",
+          "type": "VARCHAR(160)",
+          "nullable": true,
+          "sql": "name_snapshot VARCHAR(160)"
+        },
+        {
+          "name": "sku_snapshot",
+          "type": "VARCHAR(64)",
+          "nullable": true,
+          "sql": "sku_snapshot VARCHAR(64)"
+        }
+      ],
+      "pk": [
+        "sale_id",
+        "line_no"
+      ],
+      "unique": [],
+      "fks": [
+        {
+          "name": "fk_line_sale",
+          "columns": [
+            "sale_id"
+          ],
+          "target": "sales",
+          "targetColumns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_line_product",
+          "columns": [
+            "product_id"
+          ],
+          "target": "products",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "PRIMARY KEY (sale_id,line_no)",
+        "KEY ix_sale_line_product (product_id,sale_id)",
+        "CONSTRAINT fk_line_sale FOREIGN KEY (sale_id) REFERENCES sales(id)",
+        "CONSTRAINT fk_line_product FOREIGN KEY (product_id) REFERENCES products(id)",
+        "CONSTRAINT ck_line_qty CHECK (quantity BETWEEN 1 AND 9999)"
+      ]
+    },
+    "stock_locations": {
+      "name": "stock_locations",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "code",
+          "type": "VARCHAR(80)",
+          "nullable": false,
+          "sql": "code VARCHAR(80) NOT NULL UNIQUE"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR(120)",
+          "nullable": false,
+          "sql": "name VARCHAR(120) NOT NULL"
+        },
+        {
+          "name": "kind",
+          "type": "ENUM('WAREHOUSE','BOOTH')",
+          "nullable": false,
+          "sql": "kind ENUM('WAREHOUSE','BOOTH') NOT NULL"
+        },
+        {
+          "name": "booth_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": true,
+          "sql": "booth_id BIGINT UNSIGNED UNIQUE"
+        },
+        {
+          "name": "active",
+          "type": "BOOLEAN",
+          "nullable": false,
+          "sql": "active BOOLEAN NOT NULL DEFAULT TRUE"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [
+        [
+          "code"
+        ],
+        [
+          "booth_id"
+        ]
+      ],
+      "fks": [
+        {
+          "name": "fk_location_booth",
+          "columns": [
+            "booth_id"
+          ],
+          "target": "booths",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "CONSTRAINT fk_location_booth FOREIGN KEY (booth_id) REFERENCES booths(id)",
+        "CONSTRAINT ck_location_kind CHECK ((kind='WAREHOUSE' AND booth_id IS NULL) OR (kind='BOOTH' AND booth_id IS NOT NULL))"
+      ]
+    },
+    "stock_balances": {
+      "name": "stock_balances",
+      "fields": [
+        {
+          "name": "location_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "location_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "product_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "product_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "on_hand",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "on_hand BIGINT UNSIGNED NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "reserved",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "reserved BIGINT UNSIGNED NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "version",
+          "type": "INT UNSIGNED",
+          "nullable": false,
+          "sql": "version INT UNSIGNED NOT NULL DEFAULT 1"
+        }
+      ],
+      "pk": [
+        "location_id",
+        "product_id"
+      ],
+      "unique": [],
+      "fks": [
+        {
+          "name": "fk_balance_location",
+          "columns": [
+            "location_id"
+          ],
+          "target": "stock_locations",
+          "targetColumns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_balance_product",
+          "columns": [
+            "product_id"
+          ],
+          "target": "products",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "PRIMARY KEY (location_id,product_id)",
+        "CONSTRAINT fk_balance_location FOREIGN KEY (location_id) REFERENCES stock_locations(id)",
+        "CONSTRAINT fk_balance_product FOREIGN KEY (product_id) REFERENCES products(id)",
+        "CONSTRAINT ck_balance_reserved CHECK (on_hand >= reserved)"
+      ]
+    },
+    "stock_documents": {
+      "name": "stock_documents",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "kind",
+          "type": "ENUM('RECEIVE','TRANSFER','ADJUST','RETURN')",
+          "nullable": false,
+          "sql": "kind ENUM('RECEIVE','TRANSFER','ADJUST','RETURN') NOT NULL"
+        },
+        {
+          "name": "from_location_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": true,
+          "sql": "from_location_id BIGINT UNSIGNED"
+        },
+        {
+          "name": "to_location_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": true,
+          "sql": "to_location_id BIGINT UNSIGNED"
+        },
+        {
+          "name": "reason",
+          "type": "VARCHAR(500)",
+          "nullable": false,
+          "sql": "reason VARCHAR(500) NOT NULL"
+        },
+        {
+          "name": "created_by",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "created_by BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME(3)",
+          "nullable": false,
+          "sql": "created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [],
+      "fks": [
+        {
+          "name": "fk_doc_from",
+          "columns": [
+            "from_location_id"
+          ],
+          "target": "stock_locations",
+          "targetColumns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_doc_to",
+          "columns": [
+            "to_location_id"
+          ],
+          "target": "stock_locations",
+          "targetColumns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_doc_user",
+          "columns": [
+            "created_by"
+          ],
+          "target": "users",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "CONSTRAINT fk_doc_from FOREIGN KEY (from_location_id) REFERENCES stock_locations(id)",
+        "CONSTRAINT fk_doc_to FOREIGN KEY (to_location_id) REFERENCES stock_locations(id)",
+        "CONSTRAINT fk_doc_user FOREIGN KEY (created_by) REFERENCES users(id)"
+      ]
+    },
+    "stock_document_lines": {
+      "name": "stock_document_lines",
+      "fields": [
+        {
+          "name": "document_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "document_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "line_no",
+          "type": "SMALLINT UNSIGNED",
+          "nullable": false,
+          "sql": "line_no SMALLINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "product_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "product_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "quantity",
+          "type": "INT",
+          "nullable": false,
+          "sql": "quantity INT NOT NULL"
+        }
+      ],
+      "pk": [
+        "document_id",
+        "line_no"
+      ],
+      "unique": [],
+      "fks": [
+        {
+          "name": "fk_docline_doc",
+          "columns": [
+            "document_id"
+          ],
+          "target": "stock_documents",
+          "targetColumns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_docline_product",
+          "columns": [
+            "product_id"
+          ],
+          "target": "products",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "PRIMARY KEY (document_id,line_no)",
+        "CONSTRAINT fk_docline_doc FOREIGN KEY (document_id) REFERENCES stock_documents(id)",
+        "CONSTRAINT fk_docline_product FOREIGN KEY (product_id) REFERENCES products(id)",
+        "CONSTRAINT ck_docline_nonzero CHECK (quantity <> 0)"
+      ]
+    },
+    "stock_ledger": {
+      "name": "stock_ledger",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "location_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "location_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "product_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "product_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "delta",
+          "type": "BIGINT",
+          "nullable": false,
+          "sql": "delta BIGINT NOT NULL"
+        },
+        {
+          "name": "source_kind",
+          "type": "ENUM('DOCUMENT','SALE','RETURN')",
+          "nullable": false,
+          "sql": "source_kind ENUM('DOCUMENT','SALE','RETURN') NOT NULL"
+        },
+        {
+          "name": "source_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "source_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "source_line_no",
+          "type": "SMALLINT UNSIGNED",
+          "nullable": false,
+          "sql": "source_line_no SMALLINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME(3)",
+          "nullable": false,
+          "sql": "created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [
+        [
+          "source_kind",
+          "source_id",
+          "source_line_no",
+          "location_id"
+        ]
+      ],
+      "fks": [
+        {
+          "name": "fk_ledger_location",
+          "columns": [
+            "location_id"
+          ],
+          "target": "stock_locations",
+          "targetColumns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_ledger_product",
+          "columns": [
+            "product_id"
+          ],
+          "target": "products",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "UNIQUE KEY uq_stock_source (source_kind,source_id,source_line_no,location_id)",
+        "KEY ix_ledger_location_product (location_id,product_id)",
+        "CONSTRAINT fk_ledger_location FOREIGN KEY (location_id) REFERENCES stock_locations(id)",
+        "CONSTRAINT fk_ledger_product FOREIGN KEY (product_id) REFERENCES products(id)",
+        "CONSTRAINT ck_ledger_nonzero CHECK (delta <> 0)"
+      ]
+    },
+    "stock_holds": {
+      "name": "stock_holds",
+      "fields": [
+        {
+          "name": "sale_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "sale_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "line_no",
+          "type": "SMALLINT UNSIGNED",
+          "nullable": false,
+          "sql": "line_no SMALLINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "location_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "location_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "product_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "product_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "quantity",
+          "type": "INT UNSIGNED",
+          "nullable": false,
+          "sql": "quantity INT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "status",
+          "type": "ENUM('ACTIVE','CONSUMED','RELEASED')",
+          "nullable": false,
+          "sql": "status ENUM('ACTIVE','CONSUMED','RELEASED') NOT NULL DEFAULT 'ACTIVE'"
+        }
+      ],
+      "pk": [
+        "sale_id",
+        "line_no"
+      ],
+      "unique": [],
+      "fks": [
+        {
+          "name": "fk_hold_line",
+          "columns": [
+            "sale_id",
+            "line_no"
+          ],
+          "target": "sale_lines",
+          "targetColumns": [
+            "sale_id",
+            "line_no"
+          ]
+        },
+        {
+          "name": "fk_hold_location",
+          "columns": [
+            "location_id"
+          ],
+          "target": "stock_locations",
+          "targetColumns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_hold_product",
+          "columns": [
+            "product_id"
+          ],
+          "target": "products",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "PRIMARY KEY (sale_id,line_no)",
+        "CONSTRAINT fk_hold_line FOREIGN KEY (sale_id,line_no) REFERENCES sale_lines(sale_id,line_no)",
+        "CONSTRAINT fk_hold_location FOREIGN KEY (location_id) REFERENCES stock_locations(id)",
+        "CONSTRAINT fk_hold_product FOREIGN KEY (product_id) REFERENCES products(id)"
+      ]
+    },
+    "returns": {
+      "name": "returns",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "sale_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "sale_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "state",
+          "type": "ENUM('DRAFT','AUTHORIZED','POSTED','CANCELLED')",
+          "nullable": false,
+          "sql": "state ENUM('DRAFT','AUTHORIZED','POSTED','CANCELLED') NOT NULL DEFAULT 'DRAFT'"
+        },
+        {
+          "name": "reason",
+          "type": "VARCHAR(500)",
+          "nullable": false,
+          "sql": "reason VARCHAR(500) NOT NULL"
+        },
+        {
+          "name": "refund_reference",
+          "type": "VARCHAR(120)",
+          "nullable": true,
+          "sql": "refund_reference VARCHAR(120)"
+        },
+        {
+          "name": "destination_location_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": true,
+          "sql": "destination_location_id BIGINT UNSIGNED"
+        },
+        {
+          "name": "created_by",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "created_by BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "authorized_at",
+          "type": "DATETIME(3)",
+          "nullable": true,
+          "sql": "authorized_at DATETIME(3)"
+        },
+        {
+          "name": "posted_at",
+          "type": "DATETIME(3)",
+          "nullable": true,
+          "sql": "posted_at DATETIME(3)"
+        },
+        {
+          "name": "net_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "net_cents BIGINT UNSIGNED NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "tax_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "tax_cents BIGINT UNSIGNED NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "total_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "total_cents BIGINT UNSIGNED NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME(3)",
+          "nullable": false,
+          "sql": "created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [],
+      "fks": [
+        {
+          "name": "fk_return_sale",
+          "columns": [
+            "sale_id"
+          ],
+          "target": "sales",
+          "targetColumns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_return_user",
+          "columns": [
+            "created_by"
+          ],
+          "target": "users",
+          "targetColumns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_return_location",
+          "columns": [
+            "destination_location_id"
+          ],
+          "target": "stock_locations",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "KEY ix_returns_sale (sale_id)",
+        "CONSTRAINT fk_return_sale FOREIGN KEY (sale_id) REFERENCES sales(id)",
+        "CONSTRAINT fk_return_user FOREIGN KEY (created_by) REFERENCES users(id)",
+        "CONSTRAINT fk_return_location FOREIGN KEY (destination_location_id) REFERENCES stock_locations(id)"
+      ]
+    },
+    "return_lines": {
+      "name": "return_lines",
+      "fields": [
+        {
+          "name": "return_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "return_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "line_no",
+          "type": "SMALLINT UNSIGNED",
+          "nullable": false,
+          "sql": "line_no SMALLINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "sale_line_no",
+          "type": "SMALLINT UNSIGNED",
+          "nullable": false,
+          "sql": "sale_line_no SMALLINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "quantity",
+          "type": "INT UNSIGNED",
+          "nullable": false,
+          "sql": "quantity INT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "disposition",
+          "type": "ENUM('RESTOCK','DAMAGED')",
+          "nullable": false,
+          "sql": "disposition ENUM('RESTOCK','DAMAGED') NOT NULL"
+        },
+        {
+          "name": "net_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "net_cents BIGINT UNSIGNED NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "tax_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "tax_cents BIGINT UNSIGNED NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "commission_cents",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "commission_cents BIGINT UNSIGNED NOT NULL DEFAULT 0"
+        }
+      ],
+      "pk": [
+        "return_id",
+        "line_no"
+      ],
+      "unique": [
+        [
+          "return_id",
+          "sale_line_no"
+        ]
+      ],
+      "fks": [
+        {
+          "name": "fk_returnline_return",
+          "columns": [
+            "return_id"
+          ],
+          "target": "returns",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "PRIMARY KEY (return_id,line_no)",
+        "UNIQUE KEY uq_return_orig_line (return_id,sale_line_no)",
+        "CONSTRAINT fk_returnline_return FOREIGN KEY (return_id) REFERENCES returns(id)",
+        "CONSTRAINT ck_returnline_qty CHECK (quantity > 0)"
+      ]
+    },
+    "commission_entries": {
+      "name": "commission_entries",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "salesperson_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "salesperson_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "amount_cents",
+          "type": "BIGINT",
+          "nullable": false,
+          "sql": "amount_cents BIGINT NOT NULL"
+        },
+        {
+          "name": "source_kind",
+          "type": "ENUM('SALE','RETURN')",
+          "nullable": false,
+          "sql": "source_kind ENUM('SALE','RETURN') NOT NULL"
+        },
+        {
+          "name": "source_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "source_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "source_line_no",
+          "type": "SMALLINT UNSIGNED",
+          "nullable": false,
+          "sql": "source_line_no SMALLINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME(3)",
+          "nullable": false,
+          "sql": "created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [
+        [
+          "source_kind",
+          "source_id",
+          "source_line_no"
+        ]
+      ],
+      "fks": [
+        {
+          "name": "fk_commission_salesperson",
+          "columns": [
+            "salesperson_id"
+          ],
+          "target": "salespeople",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "UNIQUE KEY uq_commission_source (source_kind,source_id,source_line_no)",
+        "KEY ix_commission_salesperson_date (salesperson_id,created_at)",
+        "CONSTRAINT fk_commission_salesperson FOREIGN KEY (salesperson_id) REFERENCES salespeople(id)",
+        "CONSTRAINT ck_commission_nonzero CHECK (amount_cents <> 0)"
+      ]
+    },
+    "commission_settlements": {
+      "name": "commission_settlements",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "salesperson_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "salesperson_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "state",
+          "type": "ENUM('PREPARED','PAID','CANCELLED')",
+          "nullable": false,
+          "sql": "state ENUM('PREPARED','PAID','CANCELLED') NOT NULL DEFAULT 'PREPARED'"
+        },
+        {
+          "name": "cutoff_at",
+          "type": "DATETIME(3)",
+          "nullable": false,
+          "sql": "cutoff_at DATETIME(3) NOT NULL"
+        },
+        {
+          "name": "total_cents",
+          "type": "BIGINT",
+          "nullable": false,
+          "sql": "total_cents BIGINT NOT NULL"
+        },
+        {
+          "name": "payment_reference",
+          "type": "VARCHAR(120)",
+          "nullable": true,
+          "sql": "payment_reference VARCHAR(120)"
+        },
+        {
+          "name": "created_by",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "created_by BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME(3)",
+          "nullable": false,
+          "sql": "created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)"
+        },
+        {
+          "name": "paid_at",
+          "type": "DATETIME(3)",
+          "nullable": true,
+          "sql": "paid_at DATETIME(3)"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [],
+      "fks": [
+        {
+          "name": "fk_settlement_salesperson",
+          "columns": [
+            "salesperson_id"
+          ],
+          "target": "salespeople",
+          "targetColumns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_settlement_user",
+          "columns": [
+            "created_by"
+          ],
+          "target": "users",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "CONSTRAINT fk_settlement_salesperson FOREIGN KEY (salesperson_id) REFERENCES salespeople(id)",
+        "CONSTRAINT fk_settlement_user FOREIGN KEY (created_by) REFERENCES users(id)",
+        "CONSTRAINT ck_settlement_positive CHECK (total_cents > 0)"
+      ]
+    },
+    "commission_settlement_lines": {
+      "name": "commission_settlement_lines",
+      "fields": [
+        {
+          "name": "settlement_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "settlement_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "entry_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "entry_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "amount_cents",
+          "type": "BIGINT",
+          "nullable": false,
+          "sql": "amount_cents BIGINT NOT NULL"
+        }
+      ],
+      "pk": [
+        "settlement_id",
+        "entry_id"
+      ],
+      "unique": [],
+      "fks": [
+        {
+          "name": "fk_settlementline_settlement",
+          "columns": [
+            "settlement_id"
+          ],
+          "target": "commission_settlements",
+          "targetColumns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_settlementline_entry",
+          "columns": [
+            "entry_id"
+          ],
+          "target": "commission_entries",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "PRIMARY KEY (settlement_id,entry_id)",
+        "CONSTRAINT fk_settlementline_settlement FOREIGN KEY (settlement_id) REFERENCES commission_settlements(id)",
+        "CONSTRAINT fk_settlementline_entry FOREIGN KEY (entry_id) REFERENCES commission_entries(id)"
+      ]
+    },
+    "commission_claims": {
+      "name": "commission_claims",
+      "fields": [
+        {
+          "name": "entry_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "entry_id BIGINT UNSIGNED NOT NULL PRIMARY KEY"
+        },
+        {
+          "name": "settlement_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "settlement_id BIGINT UNSIGNED NOT NULL"
+        }
+      ],
+      "pk": [
+        "entry_id"
+      ],
+      "unique": [],
+      "fks": [
+        {
+          "name": "fk_claim_entry",
+          "columns": [
+            "entry_id"
+          ],
+          "target": "commission_entries",
+          "targetColumns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_claim_settlement",
+          "columns": [
+            "settlement_id"
+          ],
+          "target": "commission_settlements",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "CONSTRAINT fk_claim_entry FOREIGN KEY (entry_id) REFERENCES commission_entries(id)",
+        "CONSTRAINT fk_claim_settlement FOREIGN KEY (settlement_id) REFERENCES commission_settlements(id)"
+      ]
+    },
+    "idempotency_keys": {
+      "name": "idempotency_keys",
+      "fields": [
+        {
+          "name": "actor_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "actor_id BIGINT UNSIGNED NOT NULL"
+        },
+        {
+          "name": "operation",
+          "type": "VARCHAR(80)",
+          "nullable": false,
+          "sql": "operation VARCHAR(80) NOT NULL"
+        },
+        {
+          "name": "command_key",
+          "type": "CHAR(36)",
+          "nullable": false,
+          "sql": "command_key CHAR(36) NOT NULL"
+        },
+        {
+          "name": "request_hash",
+          "type": "CHAR(64)",
+          "nullable": false,
+          "sql": "request_hash CHAR(64) NOT NULL"
+        },
+        {
+          "name": "response_json",
+          "type": "LONGTEXT",
+          "nullable": false,
+          "sql": "response_json LONGTEXT NOT NULL"
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME(3)",
+          "nullable": false,
+          "sql": "created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)"
+        }
+      ],
+      "pk": [
+        "actor_id",
+        "operation",
+        "command_key"
+      ],
+      "unique": [],
+      "fks": [
+        {
+          "name": "fk_idempotency_actor",
+          "columns": [
+            "actor_id"
+          ],
+          "target": "users",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "PRIMARY KEY (actor_id,operation,command_key)",
+        "CONSTRAINT fk_idempotency_actor FOREIGN KEY (actor_id) REFERENCES users(id)"
+      ]
+    },
+    "audit_events": {
+      "name": "audit_events",
+      "fields": [
+        {
+          "name": "id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": false,
+          "sql": "id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY"
+        },
+        {
+          "name": "actor_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": true,
+          "sql": "actor_id BIGINT UNSIGNED"
+        },
+        {
+          "name": "action",
+          "type": "VARCHAR(100)",
+          "nullable": false,
+          "sql": "action VARCHAR(100) NOT NULL"
+        },
+        {
+          "name": "subject_type",
+          "type": "VARCHAR(60)",
+          "nullable": false,
+          "sql": "subject_type VARCHAR(60) NOT NULL"
+        },
+        {
+          "name": "subject_id",
+          "type": "BIGINT UNSIGNED",
+          "nullable": true,
+          "sql": "subject_id BIGINT UNSIGNED"
+        },
+        {
+          "name": "detail_json",
+          "type": "LONGTEXT",
+          "nullable": true,
+          "sql": "detail_json LONGTEXT"
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME(3)",
+          "nullable": false,
+          "sql": "created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)"
+        }
+      ],
+      "pk": [
+        "id"
+      ],
+      "unique": [],
+      "fks": [
+        {
+          "name": "fk_audit_actor",
+          "columns": [
+            "actor_id"
+          ],
+          "target": "users",
+          "targetColumns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        "KEY ix_audit_date (created_at)",
+        "CONSTRAINT fk_audit_actor FOREIGN KEY (actor_id) REFERENCES users(id)"
+      ]
+    }
+  }
+}

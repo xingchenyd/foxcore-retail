@@ -1,0 +1,43 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 业务用例图 · 组织对外创造的价值
+left to right direction
+actor "顾客\n业务执行者" as Customer
+actor "销售顾问\n佣金权益人" as Seller
+actor "经营负责人\n经营决策涉众" as Owner
+rectangle "Foxcore Retail 组织边界" {
+ usecase "BU-01 购买现场商品" as Buy
+ usecase "BU-02 办理售后退货" as Return
+ usecase "BU-03 获得可核对的佣金结算" as Commission
+ usecase "BU-04 获取经营业绩与责任信息" as Insight
+}
+Customer -- Buy
+Customer -- Return
+Seller -- Commission
+Owner -- Insight
+note bottom of Buy
+销售员在售卖流程中是业务工人；
+在领取佣金时是服务接受者。
+end note
+@enduml

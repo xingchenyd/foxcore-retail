@@ -1,0 +1,41 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title UC-08 系统序列图 · 取消与核对待成交单
+actor "操作执行者" as actor
+boundary "React 页面\n边界" as ui
+control "业务路由 / sales.ts\n控制职责" as api
+database "MariaDB 实体表\n数据实体" as db
+autonumber
+actor -> ui : 核对资金未收或已撤销；填写取消原因
+ui -> api : POST /sales/{id}/cancel + 资金/商品双确认
+api -> db : 先锁活动再锁销售；校验 DRAFT/CHECKOUT
+api -> db : CHECKOUT 仅管理员；paymentReconciled + goodsRecovered
+api -> db : 释放 reserved；holds=RELEASED；CANCELLED
+api -> db : 保存原因、审计、幂等响应
+api --> ui : 取消成功；POSTED 拒绝此入口，转退货
+note over api,db
+业务写入共有：认证/角色/CSRF、UUID 幂等、事务与审计。
+展示为职责视图；当前控制与 SQL 同处业务路由模块。
+end note
+@enduml

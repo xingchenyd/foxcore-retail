@@ -2,6 +2,8 @@
 
 # 03 系统设计说明（SDD）
 
+> **2026-10-24 课程复核入口**：[课程知识与项目映射](course-review/课程知识与项目映射.md)、[本轮可编辑图册](course-review/diagrams/)与[SQL 派生数据字典](course-review/数据字典.md)依据当前代码和迁移整理。当前为 25 张应用表 + 1 张迁移表，48 个路径 / 58 个 HTTP 方法操作（56 业务 API + 2 健康检查）。旧 `diagrams/` 图片与既有 PDF 保留为历史派生物，状态与关系以新图及代码核对；历史测试记录不自动代表本轮结果。
+
 **Foxcore Retail — 现场零售运营管理系统 · 系统设计文档**
 
 ---
@@ -97,7 +99,7 @@
 | **OWNER / SALESPERSON** | 系统两种角色：业主管理员 / 现场销售员 |
 | **4+1 视图** | Kruchten 提出的架构描述模型：用例、逻辑、进程、物理、开发视图 |
 | **ADR** | Architecture Decision Record，架构决策记录 |
-| **模块化单体** | Modular Monolith：单一可部署进程，内部按领域模块严格分层与隔离 |
+| **模块化单体** | 单一可部署进程，按业务文件组织路由；当前业务校验与 SQL 主要位于同一事务脚本，尚未实现独立领域实体与仓储的严格分层 |
 
 ### 1.4 参考文献
 
@@ -108,7 +110,7 @@
 | REF-03 | IEEE Std 1016-2009, *Standard for Information Technology — Systems Design — Software Design Descriptions* | 本文档结构依据 |
 | REF-04 | P. Kruchten, *The 4+1 View Model of Architecture*, IEEE Software, 1995 | 第 4 章架构视图模型 |
 | REF-05 | [02 软件需求规格](02-SRS.md) | 需求基线（FR/NFR/UC） |
-| REF-06 | [OpenAPI 合同](openapi.json) | API 接口契约（45 个路径） |
+| REF-06 | [OpenAPI 合同](openapi.json)及[补充合同](openapi-fixes.json) | 当前源码 48 个路径、58 个 HTTP 方法操作（56 业务 API + 2 健康检查）；旧合同须结合补充合同和代码核对 |
 | REF-07 | MariaDB 11.8 Reference Manual | 事务、锁与 DDL 隐式提交行为 |
 | REF-08 | [08 Vercel 云端部署](08-deployment-vercel.md) | 云端形态的部署视图补充 |
 
@@ -200,17 +202,17 @@
 | CHECKOUT → POSTED | `POST /api/v1/sales/{id}/post` | 记录线下收款确认，`on_hand` 与 `reserved` 同量下降，写负库存流水、正佣金流水、成交时间与审计 |
 | → CANCELLED | `POST /api/v1/sales/{id}/cancel` | 释放或冲销 hold；已 POSTED 单据不可取消，须走退货 |
 
-**准备收款事务的加锁顺序（严格固定，防止死锁）**
+**准备收款事务的主要加锁顺序（降低冲突风险，不构成无死锁保证）**
 
 ```
 1. idempotency_keys（幂等行，最先）
 2. events（校验活动 OPEN）
-3. shifts → sales（校验班次与单据状态）
+3. sales 联接 shifts / events / salespeople 查询并 FOR UPDATE（校验归属、班次与单据状态）
 4. products（重读当前底价与成本）
 5. stock_balances（展位库位余额，最后）
 ```
 
-事务内**重新读取**当前底价、税率、佣金率、活动/班次状态与可售量——不使用请求体携带的价格作为成交依据。只增加 `reserved`，保留 `on_hand`，因此"待收款"期间的实物仍在展位，符合现场作业语义（ADR-04）。
+事务内**重新读取**当前底价、税率、佣金率、活动/班次状态与可售量；实际成交单价来自草稿中的协商价，准备时由服务端验证其不低于当前底价，而非无条件相信客户端金额。准备只增加 `reserved`，保留 `on_hand`，因此"待收款"期间的实物仍在展位，符合现场作业语义（ADR-04）。
 
 **快照机制**：每条 `sale_lines` 保存 `final_unit_price_cents`、`name_snapshot`、`sku_snapshot`、`cost_snapshot_cents`、`min_snapshot_cents`、`tax_bps_snapshot`、`commission_bps_snapshot`。已过账历史不受后续主数据变更影响（ADR-03）。
 
@@ -260,7 +262,7 @@
 | NFR-SEC-02 | 越权访问被拒 | 角色中间件 + 销售员查询按 `salesperson_id` 限定 | STD TC-010 |
 | NFR-SEC-03 | 成本不泄露给销售员 | 序列化层按角色裁剪字段 | STD TC-010 |
 | NFR-AUD-01 | 关键操作可追溯 | 同事务审计写入 | STD TC-013 |
-| NFR-MAIN-01 | 结构清晰可维护 | 模块化单体，模块间仅经服务层调用 | 类型检查 + 构建 |
+| NFR-MAIN-01 | 结构清晰可维护 | 按业务组织事务脚本，共享金额、规则和事务工具；逐步分离应用服务与数据访问是优化目标 | 类型检查 + 构建 + 业务合同测试；不能单靠编译证明严格分层 |
 
 ### 2.5 设计约束
 
@@ -309,7 +311,7 @@
 | **可审计性** | 写即记录 | `audit_events` 同事务；不可 UPDATE/DELETE 的流水表 |
 | **安全性** | 纵深防御 | Argon2id、摘要令牌、CSRF、角色裁剪、CSP、no-store、参数化 SQL |
 | **可移植性** | 环境无关 | 通用 Dockerfile + 环境变量；云端形态以 `VERCEL` 等变量门控，不改动本地路径 |
-| **可维护性** | 显式边界 | 模块只经服务层交互；共享逻辑集中在 `core.ts` / `amounts.ts` |
+| **可维护性** | 显式边界 | 当前按业务文件组织路由和事务脚本；共享逻辑集中在 `core.ts` / `amounts.ts` / 规则模块，独立仓储边界仍待渐进提取 |
 
 ---
 
@@ -340,7 +342,7 @@
 |---|---|---|---|
 | 表现层 | `apps/web`（React 19 + TypeScript + Vite） | 角色化导航、表单、服务端数据查询、错误与状态显示 | 不保存认证令牌；已保存单据一律从服务器读取 |
 | 接口层 | `apps/server/src/index.ts` | 路由注册、静态资源托管、健康检查、错误统一处理 | — |
-| 领域服务层 | `auth.ts` | Argon2id、会话、角色与 CSRF 校验 | `users`, `sessions`, `audit_events` |
+| 应用事务脚本 / 规则模块 | `auth.ts` | Argon2id、会话、角色与 CSRF 校验 | `users`, `sessions`, `audit_events` |
 | | `catalog.ts` | 场地、活动、展位、商品、员工、班次；报表查询 | 六类主数据 + `event_categories` |
 | | `inventory.ts` | 收货、调拨确认、盘点、余额与占用 | `stock_*` 全族 |
 | | `sales.ts` | 草稿、占用、线下收款确认、过账、取消 | `sales`, `sale_lines`, `stock_holds` |
@@ -348,7 +350,7 @@
 | | `commissions.ts` | 正负计提、结算占用、付款登记 | `commission_*` |
 | 平台层 | `db.ts` / `core.ts` / `amounts.ts` | 单连接事务、整数金额与舍入、幂等键、审计、错误模型 | `idempotency_keys`, `audit_events` |
 
-**依赖规则**：领域服务之间**不互相直接调用数据库以外的私有状态**；跨模块共享逻辑必须下沉到平台层；表现层只能通过 HTTP API 访问领域逻辑。
+**当前依赖与优化方向**：表现层通过 HTTP API 访问业务；服务端路由使用共同 SQL / 事务工具直接读写相关表，业务控制与持久化尚未严格分离。可渐进提取纯规则、应用服务和仓储，并保持既有锁序、事务和幂等合同；这属于改进方向，不能表述为已经完成完整 DDD 分层。
 
 ![图 4-3　Foxcore Retail 实体类图（分析类图：泛化 / 组合 / 连接，架构型四色标注）](diagrams/class-diagram.svg)
 
@@ -439,7 +441,7 @@
 
 ![物理 ERD](diagrams/physical-erd.svg)
 
-**图 5-1 物理 ERD（24 张表）**（源：`diagrams/physical-erd.puml`）
+**图 5-1 历史物理 ERD**（源：`diagrams/physical-erd.puml`）。当前迁移为 **25 张应用表 + `schema_migrations`**；准确键字段与外键见[本轮物理 ERD 总览](course-review/diagrams/erd-00-overview.svg)及分域图。
 
 | 表族 | 表数 | 代表表 |
 |---|---|---|
@@ -499,24 +501,25 @@
 
 | 需求编号 | 需求简述 | 设计（本文档） | 数据库（04） | 测试（05） |
 |---|---|---|---|---|
-| FR-01 / UC-01 | 登录、改密、登出 | 2.3.1 | `users`, `sessions` | TC-001, TC-002 |
-| FR-02 / UC-02 | 场地与活动管理 | 2.3.2 | `venues`, `events`, `event_categories` | TC-003 |
-| FR-03 / UC-03 | 展位管理 | 2.3.2 | `booths` | TC-003 |
-| FR-04 / UC-04 | 商品管理 | 2.3.2 | `products` | TC-003 |
-| FR-05 / UC-05 | 员工与班次 | 2.3.2 | `salespeople`, `shifts`, `users` | TC-004 |
-| FR-06 / UC-06 | 收货与调拨 | 2.3.3 | `stock_locations`, `stock_documents`, `stock_ledger` | TC-005 |
-| FR-07 / UC-07 | 盘点与余额 | 2.3.3 | `stock_balances`, `stock_document_lines` | TC-005 |
-| FR-08 / UC-08 | 销售草稿与准备收款 | 2.3.4 | `sales`, `sale_lines`, `stock_holds` | TC-006, TC-007 |
-| FR-09 / UC-09 | 过账与取消 | 2.3.4 | `sales`, `stock_ledger`, `commission_entries` | TC-006, TC-008 |
-| FR-10 / UC-10 | 退货与退款 | 2.3.5 | `returns`, `return_lines` | TC-009 |
-| FR-11 / UC-11 | 佣金计提与结算 | 2.3.6 | `commission_*` | TC-010 |
-| FR-12 / UC-12 | 报表与导出 | 2.3.7 | 只读查询 | TC-011 |
+| FR-08 / UC-13 | 登录、改密、登出 | 2.3.1 | `users`, `sessions` | TC-001, TC-002 |
+| FR-01 / UC-01 | 场地与活动管理 | 2.3.2 | `venues`, `events`, `event_categories` | TC-003 |
+| FR-01 / UC-01 | 展位管理 | 2.3.2 | `booths` | TC-003 |
+| FR-01 / UC-02 | 商品管理 | 2.3.2 | `products` | TC-003 |
+| FR-01、FR-02 / UC-02、UC-03 | 员工与班次 | 2.3.2 | `salespeople`, `shifts`, `users` | TC-004 |
+| FR-03 / UC-04 | 收货与调拨 | 2.3.3 | `stock_locations`, `stock_documents`, `stock_ledger` | TC-005 |
+| FR-03 / UC-04 | 盘点与余额 | 2.3.3 | `stock_balances`, `stock_document_lines` | TC-005 |
+| FR-04 / UC-05、UC-06 | 销售草稿与准备收款 | 2.3.4 | `sales`, `sale_lines`, `stock_holds` | TC-006, TC-007 |
+| FR-04 / UC-07、UC-08 | 过账与取消 | 2.3.4 | `sales`, `stock_ledger`, `commission_entries` | TC-006, TC-008 |
+| FR-05 / UC-09 | 退货与退款 | 2.3.5 | `returns`, `return_lines` | TC-009 |
+| FR-06 / UC-10 | 佣金计提与结算 | 2.3.6 | `commission_*` | TC-010 |
+| FR-07 / UC-11 | 报表与导出 | 2.3.7 | 只读查询 | TC-011 |
+| FR-08 / UC-12 | 账户启停与审计查询 | 2.3.1、2.3.8 | `users`, `sessions`, `audit_events` | TC-002、TC-013 |
 | NFR-PERF-02 | 并发不超卖 | 2.3.4、4.4 | `FOR UPDATE`, 唯一键 | TC-007 |
 | NFR-REL-01 | 重试不重复过账 | 2.3.8 | `idempotency_keys` | TC-006 |
 | NFR-SEC-01/02/03 | 口令、越权、成本隔离 | 2.3.1、2.3.8 | 角色字段与 CHECK | TC-002, TC-013 |
 | NFR-AUD-01 | 关键操作可追溯 | 2.3.8 | `audit_events` | TC-013 |
 
-完整的 CASE/DERIVED/EXT 追踪见 [`traceability.csv`](traceability.csv)。
+当前 UC 名称以 [`use-cases.json`](use-cases.json) 为准；以上修正与 SRS 功能编号的对应关系，TC 编号仍指历史测试设计，不表示本轮运行结果。完整的 CASE/DERIVED/EXT 追踪见 [`traceability.csv`](traceability.csv)。
 
 ### 7.2 设计 → 构件追踪
 

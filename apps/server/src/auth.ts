@@ -39,7 +39,7 @@ export function writable(req: FastifyRequest, a: Actor): void {
   const expected = process.env.PUBLIC_ORIGIN;
   if (req.headers.origin && expected && req.headers.origin !== expected) throw forbidden();
   if (req.headers['x-csrf-token'] !== a.csrf) throw new ApiError(403, 'CSRF', '安全校验失败，请刷新页面');
-  if (a.mustChangePassword && req.url !== '/api/v1/auth/password') throw new ApiError(403, 'PASSWORD_CHANGE_REQUIRED', '请先修改初始密码');
+  if (a.mustChangePassword && !['/api/v1/auth/password','/api/v1/auth/logout'].includes(req.url)) throw new ApiError(403, 'PASSWORD_CHANGE_REQUIRED', '请先修改初始密码');
 }
 export async function login(req: FastifyRequest, reply: FastifyReply): Promise<unknown> {
   const data = body(req.body, ['username', 'password']);

@@ -4,6 +4,7 @@ import { DateTime } from 'luxon';
 import { pool, exec, first, rows, tx, type Db } from './db.js';
 import { actor, owner, writable, type Actor } from './auth.js';
 import { audit, bad, body, command, conflict, halfUp, id, missing, money, nonempty, positiveInt, requireKey } from './core.js';
+import { listPage } from './pagination.js';
 
 interface Sale extends RowDataPacket { id:string; shift_id:string; event_id:string; state:string; version:number; total_cents:string; net_cents:string; tax_cents:string; posted_at:string|null; sale_no:string|null; salesperson_id:string; booth_id:string; shift_status:string; event_status:string; planned_start:string; planned_end:string; actual_end:string|null; tax_bps:number|null; policy_confirmed:number; commission_bps:number|null }
 interface Line extends RowDataPacket { sale_id:string; line_no:number; product_id:string; quantity:number; final_unit_price_cents:string; line_net_cents:string; line_tax_cents:string; line_commission_cents:string }
@@ -36,13 +37,9 @@ async function readableSale(db:Db,saleId:string,a:Actor):Promise<unknown> {
 
 export function registerSales(app:FastifyInstance):void {
   app.get('/api/v1/sales',async req=>{
-    const a=await actor(req),db=await pool.getConnection();
-    try {
-      const q=req.query as Record<string,unknown>,limit=q.limit===undefined?100:Number(q.limit),offset=q.offset===undefined?0:Number(q.offset);
-      if(!Number.isInteger(limit)||limit<1||limit>100||!Number.isInteger(offset)||offset<0) throw bad('分页参数无效');
-      const filter=a.role==='OWNER'?'':' WHERE sh.salesperson_id=?';
-      return {items:await rows<RowDataPacket>(db,`SELECT sa.id,sa.sale_no,sa.shift_id,sa.event_id,sa.state,sa.created_at,sa.posted_at,sa.net_cents,sa.tax_cents,sa.total_cents,sh.salesperson_id,b.location AS booth_location FROM sales sa JOIN shifts sh ON sh.id=sa.shift_id JOIN booths b ON b.id=sh.booth_id${filter} ORDER BY sa.id DESC LIMIT ? OFFSET ?`,[...(a.role==='OWNER'?[]:[a.salespersonId]),limit,offset]),limit,offset};
-    } finally {db.release();}
+    const a=await actor(req),q=req.query as Record<string,unknown>;
+    const filter=a.role==='OWNER'?'':' WHERE sh.salesperson_id=?';
+    return listPage(`SELECT sa.id,sa.sale_no,sa.shift_id,sa.event_id,sa.state,sa.created_at,sa.posted_at,sa.net_cents,sa.tax_cents,sa.total_cents,sh.salesperson_id,b.location AS booth_location FROM sales sa JOIN shifts sh ON sh.id=sa.shift_id JOIN booths b ON b.id=sh.booth_id${filter} ORDER BY sa.id DESC`,a.role==='OWNER'?[]:[a.salespersonId],q,100);
   });
   app.get('/api/v1/sales/:id',async req=>{const a=await actor(req),db=await pool.getConnection();try{return await readableSale(db,id(params(req).id),a);}finally{db.release();}});
   app.post('/api/v1/sales',async req=>{

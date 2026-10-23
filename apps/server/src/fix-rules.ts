@@ -20,6 +20,16 @@ export function parseRate(value: unknown): number {
   if (typeof value !== 'number' || !Number.isInteger(value) || value < 0 || value > 10_000) return invalid('费率必须为 0–10000 bps 的整数');
   return value;
 }
+/** MariaDB DATE values must be real calendar days, not just date-shaped strings. */
+export function parseCalendarDate(value: unknown): string {
+  if (typeof value !== 'string' || !/^[1-9]\d{3}-\d{2}-\d{2}$/.test(value)) return invalid('活动日期必须为有效的 YYYY-MM-DD 日期');
+  const [year, month, day] = value.split('-').map(Number);
+  const parsed = new Date(Date.UTC(year!, month! - 1, day!));
+  if (parsed.getUTCFullYear() !== year || parsed.getUTCMonth() + 1 !== month || parsed.getUTCDate() !== day) {
+    return invalid('活动日期不存在，请核对月份和日期');
+  }
+  return value;
+}
 export interface Pagination { limit: number; offset: number }
 export function parsePage(q: Record<string, unknown>, defaultLimit = 20): Pagination {
   const integer = (value: unknown, fallback: number, min: number, max: number): number => {

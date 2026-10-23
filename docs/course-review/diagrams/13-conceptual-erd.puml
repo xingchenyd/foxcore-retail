@@ -1,0 +1,53 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 概念 ERD · 九个核心业务实体
+hide circle
+left to right direction
+entity "类别 CATEGORY" as C
+entity "场地 VENUE" as V
+entity "活动 EVENT" as E
+entity "展位 BOOTH" as B
+entity "销售顾问 SALESPERSON" as P
+entity "班次 SHIFT" as S
+entity "销售 SALE" as A
+entity "商品 PRODUCT" as G
+entity "销售明细 PRODUCT_SALE" as L
+C ||--o{ E
+V ||--o{ E
+E ||--o{ B
+B ||--o{ S
+P ||--o{ S
+S ||--o{ A
+E ||--o{ A
+A ||--|{ L
+G ||--o{ L
+note bottom of L
+销售与商品的多对多由销售明细化为两个一对多。
+应用草稿创建必须有行；物理 FK 本身不能强制头至少有一行。
+end note
+note bottom of E
+草稿活动可以没有展位；开放活动必须至少一个有效展位。
+概念九实体不等于完整物理数据库；扩展后为 25 张业务表。
+end note
+@enduml
