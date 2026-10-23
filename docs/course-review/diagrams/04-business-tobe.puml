@@ -1,0 +1,45 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 改进业务序列图 · 系统承担校验与核算
+actor 顾客
+participant 销售员
+participant "Foxcore 系统" as System
+participant 管理员
+管理员 -> System : 活动、税率、班次、库存准备
+顾客 -> 销售员 : 选品与议价
+销售员 -> System : 草稿 / 商品、数量、价格
+销售员 -> System : 准备收款
+System -> System : 校验归属、底价、可售库存\n固化快照并占用库存
+System --> 销售员 : 固定应收额
+顾客 -> 销售员 : 线下付款（系统之外）
+销售员 -> System : 登记收款方式、现金或终端凭证
+System -> System : 同事务销售过账、扣库存\n计提佣金、写审计
+System --> 销售员 : 成交单号
+管理员 -> System : 查询净销售、退货及佣金
+System --> 管理员 : 可追溯报表
+note over 销售员,管理员
+实物与资金仍在线下交接，系统保存已确认的事实。
+本图是实现蓝图；没有业务方签署记录。
+end note
+@enduml

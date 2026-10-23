@@ -1,0 +1,206 @@
+[
+  {
+    "id": "01-business-usecases",
+    "title": "业务用例图 · 组织对外创造的价值",
+    "description": "按价值而非菜单划分组织业务。顾客不直接操作当前系统。",
+    "source": "docs/01-vision-business.md；课程 A2；组织角色为分析建模"
+  },
+  {
+    "id": "02-system-usecases",
+    "title": "系统用例图 · 13 个用例与权限边界",
+    "description": "完整用例与权限映射。用例编号沿用仓库登记表，不重排旧编号。",
+    "source": "docs/use-cases.json；auth.ts；业务路由"
+  },
+  {
+    "id": "03-business-asis",
+    "title": "现状业务序列图 · 文献重建，待实地确认",
+    "description": "现状描述保留业务执行者、工人与实体，并显式记录证据边界。",
+    "source": "docs/01-vision-business.md 2.1；课程 A3"
+  },
+  {
+    "id": "04-business-tobe",
+    "title": "改进业务序列图 · 系统承担校验与核算",
+    "description": "改进点是减少转抄、自动校验与领域规则集中执行；不虚构系统支付能力。",
+    "source": "catalog.ts；inventory.ts；sales.ts；reports.ts"
+  },
+  {
+    "id": "05-domain-classes",
+    "title": "分析类图 · 核心领域概念（不是现有 TypeScript 类）",
+    "description": "把关键名词、属性、操作、基数和组合关系集中表达。Money 是分析值对象，代码当前使用 bigint 函数。",
+    "source": "001_core.sql；sales.ts；amounts.ts；课程 C1"
+  },
+  {
+    "id": "06-domain-accounting",
+    "title": "分析类图 · 库存、退货与佣金协作",
+    "description": "解释占用与事实分离、退货冲回、结算历史和当前认领之间的区别。",
+    "source": "inventory.ts；sales.ts；returns.ts；commissions.ts"
+  },
+  {
+    "id": "07-architecture",
+    "title": "架构与部署图 · 当前模块化单体",
+    "description": "实际架构与渐进设计分开叙述，数据库端口在生产 Compose 内网使用。",
+    "source": "apps/server/src/index.ts；db.ts；compose.yaml"
+  },
+  {
+    "id": "08-sale-state",
+    "title": "状态图 · 销售与库存占用",
+    "description": "状态迁移包含触发、守卫和副作用，避免把 UI 提示当成业务控制。",
+    "source": "sales.ts；stock_holds 表"
+  },
+  {
+    "id": "09-return-settlement-state",
+    "title": "状态图 · 退货与佣金结算",
+    "description": "退款与佣金支付均为线下事实登记；授权或准备不代表钱已付出。",
+    "source": "returns.ts；commissions.ts"
+  },
+  {
+    "id": "10-event-shift-state",
+    "title": "状态图 · 活动、班次与闭场守卫",
+    "description": "区分数据库允许值和应用实际可达状态；闭场检查以服务端代码为准。",
+    "source": "catalog.ts；catalog-updates.ts"
+  },
+  {
+    "id": "11-close-activity",
+    "title": "活动图 · 现场经营闭环与异常分支",
+    "description": "从准备到闭场串起菜单，并显示失败时应回到哪里处理。",
+    "source": "catalog.ts；sales.ts；inventory.ts；commissions.ts"
+  },
+  {
+    "id": "seq-uc-01",
+    "title": "UC-01 系统序列图 · 管理活动与展位",
+    "description": "边界、控制职责和数据实体协作；异常细节见对应规约与源码。",
+    "source": "catalog.ts；docs/use-cases.json"
+  },
+  {
+    "id": "seq-uc-02",
+    "title": "UC-02 系统序列图 · 维护商品、员工和账户",
+    "description": "边界、控制职责和数据实体协作；异常细节见对应规约与源码。",
+    "source": "catalog.ts / index.ts；docs/use-cases.json"
+  },
+  {
+    "id": "seq-uc-03",
+    "title": "UC-03 系统序列图 · 排班、开班和关班",
+    "description": "边界、控制职责和数据实体协作；异常细节见对应规约与源码。",
+    "source": "catalog.ts / catalog-updates.ts；docs/use-cases.json"
+  },
+  {
+    "id": "seq-uc-04",
+    "title": "UC-04 系统序列图 · 收货、调拨和盘点",
+    "description": "边界、控制职责和数据实体协作；异常细节见对应规约与源码。",
+    "source": "inventory.ts；docs/use-cases.json"
+  },
+  {
+    "id": "seq-uc-05",
+    "title": "UC-05 系统序列图 · 录入销售草稿",
+    "description": "边界、控制职责和数据实体协作；异常细节见对应规约与源码。",
+    "source": "sales.ts；docs/use-cases.json"
+  },
+  {
+    "id": "seq-uc-06",
+    "title": "UC-06 系统序列图 · 准备收款",
+    "description": "边界、控制职责和数据实体协作；异常细节见对应规约与源码。",
+    "source": "sales.ts；docs/use-cases.json"
+  },
+  {
+    "id": "seq-uc-07",
+    "title": "UC-07 系统序列图 · 确认成交",
+    "description": "边界、控制职责和数据实体协作；异常细节见对应规约与源码。",
+    "source": "sales.ts；docs/use-cases.json"
+  },
+  {
+    "id": "seq-uc-08",
+    "title": "UC-08 系统序列图 · 取消与核对待成交单",
+    "description": "边界、控制职责和数据实体协作；异常细节见对应规约与源码。",
+    "source": "sales.ts；docs/use-cases.json"
+  },
+  {
+    "id": "seq-uc-09",
+    "title": "UC-09 系统序列图 · 退货与更正",
+    "description": "边界、控制职责和数据实体协作；异常细节见对应规约与源码。",
+    "source": "returns.ts；docs/use-cases.json"
+  },
+  {
+    "id": "seq-uc-10",
+    "title": "UC-10 系统序列图 · 佣金结算",
+    "description": "边界、控制职责和数据实体协作；异常细节见对应规约与源码。",
+    "source": "commissions.ts；docs/use-cases.json"
+  },
+  {
+    "id": "seq-uc-11",
+    "title": "UC-11 系统序列图 · 查询与导出报表",
+    "description": "边界、控制职责和数据实体协作；异常细节见对应规约与源码。",
+    "source": "reports.ts / report-query.ts；docs/use-cases.json"
+  },
+  {
+    "id": "seq-uc-12",
+    "title": "UC-12 系统序列图 · 账户与审计",
+    "description": "边界、控制职责和数据实体协作；异常细节见对应规约与源码。",
+    "source": "index.ts / core.ts；docs/use-cases.json"
+  },
+  {
+    "id": "seq-uc-13",
+    "title": "UC-13 系统序列图 · 身份认证与会话管理",
+    "description": "边界、控制职责和数据实体协作；异常细节见对应规约与源码。",
+    "source": "auth.ts；docs/use-cases.json"
+  },
+  {
+    "id": "12-context",
+    "title": "系统上下文图 · 真实交互与外部边界",
+    "description": "系统范围和外部参与者；线下支付系统不应被误画成已经集成的服务。",
+    "source": "用户手册；auth.ts；sales.ts"
+  },
+  {
+    "id": "13-conceptual-erd",
+    "title": "概念 ERD · 九个核心业务实体",
+    "description": "将案例核心实体与扩展运行模型区分，并解释多对多拆分。",
+    "source": "db/migrations/001_core.sql；仓库案例 B 模型转述"
+  },
+  {
+    "id": "14-navigation",
+    "title": "页面与任务导航图 · 按经营顺序组织",
+    "description": "解释页面之间的业务衔接；新 UI 引导用户按流程前进。",
+    "source": "apps/web/src/main.tsx；服务端权限"
+  },
+  {
+    "id": "erd-00-overview",
+    "title": "物理 ERD 总览 · 25 张业务表（仅键字段）",
+    "description": "依据迁移自动生成，schema_migrations 为迁移工具表另计。总图适合屏幕放大，逐域图显示全部字段。",
+    "source": "db/migrations/001_core.sql"
+  },
+  {
+    "id": "erd-master",
+    "title": "物理 ERD · 主数据与班次",
+    "description": "字段完整呈现；未连到的跨域 FK 见完整总图和数据字典。",
+    "source": "db/migrations/001_core.sql"
+  },
+  {
+    "id": "erd-sales",
+    "title": "物理 ERD · 销售与占用",
+    "description": "字段完整呈现；未连到的跨域 FK 见完整总图和数据字典。",
+    "source": "db/migrations/001_core.sql"
+  },
+  {
+    "id": "erd-inventory",
+    "title": "物理 ERD · 库存与流水",
+    "description": "字段完整呈现；未连到的跨域 FK 见完整总图和数据字典。",
+    "source": "db/migrations/001_core.sql"
+  },
+  {
+    "id": "erd-returns",
+    "title": "物理 ERD · 退货与原单",
+    "description": "字段完整呈现；未连到的跨域 FK 见完整总图和数据字典。",
+    "source": "db/migrations/001_core.sql"
+  },
+  {
+    "id": "erd-commissions",
+    "title": "物理 ERD · 佣金与结算",
+    "description": "字段完整呈现；未连到的跨域 FK 见完整总图和数据字典。",
+    "source": "db/migrations/001_core.sql"
+  },
+  {
+    "id": "erd-security",
+    "title": "物理 ERD · 账号、会话、幂等与审计",
+    "description": "字段完整呈现；未连到的跨域 FK 见完整总图和数据字典。",
+    "source": "db/migrations/001_core.sql"
+  }
+]

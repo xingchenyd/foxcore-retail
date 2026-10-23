@@ -1,0 +1,39 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 状态图 · 销售与库存占用
+state "销售单" as Sale {
+ [*] --> DRAFT
+ DRAFT --> CHECKOUT : prepare [校价/税率/佣金/库存成功]\n/ 固化快照 + ACTIVE hold
+ DRAFT --> CANCELLED : cancel [有原因]
+ CHECKOUT --> POSTED : post [线下收款依据已核对]\n/ 扣 onHand + reserved，hold=CONSUMED
+ CHECKOUT --> CANCELLED : cancel [OWNER + 原因 + paymentReconciled\n且 goodsRecovered=true]\n/ 释放 reserved，hold=RELEASED
+ POSTED --> [*]
+ CANCELLED --> [*]
+}
+note bottom of Sale
+同键同体重试返回原响应；同键异体拒绝。
+POSTED 单据不可编辑，纠正通过关联退货。
+没有自动超时释放 CHECKOUT，需人工核对资金。
+end note
+@enduml

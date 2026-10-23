@@ -1,0 +1,98 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 分析类图 · 库存、退货与佣金协作
+hide circle
+class "销售行" as SaleLine  {
++saleId
++lineNo
++quantity
+}
+class "库存占用" as Hold  {
++quantity
++status
++consume()
++release()
+}
+class "库位余额" as Balance  {
++onHand
++reserved
++available()
+}
+class "库存流水" as Ledger  {
++delta
++sourceKind
++sourceId
+}
+class "库存单" as StockDoc  {
++kind
++reason
+}
+class "退货单" as Return  {
++state
++refundReference
++authorize()
++post()
++cancel()
+}
+class "退货行" as ReturnLine  {
++quantity
++disposition
++refund: Money
+}
+class "佣金流水" as Entry  {
++amount: Money
++sourceKind
++sourceId
+}
+class "结算单" as Settlement  {
++state
++total: Money
++pay()
++cancel()
+}
+class "结算行" as SettlementLine  {
++amount: Money
+}
+class "结算占用" as Claim  {
++entryId
++settlementId
+}
+SaleLine "1" -- "0..1" Hold
+Hold "0..*" -- "1" Balance
+Ledger "0..*" -- "1" Balance : 汇总校验
+StockDoc ..> Ledger : 生成
+Return "1" *-- "1..*" ReturnLine
+SaleLine "1" -- "0..*" ReturnLine : 累计可退量
+ReturnLine ..> Ledger : RESTOCK 才回库
+SaleLine ..> Entry : 正向计提
+ReturnLine ..> Entry : 负向冲回
+Settlement "1" *-- "1..*" SettlementLine
+Entry "1" -- "0..*" SettlementLine : 保留取消历史
+Entry "1" -- "0..1" Claim
+Settlement "1" -- "0..*" Claim
+note bottom of Balance
+可售 = onHand - reserved；余额 = 库存流水累计。
+图中汇总/生成线为领域关系，不是物理 FK。
+end note
+@enduml

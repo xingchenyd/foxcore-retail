@@ -1,19 +1,17 @@
 {
-  "status": "REPAIR_CANDIDATE_RUNTIME_UNVERIFIED",
-  "baseCommit": "f5d79e193605ea71a45ff44fc1b6e4e1a2d67768",
-  "productionChanges": "F01-F08",
-  "verifiedHere": [
-    "pure production-logic tests",
-    "syntax and documentation-checker fixture checks",
-    "patch integrity"
+  "status": "BRANCH_REVIEW_NATIVE_VALIDATED_DOCKER_PENDING",
+  "baseCommit": "3393bc3a4989b642f881cc891dc305cfda37ee5a",
+  "branch": "codex/retail-review-ui-docs-20261024",
+  "date": "2026-10-24",
+  "changes": [
+    "UI and interaction overhaul",
+    "calendar validation, consistent sales pagination, initial-password logout",
+    "34 editable UML/ERD diagrams and course handbook",
+    "compatible dependency security patches"
   ],
-  "notRunHere": [
-    "Node 24 full typecheck/build",
-    "MariaDB HTTP/concurrency/invariants",
-    "browser E2E",
-    "Docker installation/restart/backup/restore",
-    "cloud deployment"
-  ],
-  "evidence": "docs/fixes/verification.md",
-  "pdfDerivatives": "not regenerated"
+  "evidence": "docs/course-review/verification.json",
+  "mainModified": false,
+  "publicDeployment": false,
+  "oldPdfDerivatives": "historical, not regenerated",
+  "newPdfDerivatives": "docs/course-review/deliverables"
 }

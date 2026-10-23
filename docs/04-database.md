@@ -2,6 +2,8 @@
 
 # 04 数据库设计与 ERD
 
+> **2026-10-24 课程复核入口**：当前 `001_core.sql` 创建 25 张应用表，迁移脚本另建 `schema_migrations`，合计 26 张。请优先查看[SQL 派生数据字典](course-review/数据字典.md)、[本轮物理 ERD 总览及分域图](course-review/diagrams/)和[课程映射](course-review/课程知识与项目映射.md)。本文旧 `diagrams/` 图片及对应 PDF 保留为历史材料；旧修订行中的 24 表为历史误计，不作为现行数量。
+
 **Foxcore Retail — 数据库设计说明（概念 / 逻辑 / 物理三层）**
 
 ---
@@ -58,7 +60,7 @@
 
 - 概念层：按业务模块的局部 ERD 与全局概念 ERD（Barker 记号）；
 - 逻辑层：逻辑 ERD、逻辑数据字典、关系模式、归一化推导；
-- 物理层：24 张表的完整定义、索引策略、约束清单、种子数据；
+- 物理层：25 张应用表与迁移版本表的定义、索引策略、约束清单、种子数据；
 - 完整性：16 项不变量与核查脚本；
 - 运维：迁移顺序、校验和、备份恢复。
 
@@ -348,7 +350,7 @@ commission_settlement_lines (settlement_id(FK), entry_id(FK), amount_cents)
 commission_claims        (entry_id(FK) PK, settlement_id(FK))
 idempotency_keys         (actor_id(FK), operation, command_key, request_hash, response_json, created_at)
 audit_events             (id, actor_id(FK), action, subject_type, subject_id, detail_json, created_at)
-schema_migrations        (version, checksum_sha256, applied_at)
+schema_migrations        (version, checksum, applied_at)
 ```
 
 **复合外键链（归属不可篡改）**
@@ -389,7 +391,7 @@ shifts  UQ(id, event_id)  ──>  sales (shift_id, event_id)
 
 ![物理 ERD](diagrams/physical-erd.svg)
 
-**图 4-1 物理 ERD（24 张表 + `schema_migrations`）**（源：`diagrams/physical-erd.puml`）
+**图 4-1 历史物理 ERD**（源：`diagrams/physical-erd.puml`）。现行数据库为 **25 张应用表 + `schema_migrations`**；本轮[总览](course-review/diagrams/erd-00-overview.svg)仅将已建 FK 画为实线，应用维护的逻辑关联另作标注。
 
 **存储引擎**：全部 InnoDB（事务、行锁、外键、CHECK 支持）。
 **字符集**：`utf8mb4`。
@@ -705,7 +707,7 @@ shifts  UQ(id, event_id)  ──>  sales (shift_id, event_id)
 |---|---|:--:|---|---|
 | `id` | BIGINT UNSIGNED | NN | PK | |
 | `actor_id` | BIGINT UNSIGNED | √ | FK→`users` | 空表示系统动作 |
-| `action` | VARCHAR(100) | NN | | 如 `sale.post` |
+| `action` | VARCHAR(100) | NN | | 应用审计动作，如 `SALE_POSTED`；`sale.post` 是幂等操作名，二者不要混淆 |
 | `subject_type` / `subject_id` | VARCHAR(60) / BIGINT | NN/√ | | 对象类型与标识 |
 | `detail_json` | LONGTEXT | √ | | 明细快照 |
 | `created_at` | DATETIME(3) | NN | IX | 按时间检索 |
@@ -715,7 +717,7 @@ shifts  UQ(id, event_id)  ──>  sales (shift_id, event_id)
 | 列 | 类型 | 空 | 键 | 说明 |
 |---|---|:--:|---|---|
 | `version` | VARCHAR | NN | PK | 迁移文件名（按序） |
-| `checksum_sha256` | CHAR(64) | NN | | 文件内容校验和，变动即拒绝启动 |
+| `checksum` | CHAR(64) | NN | | 迁移脚本实际列名；保存 SHA-256 文件内容校验和，变动即拒绝启动 |
 | `applied_at` | DATETIME(3) | NN | | |
 
 ### 4.3 索引策略

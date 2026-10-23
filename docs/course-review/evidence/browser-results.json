@@ -1,0 +1,39 @@
+{
+  "scope": "Native isolated MariaDB review instance; no Docker proof claimed",
+  "unit": {
+    "files": 4,
+    "passed": 50
+  },
+  "browserE2E": {
+    "passed": 4,
+    "projects": [
+      "chromium",
+      "mobile"
+    ],
+    "seconds": 8.6,
+    "finalCodeVerification": "Re-run after explicit Field labels and route scroll reset; 4 of 4 passed."
+  },
+  "nativeOriginalBusinessScenarios": {
+    "passed": 2,
+    "projects": [
+      "desktop-native-business",
+      "mobile-native-business"
+    ],
+    "seconds": 27.6,
+    "config": "work/playwright.native.config.mjs"
+  },
+  "webTypecheck": "PASS",
+  "webBuild": "PASS",
+  "screenshots": [
+    "docs/course-review/ui-preview/dashboard-desktop.png",
+    "docs/course-review/ui-preview/sales-desktop.png",
+    "docs/course-review/ui-preview/dashboard-mobile.png"
+  ],
+  "screenshotPageErrors": 0,
+  "screenshotData": "Synthetic data created through real API; other test fixtures remain in the isolated database",
+  "notes": [
+    "Global search only covers loaded table records; scope visible in UI.",
+    "Server pagination, no whole-database KPI claim.",
+    "Original Docker guard remains unchanged."
+  ]
+}

@@ -1,0 +1,90 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 物理 ERD · 账号、会话、幂等与审计
+hide circle
+left to right direction
+entity "users" as users {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * username : VARCHAR(80) <<UK>>
+  {field} * password_hash : VARCHAR(255)
+  {field} * role : ENUM
+  {field} salesperson_id : BIGINT UNSIGNED <<FK,UK>>
+  {field} * active : BOOLEAN
+  {field} * must_change_password : BOOLEAN
+  {field} * failed_logins : INT UNSIGNED
+  {field} locked_until : DATETIME(3)
+  {field} * created_at : DATETIME(3)
+}
+entity "sessions" as sessions {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * user_id : BIGINT UNSIGNED <<FK>>
+  {field} * token_hash : CHAR(64) <<UK>>
+  {field} * csrf_hash : CHAR(64)
+  {field} * created_at : DATETIME(3)
+  {field} * last_seen_at : DATETIME(3)
+  {field} * expires_at : DATETIME(3)
+  {field} revoked_at : DATETIME(3)
+}
+entity "idempotency_keys" as idempotency_keys {
+  {field} * actor_id : BIGINT UNSIGNED <<PK,FK>>
+  {field} * operation : VARCHAR(80) <<PK>>
+  {field} * command_key : CHAR(36) <<PK>>
+  {field} * request_hash : CHAR(64)
+  {field} * response_json : LONGTEXT
+  {field} * created_at : DATETIME(3)
+}
+entity "audit_events" as audit_events {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} actor_id : BIGINT UNSIGNED <<FK>>
+  {field} * action : VARCHAR(100)
+  {field} * subject_type : VARCHAR(60)
+  {field} subject_id : BIGINT UNSIGNED
+  {field} detail_json : LONGTEXT
+  {field} * created_at : DATETIME(3)
+}
+entity "salespeople" as salespeople {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * first_name : VARCHAR(80)
+  {field} * last_name : VARCHAR(80)
+  {field} street : VARCHAR(120)
+  {field} city : VARCHAR(80)
+  {field} province : VARCHAR(80)
+  {field} postal_code : VARCHAR(16)
+  {field} phone : VARCHAR(32)
+  {field} description : VARCHAR(500)
+  {field} * active : BOOLEAN
+  {field} commission_bps : SMALLINT UNSIGNED
+  {field} * version : INT UNSIGNED
+}
+salespeople |o--o| users : "salesperson_id"
+users ||--o{ sessions : "user_id"
+users ||--o{ idempotency_keys : "actor_id"
+users |o--o{ audit_events : "actor_id"
+legend bottom
+星号 (*) 表示 NOT NULL；PK 主键；FK 外键；UK 单列唯一。
+实线只表示迁移中真实 FK；标注字段为子表列（含复合 FK）。
+父端 1 / 0..1 由子 FK 可空性决定；子端 0..N / 0..1 由唯一性决定。
+跨域外键及复合 UNIQUE/CHECK 全文见数据字典；图中 ENUM 值缩写。
+endlegend
+@enduml

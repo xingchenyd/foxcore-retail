@@ -1,0 +1,43 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title UC-09 系统序列图 · 退货与更正
+actor "操作执行者" as actor
+boundary "React 页面\n边界" as ui
+control "业务路由 / returns.ts\n控制职责" as api
+database "MariaDB 实体表\n数据实体" as db
+autonumber
+actor -> ui : 选原成交单、行、数量、良品/损坏与目标
+ui -> api : POST /returns；随后 authorize
+api -> db : 锁活动、原销售、退货；原单无其他 AUTHORIZED；已退+本次不得超售量
+api -> db : 按原快照分摊退款与佣金尾差；AUTHORIZED
+api --> ui : 返回应退额；管理员线下退款
+ui -> api : POST /returns/{id}/post + refundReference
+api -> db : 复核目标；RESTOCK 回库，DAMAGED 不回可售库
+api -> db : POSTED + 负佣金 + 审计同事务
+api --> ui : 退货凭证；原销售保持不变
+note over api,db
+业务写入共有：认证/角色/CSRF、UUID 幂等、事务与审计。
+展示为职责视图；当前控制与 SQL 同处业务路由模块。
+end note
+@enduml
