@@ -1,0 +1,43 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 系统上下文图 · 真实交互与外部边界
+left to right direction
+actor 顾客 as C
+actor 管理员 as O
+actor 销售员 as S
+rectangle "Foxcore Retail\n现场运营系统" as App
+rectangle "线下现金 / 独立支付终端\n由人核对，不调用支付 API" as Pay
+artifact "CSV / 经营报表" as Report
+C --> S : 选购、退货、交付
+C --> Pay : 付款 / 收到退款
+O --> App : 主数据、库存、售后、佣金与审计
+S --> App : 本人班次与销售记录
+S --> Pay : 核对线下收款事实
+O --> Pay : 线下退款 / 佣金支付
+App --> Report : 已过账事实聚合
+note bottom of App
+没有顾客账号、在线商城或支付网关。
+两类账号，单货币 CAD，业务时区 America/Toronto。
+end note
+@enduml

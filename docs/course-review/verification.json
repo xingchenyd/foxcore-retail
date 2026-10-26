@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-24",
+  "timezone": "Asia/Shanghai",
+  "baseCommit": "3393bc3a4989b642f881cc891dc305cfda37ee5a",
+  "deliveryBranch": "codex/retail-review-ui-docs-20261024",
+  "environment": {"os": "Windows", "node": "24.19.0", "typescript": "5.9.3", "mariadb": "11.8.9", "database": "new isolated native instance, loopback only, synthetic data"},
+  "checks": {
+    "documentationContract": "PASS",
+    "serverAndWebTypecheck": "PASS",
+    "unit": {"passed": 50, "failed": 0},
+    "pureProductionLogic": {"passed": 94, "failed": 0},
+    "productionBuild": "PASS",
+    "realHttpIntegration": {"passed": 1, "failed": 0, "includes": ["20 concurrent last-item reservations: 1 success, 19 conflicts", "20 same-key posts: one committed outcome", "refund, permissions, invalid calendar dates, strict sales pagination, initial-password logout"]},
+    "nativeAdaptedHttpAcceptance": {"passed": 14, "failed": 0, "note": "Original F02-F07 assertions, isolated native adapter; original Docker guards unchanged"},
+    "invariants": {"passed": 19, "violations": 0},
+    "actualDatabaseTables": 26,
+    "businessTables": 25,
+    "appendOnlyUpdateDenied": ["stock_ledger", "commission_entries", "audit_events"],
+    "repeatMigrationAndOwnerInitialization": "PASS",
+    "desktopAndMobileUiRegression": {"passed": 4, "failed": 0},
+    "desktopAndMobileFullBusinessForms": {"passed": 2, "failed": 0, "note": "Original business.spec.ts using explicit native isolation adapter, no Docker proof claimed"},
+    "npmAudit": {"total": 0},
+    "editableDiagramsRendered": 34
+  },
+  "notVerified": ["Docker installation/restart/backup/restore", "upgrade against arbitrary historical business data", "production load and endurance benchmarks", "public deployment", "real-user interviews and business benefit measurements"],
+  "evidenceDirectory": "evidence",
+  "privateMaterialExcluded": ["runtime-state", "passwords", "cookies", "database files", "backups", "raw browser traces", "original course and reference PDFs"]
+}

@@ -44,7 +44,16 @@ function main(){
   validateRoutes(overlay,modules.map(p=>readFileSync(join(root,'apps/server/src',p),'utf8')).join('\n'));
   const acceptance=readFileSync(join(root,'docs/fixes/requirements-tests.csv'),'utf8');
   for(let n=1;n<=8;n++)if(!acceptance.includes(`F0${n},`))throw new Error('Missing finding F0'+n);
-  const release=JSON.parse(readFileSync(join(root,'RELEASE_STATUS.json'),'utf8'));assert.equal(release.status,'REPAIR_CANDIDATE_RUNTIME_UNVERIFIED');
+  const release=JSON.parse(readFileSync(join(root,'RELEASE_STATUS.json'),'utf8'));
+  if(release.status==='BRANCH_REVIEW_NATIVE_VALIDATED_DOCKER_PENDING'){
+    assert.equal(release.evidence,'docs/course-review/verification.json');
+    const evidence=JSON.parse(readFileSync(join(root,release.evidence),'utf8'));
+    assert.equal(evidence.baseCommit,release.baseCommit);
+    assert.equal(evidence.deliveryBranch,release.branch);
+    assert.equal(release.mainModified,false);assert.equal(release.publicDeployment,false);
+    assert.equal(evidence.checks.invariants.violations,0);
+    assert.ok(evidence.notVerified.some(x=>x.startsWith('Docker')),'Native verification must not imply Docker validation');
+  }else assert.equal(release.status,'REPAIR_CANDIDATE_RUNTIME_UNVERIFIED');
   console.log('Documentation checks passed: registry/references, seven SDD mappings, overlay/source routes and repair tracking. Not a proof that every prose statement or runtime contract is correct.');
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url))main();

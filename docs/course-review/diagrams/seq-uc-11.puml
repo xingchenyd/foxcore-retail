@@ -1,0 +1,42 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title UC-11 系统序列图 · 查询与导出报表
+actor "操作执行者" as actor
+boundary "React 页面\n边界" as ui
+control "业务路由 / reports.ts / report-query.ts\n控制职责" as api
+database "MariaDB 实体表\n数据实体" as db
+autonumber
+actor -> ui : 选择活动与汇总维度
+ui -> api : GET /reports/sales?group&eventId&limit&offset
+api -> db : 权限与筛选相交；POSTED 销售减 POSTED 退货
+api -> db : REPEATABLE READ：count 与当前页同视图
+api --> ui : items / total / hasMore；销售员裁剪毛利
+actor -> ui : 管理员选择 CSV 导出
+ui -> api : GET /reports/sales.csv（同筛选范围）
+api --> ui : 完整分组，防公式注入；超 10000 组返回 413
+note over api,db
+业务写入共有：认证/角色/CSRF、UUID 幂等、事务与审计。
+展示为职责视图；当前控制与 SQL 同处业务路由模块。
+end note
+@enduml

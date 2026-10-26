@@ -11,6 +11,14 @@ const assets=fileURLToPath(new URL('../',import.meta.url));
 const root=process.argv.includes('--root')?resolve(process.argv[process.argv.indexOf('--root')+1]):assets;
 const plan=process.argv.includes('--plan'),writes=new Map();
 const read=path=>readFileSync(join(root,path),'utf8');
+// The old overlay is a one-time baseline repair. Never roll a later reviewed
+// version back to its historical NOT_RUN banners or release record.
+if(existsSync(join(root,'RELEASE_STATUS.json'))&&JSON.parse(read('RELEASE_STATUS.json')).status==='BRANCH_REVIEW_NATIVE_VALIDATED_DOCKER_PENDING'){
+  execFileSync(process.execPath,[join(root,'scripts/check-fix-docs.mjs')],{cwd:root,stdio:'inherit'});
+  if(!plan)writeManifest();
+  console.log(plan?'Current review validated; no writes planned.':'Current review preserved; SHA256SUMS regenerated.');
+  process.exit(0);
+}
 const note='本轮修复：实现与验证状态以 [修复说明](fixes/README.md)、[决策](fixes/decisions.md)、[验证记录](fixes/verification.md) 和 `use-cases.json` 为准。下文未更新的历史运行统计不代表本轮通过。PDF/既有图片是旧基线派生物，尚未重新生成；修复后以 Markdown、源码及新合同为准。';
 function banner(text,message){const mark='<!-- foxcore-fixes-current -->';text=text.replace(/<!-- foxcore-fixes-current -->[\s\S]*?<!-- \/foxcore-fixes-current -->\n*/,'');return `${mark}\n> ${message}\n<!-- /foxcore-fixes-current -->\n\n${text}`;}
 function replace(text,old,next,path){if(text.includes(next))return text;const count=text.split(old).length-1;if(count!==1)throw new Error(`${path}: expected one exact baseline block, got ${count}; no files written`);return text.replace(old,next);}
@@ -48,7 +56,10 @@ if(plan){console.log(`Documentation plan OK: ${writes.size} source files; no wri
 for(const [path,text] of writes)writeFileSync(join(root,path),text);
 // Manifest is generated over the actual complete working copy after code + docs are applied.
 // It does not embed file contents; secrets, working logs and the manifest itself are excluded.
+function writeManifest(){
 const paths=execFileSync('git',['ls-files','--cached','--others','--exclude-standard','-z'],{cwd:root,encoding:'utf8'}).split('\0').filter(Boolean);
 const safe=paths.filter(p=>p!=='SHA256SUMS'&&!/(^|\/)(node_modules|\.git|dist|test-results|playwright-report)(\/|$)/.test(p)&&!/(^|\/)\.env$|password|secret|\.pem$|\.key$|\.sql\.gz$|\.dump$/i.test(p)&&!p.startsWith('docs/fixes/evidence/verify-')&&existsSync(join(root,p)));
 writeFileSync(join(root,'SHA256SUMS'),safe.sort().map(p=>createHash('sha256').update(readFileSync(join(root,p))).digest('hex')+'  '+p).join('\n')+'\n');
+}
+writeManifest();
 console.log(`Synchronized ${writes.size} source documents; derived PDFs/images remain historical. SHA256SUMS regenerated.`);

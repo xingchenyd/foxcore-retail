@@ -1,0 +1,52 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 页面与任务导航图 · 按经营顺序组织
+left to right direction
+rectangle "工作台\n待办与流程引导" as Home
+rectangle "活动与展位" as E
+rectangle "商品目录" as P
+rectangle "人员与班次" as S
+rectangle "库存\n收货/交接/差额盘点" as I
+rectangle "销售工作台\n草稿→准备→确认" as Sale
+rectangle "退货与核对\n授权→退款登记" as R
+rectangle "佣金\n流水→准备→已付" as C
+rectangle "报表\n活动/商品/员工" as Report
+rectangle "操作日志" as Audit
+Home --> E
+Home --> Sale
+E --> S
+P --> I
+S --> Sale
+I --> Sale
+Sale --> R : 已成交更正
+Sale --> C : 正向计提
+R --> C : 负向冲回
+Sale --> Report
+R --> Report
+Report --> Audit : 管理员追溯
+note bottom of Home
+导航是任务顺序，不替代服务端权限。
+销售员只能操作本人范围，售后/支付/审计由管理员处理。
+end note
+@enduml

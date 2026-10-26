@@ -1,0 +1,52 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 活动图 · 现场经营闭环与异常分支
+start
+:管理员维护活动、展位、税率和商品;
+:收货、确认实物交接并登记调拨;
+:排班并开班;
+:销售员保存草稿并准备收款;
+if (校价、归属及库存通过?) then (通过)
+ :显示锁定应收金额;
+ if (顾客已线下付款?) then (已确认)
+  :登记付款凭证并过账;
+  :库存流水与佣金同事务保存;
+ else (未支付或已撤销)
+  :管理员填写原因，确认资金与商品已核对;
+  :取消待成交单并释放占用;
+ endif
+else (未通过)
+ :显示原因；修改草稿或补货后重试;
+endif
+:完成待处理单并关班;
+:余货交回主仓；有差异则有据盘点;
+:处理授权退货；核对库存为零;
+if (闭场守卫通过?) then (通过)
+ :关闭活动;
+else (未通过)
+ :按冲突提示补齐待办后重试;
+endif
+:查询报表、核对佣金并登记结算;
+stop
+@enduml

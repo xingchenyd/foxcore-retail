@@ -1,0 +1,192 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 物理 ERD 总览 · 25 张业务表（仅键字段）
+hide circle
+left to right direction
+entity "event_categories" as event_categories {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * code : VARCHAR(40) <<UK>>
+  {field} * type : VARCHAR(80) <<UK>>
+}
+entity "venues" as venues {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+}
+entity "events" as events {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * venue_id : BIGINT UNSIGNED <<FK>>
+  {field} * category_id : BIGINT UNSIGNED <<FK>>
+}
+entity "booths" as booths {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * event_id : BIGINT UNSIGNED <<FK>>
+}
+entity "products" as products {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * sku : VARCHAR(64) <<UK>>
+}
+entity "salespeople" as salespeople {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+}
+entity "shifts" as shifts {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * salesperson_id : BIGINT UNSIGNED <<FK>>
+  {field} * booth_id : BIGINT UNSIGNED <<FK>>
+  {field} * event_id : BIGINT UNSIGNED <<FK>>
+}
+entity "users" as users {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * username : VARCHAR(80) <<UK>>
+  {field} salesperson_id : BIGINT UNSIGNED <<FK,UK>>
+}
+entity "sessions" as sessions {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * user_id : BIGINT UNSIGNED <<FK>>
+  {field} * token_hash : CHAR(64) <<UK>>
+}
+entity "sales" as sales {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} sale_no : VARCHAR(40) <<UK>>
+  {field} * shift_id : BIGINT UNSIGNED <<FK>>
+  {field} * event_id : BIGINT UNSIGNED <<FK>>
+  {field} * created_by : BIGINT UNSIGNED <<FK>>
+  {field} posted_by : BIGINT UNSIGNED <<FK>>
+}
+entity "sale_lines" as sale_lines {
+  {field} * sale_id : BIGINT UNSIGNED <<PK,FK>>
+  {field} * line_no : SMALLINT UNSIGNED <<PK>>
+  {field} * product_id : BIGINT UNSIGNED <<FK>>
+}
+entity "stock_locations" as stock_locations {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * code : VARCHAR(80) <<UK>>
+  {field} booth_id : BIGINT UNSIGNED <<FK,UK>>
+}
+entity "stock_balances" as stock_balances {
+  {field} * location_id : BIGINT UNSIGNED <<PK,FK>>
+  {field} * product_id : BIGINT UNSIGNED <<PK,FK>>
+}
+entity "stock_documents" as stock_documents {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} from_location_id : BIGINT UNSIGNED <<FK>>
+  {field} to_location_id : BIGINT UNSIGNED <<FK>>
+  {field} * created_by : BIGINT UNSIGNED <<FK>>
+}
+entity "stock_document_lines" as stock_document_lines {
+  {field} * document_id : BIGINT UNSIGNED <<PK,FK>>
+  {field} * line_no : SMALLINT UNSIGNED <<PK>>
+  {field} * product_id : BIGINT UNSIGNED <<FK>>
+}
+entity "stock_ledger" as stock_ledger {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * location_id : BIGINT UNSIGNED <<FK>>
+  {field} * product_id : BIGINT UNSIGNED <<FK>>
+}
+entity "stock_holds" as stock_holds {
+  {field} * sale_id : BIGINT UNSIGNED <<PK,FK>>
+  {field} * line_no : SMALLINT UNSIGNED <<PK,FK>>
+  {field} * location_id : BIGINT UNSIGNED <<FK>>
+  {field} * product_id : BIGINT UNSIGNED <<FK>>
+}
+entity "returns" as returns {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * sale_id : BIGINT UNSIGNED <<FK>>
+  {field} destination_location_id : BIGINT UNSIGNED <<FK>>
+  {field} * created_by : BIGINT UNSIGNED <<FK>>
+}
+entity "return_lines" as return_lines {
+  {field} * return_id : BIGINT UNSIGNED <<PK,FK>>
+  {field} * line_no : SMALLINT UNSIGNED <<PK>>
+}
+entity "commission_entries" as commission_entries {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * salesperson_id : BIGINT UNSIGNED <<FK>>
+}
+entity "commission_settlements" as commission_settlements {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} * salesperson_id : BIGINT UNSIGNED <<FK>>
+  {field} * created_by : BIGINT UNSIGNED <<FK>>
+}
+entity "commission_settlement_lines" as commission_settlement_lines {
+  {field} * settlement_id : BIGINT UNSIGNED <<PK,FK>>
+  {field} * entry_id : BIGINT UNSIGNED <<PK,FK>>
+}
+entity "commission_claims" as commission_claims {
+  {field} * entry_id : BIGINT UNSIGNED <<PK,FK>>
+  {field} * settlement_id : BIGINT UNSIGNED <<FK>>
+}
+entity "idempotency_keys" as idempotency_keys {
+  {field} * actor_id : BIGINT UNSIGNED <<PK,FK>>
+  {field} * operation : VARCHAR(80) <<PK>>
+  {field} * command_key : CHAR(36) <<PK>>
+}
+entity "audit_events" as audit_events {
+  {field} * id : BIGINT UNSIGNED <<PK>>
+  {field} actor_id : BIGINT UNSIGNED <<FK>>
+}
+venues ||--o{ events : "venue_id"
+event_categories ||--o{ events : "category_id"
+events ||--o{ booths : "event_id"
+salespeople ||--o{ shifts : "salesperson_id"
+booths ||--o{ shifts : "booth_id,event_id"
+salespeople |o--o| users : "salesperson_id"
+users ||--o{ sessions : "user_id"
+shifts ||--o{ sales : "shift_id,event_id"
+users ||--o{ sales : "created_by"
+users |o--o{ sales : "posted_by"
+sales ||--o{ sale_lines : "sale_id"
+products ||--o{ sale_lines : "product_id"
+booths |o--o| stock_locations : "booth_id"
+stock_locations ||--o{ stock_balances : "location_id"
+products ||--o{ stock_balances : "product_id"
+stock_locations |o--o{ stock_documents : "from_location_id"
+stock_locations |o--o{ stock_documents : "to_location_id"
+users ||--o{ stock_documents : "created_by"
+stock_documents ||--o{ stock_document_lines : "document_id"
+products ||--o{ stock_document_lines : "product_id"
+stock_locations ||--o{ stock_ledger : "location_id"
+products ||--o{ stock_ledger : "product_id"
+sale_lines ||--o| stock_holds : "sale_id,line_no"
+stock_locations ||--o{ stock_holds : "location_id"
+products ||--o{ stock_holds : "product_id"
+sales ||--o{ returns : "sale_id"
+users ||--o{ returns : "created_by"
+stock_locations |o--o{ returns : "destination_location_id"
+returns ||--o{ return_lines : "return_id"
+salespeople ||--o{ commission_entries : "salesperson_id"
+salespeople ||--o{ commission_settlements : "salesperson_id"
+users ||--o{ commission_settlements : "created_by"
+commission_settlements ||--o{ commission_settlement_lines : "settlement_id"
+commission_entries ||--o{ commission_settlement_lines : "entry_id"
+commission_entries ||--o| commission_claims : "entry_id"
+commission_settlements ||--o{ commission_claims : "settlement_id"
+users ||--o{ idempotency_keys : "actor_id"
+users |o--o{ audit_events : "actor_id"
+sale_lines .. return_lines : "应用关联：returns.sale_id + sale_line_no\n无直接物理外键"
+legend bottom
+星号 (*) 表示 NOT NULL；PK 主键；FK 外键；UK 单列唯一。
+实线只表示迁移中真实 FK；标注字段为子表列（含复合 FK）。
+父端 1 / 0..1 由子 FK 可空性决定；子端 0..N / 0..1 由唯一性决定。
+跨域外键及复合 UNIQUE/CHECK 全文见数据字典；图中 ENUM 值缩写。
+endlegend
+@enduml

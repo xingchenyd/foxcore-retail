@@ -1,0 +1,50 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 架构与部署图 · 当前模块化单体
+left to right direction
+node "浏览器" {
+ component "React SPA\n路由 / 表单 / 查询缓存" as Web
+}
+node "Node 24 / Fastify" {
+ component "认证 / Cookie / CSRF" as Auth
+ component "按业务模块组织的路由\ncatalog · inventory · sales\nreturns · commissions · reports" as API
+ component "事务 / 幂等 / audit()\n精确金额 / 分页" as Infra
+ artifact "前端静态产物" as Static
+}
+database "MariaDB 11.8\n25 业务表 + schema_migrations" as DB
+Web --> Auth : 同源 /api/v1
+Auth --> API : actor / owner / writable
+API --> Infra : command + tx
+API --> DB : 参数化 SQL
+Infra --> DB : 连接池 / 行锁 / COMMIT
+Web --> Static : HTML / JS / CSS
+note bottom of API
+当前为事务脚本；不是已实现的完整 DDD 分层。
+可渐进抽出领域服务、仓储；保留事务边界。
+end note
+note bottom of DB
+Compose：db + migrate + app。
+本轮原生 Windows 数据库验证不等于容器部署验收。
+end note
+@enduml

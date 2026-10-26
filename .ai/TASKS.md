@@ -1,3 +1,4 @@
+> **2026-10-24 当前修订**：独立分支 `codex/retail-review-ui-docs-20261024`，依据本次用户要求交付 GitHub，不提交或合并 main，不部署公网。已完成 UI 与交互改善、3 项后端修复、34 张新图及课程报告。真实结果见 `docs/course-review/verification.json`：Node24 全量静态、50 单元、94 纯逻辑、原生 MariaDB HTTP 1+14 场景、19 不变量、浏览器 4+2 场景通过；Docker/备份恢复未验收。以下段落为保留的历史记录。
 <!-- foxcore-fixes-current -->
 > 当前任务以 `docs/fixes/README.md` 为唯一修复状态表。F01–F08 有生产代码/测试实现；本次离线环境仅执行了纯逻辑及静态检查。Node 24 完整构建、MariaDB、浏览器和 Docker 验收尚未在作者环境执行。不得沿用旧 PASS。
 <!-- /foxcore-fixes-current -->

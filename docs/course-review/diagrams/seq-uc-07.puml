@@ -1,0 +1,42 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title UC-07 系统序列图 · 确认成交
+actor "操作执行者" as actor
+boundary "React 页面\n边界" as ui
+control "业务路由 / sales.ts\n控制职责" as api
+database "MariaDB 实体表\n数据实体" as db
+autonumber
+actor -> actor : 核对真实线下现金或终端支付
+actor -> ui : 填写现金实收或终端参考号
+ui -> api : POST /sales/{id}/post + UUID
+api -> db : command 检查同键摘要；锁 CHECKOUT 单
+api -> db : 检查现金足额/凭证；占用仍有效
+api -> db : 扣 onHand/reserved；holds=CONSUMED
+api -> db : 销售/库存/佣金/审计/响应同一事务提交
+api --> ui : 成交单号；网络不明时同键同体重试
+note over api,db
+业务写入共有：认证/角色/CSRF、UUID 幂等、事务与审计。
+展示为职责视图；当前控制与 SQL 同处业务路由模块。
+end note
+@enduml

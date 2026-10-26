@@ -1,3 +1,5 @@
+> **2026-10-24 当前交付**：请先阅读 [系统审查与课程设计](docs/course-review/README.md)、[离线可视化手册](docs/course-review/index.html) 与 [本轮验证记录](docs/course-review/验证记录.md)。本轮已修复业务边界并更新 UI，重新生成 34 张可编辑图；旧 PDF/旧图和下文历史验证不能替代本轮证据。通过独立分支 `codex/retail-review-ui-docs-20261024` 交付，不合并 main，未部署线上。
+
 <!-- foxcore-fixes-current -->
 > 本轮修复：实现与验证状态以 [修复说明](docs/fixes/README.md)、[决策](docs/fixes/decisions.md)、[验证记录](docs/fixes/verification.md) 和 `docs/use-cases.json` 为准。下文未更新的历史运行统计不代表本轮通过。PDF/既有图片是旧基线派生物，尚未重新生成；修复后以 Markdown、源码及新合同为准。
 <!-- /foxcore-fixes-current -->
@@ -27,19 +29,19 @@ Foxcore Retail 在展会、市集等**七类活动**（商贸展、肋排节、�
 
 ## 系统架构
 
-B/S 单体同源架构：客户端仅需浏览器；服务端为 Node.js 单进程 Fastify 应用，通过 `@fastify/static` 在同一端口（3000）同源托管前端静态资源与 `/api/v1` 接口（共 45 个路径），无跨域配置；数据层为 MariaDB 11.8。
+B/S 单体同源架构：客户端仅需浏览器；服务端为 Node.js 单进程 Fastify 应用，通过 `@fastify/static` 在同一端口（3000）同源托管前端静态资源与 `/api/v1` 接口（共 46 个业务路径，另有 2 个健康检查路径），无跨域配置；数据层为 MariaDB 11.8。
 
 ```
 浏览器 (React SPA)
    │  同源 HTTP :3000
    ▼
 Fastify 应用 ── 静态资源 (apps/web 构建产物)
-   │  └─ /api/v1/*  45 个 REST 端点（显式服务端输入校验）
+   │  └─ /api/v1/*  56 个业务方法操作（显式服务端输入校验）
    │  └─ 会话 Cookie + CSRF；错误处理器：4 类约束冲突 → 409
    ▼
 mysql2 连接池 · READ COMMITTED · 关键行 FOR UPDATE
    ▼
-MariaDB 11.8（24 张业务表 + 1 张迁移版本表）
+MariaDB 11.8（25 张业务表 + 1 张迁移版本表）
 ```
 
 生产部署以 Docker Compose 编排三个服务：
@@ -55,19 +57,19 @@ MariaDB 11.8（24 张业务表 + 1 张迁移版本表）
 | 层 | 选型 | 版本 |
 |---|---|---|
 | 前端框架 | React / react-router-dom / @tanstack/react-query | 19.2.0 / 7.18.4 / 5.90.2 |
-| 前端构建 | Vite（Rollup 产物由后端托管） | 7.3.6 |
+| 前端构建 | Vite（Rollup 产物由后端托管） | 7.3.7 |
 | 语言 | TypeScript | 5.9.3 |
-| 后端框架 | Fastify / @fastify/cookie / @fastify/static | 5.12.5 / 11.0.2 / 10.1.5 |
+| 后端框架 | Fastify / @fastify/cookie / @fastify/static | 5.12.7 / 11.0.2 / 10.1.5 |
 | 数据访问 | mysql2 | 3.24.4 |
 | 数据库 | MariaDB | 11.8 |
 | 安全 | argon2（Argon2id） | 0.44.0 |
 | 时区 | luxon（业务时区 America/Toronto） | 3.7.2 |
-| 测试 | Vitest / @playwright/test | 4.1.11 / 1.56.1 |
+| 测试 | Vitest / @playwright/test | 4.1.12 / 1.56.1 |
 | 运行时 | Node.js（见 `package.json` engines：`>=24 <25`） | 24 |
 
 ## 数据库设计
 
-物理设计共 **24 张业务表**（另含 1 张迁移版本表），覆盖主数据（场地/活动/展位/商品/员工）、班次、库存、销售、退货、佣金、账户与审计九个子域。完整字段级字典见 [docs/04-database.md](docs/04-database.md)，24 表 ERD 见 [docs/diagrams/physical-erd.svg](docs/diagrams/physical-erd.svg)。
+物理设计共 **25 张业务表**（另含 1 张迁移版本表），覆盖主数据（场地/活动/展位/商品/员工）、班次、库存、销售、退货、佣金、账户与审计九个子域。完整字段级字典见 [docs/04-database.md](docs/04-database.md)，25 表 ERD 见 [新版 25 表 ERD](docs/course-review/diagrams/erd-00-overview.svg)。
 
 关键设计：
 
@@ -85,7 +87,7 @@ MariaDB 11.8（24 张业务表 + 1 张迁移版本表）
 
 现场高并发场景（多销售员争用同一展位库存）采用四项机制：
 
-1. **固定加锁顺序**：幂等记录 → 活动 → 班次/销售 → 商品/库存 → 佣金/余额，全系统一致，从源头消除死锁诱因；事务隔离级别 `READ COMMITTED`，关键行 `SELECT ... FOR UPDATE`；
+1. **固定加锁顺序**：幂等记录 → 活动 → 班次/销售 → 商品/库存 → 佣金/余额，全系统一致，减少死锁诱因，不能保证没有死锁；事务隔离级别 `READ COMMITTED`，关键行 `SELECT ... FOR UPDATE`；
 2. **冲突重试**：事务捕获 `ER_LOCK_DEADLOCK`、`ER_LOCK_WAIT_TIMEOUT`、`ER_CHECKREAD` 三类错误后回滚，随机退避 20–70 ms 再重试，最多 3 次尝试；其余错误不重试。全局错误处理器仅将 `ER_DUP_ENTRY`、`ER_NO_REFERENCED_ROW_2`、`ER_ROW_IS_REFERENCED_2`、`ER_CHECK_CONSTRAINT_VIOLATED` 四类约束冲突映射为 409；
 3. **幂等写入**：业务 POST 必须携带 UUID 幂等键，键、请求摘要与响应在同一事务提交——同键同体重试返回首次响应（不重复过账），同键异体返回 409；
 4. **金额精确**：金额一律以整数分（bigint）存储运算，税与佣金按 bps 计算并 half-up 取整，杜绝浮点误差。
@@ -149,7 +151,7 @@ foxcore-retail/
 ├── apps/web/            # React + TS 前端（10 个页面模块）
 ├── apps/server/         # Fastify 后端（路由、会话、事务、错误处理）
 ├── db/
-│   ├── migrations/      # 可重建的 MariaDB 架构（24+1 表）
+│   ├── migrations/      # 可重建的 MariaDB 架构（25+1 表）
 │   └── check-invariants.sql  # 16 项数据完整性不变量核查
 ├── tests/               # unit / integration / e2e 三层测试
 ├── scripts/             # 迁移、初始化、种子、Vercel 云端迁移脚本
@@ -167,14 +169,14 @@ foxcore-retail/
 | [01-vision-business](docs/01-vision-business.md) | 愿景、AS-IS/TO-BE 业务建模、目标与业务规则 |
 | [02-SRS](docs/02-SRS.md) | 软件需求规格：功能/非功能需求、用例规约、权限矩阵 |
 | [03-SDD](docs/03-SDD.md) | 软件设计说明书：4+1 架构视图、设计决策 ADR-01~12 |
-| [04-database](docs/04-database.md) | 数据库三层设计（概念/逻辑/物理）与 24 表字段字典 |
+| [04-database](docs/04-database.md) | 数据库三层设计（概念/逻辑/物理）与 25 表字段字典 |
 | [05-STD](docs/05-STD.md) | 系统测试报告：53 项测试、已知限制、复现命令 |
 | [06-user-operations](docs/06-user-operations.md) | 用户手册：6 条核心流程、操作禁忌 |
 | [07-deployment-local](docs/07-deployment-local.md) | 本地 Docker 部署：验收清单、备份恢复、故障处置 |
 | [08-deployment-vercel](docs/08-deployment-vercel.md) | Vercel + TiDB Cloud 云端部署 |
-| [diagrams/](docs/diagrams) · [openapi.json](docs/openapi.json) | PlantUML/SVG 架构图源 · 45 个 API 路径契约 |
+| [diagrams/](docs/diagrams) · [openapi.json](docs/openapi.json) | PlantUML/SVG 架构图源 · 48 个路径（含健康检查）/ 58 个方法契约 |
 
-**实测说明**：真实本地 MariaDB 上业务、并发、数据不变量、生产构建及浏览器测试通过。本机 Docker Desktop 服务无法启动，因此 Compose 静态配置已验证，容器首次启动与备份恢复需要在目标 Docker 环境按 STD 验收。发布包不含案例原件、密码、数据库备份或任何公网部署凭据。
+**历史实测说明（本轮结果见新验证记录）**：真实本地 MariaDB 上业务、并发、数据不变量、生产构建及浏览器测试通过。本机 Docker Desktop 服务无法启动，因此 Compose 静态配置已验证，容器首次启动与备份恢复需要在目标 Docker 环境按 STD 验收。发布包不含案例原件、密码、数据库备份或任何公网部署凭据。
 
 ## 本轮修复验收入口
 

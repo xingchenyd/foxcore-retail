@@ -1,0 +1,41 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 现状业务序列图 · 文献重建，待实地确认
+actor 顾客
+participant "销售顾问\n业务工人" as Seller
+participant "纸质销售单\n业务实体" as Paper
+participant "管理员\n业务工人" as Owner
+participant "汇总表\n业务实体" as Sheet
+顾客 -> Seller : 询价、议价、购买
+Seller -> Paper : 手写商品、数量、成交价
+顾客 -> Seller : 现金或线下终端支付
+Seller -> Paper : 标记收款与销售归属
+Seller -> Owner : 移交纸单与剩余商品
+Owner -> Sheet : 转抄、汇总、核对佣金
+Owner --> Seller : 告知佣金与差异
+note over Seller,Sheet
+来源为仓库对案例 A/B 的转述，未取得现场访谈记录。
+这是 AS-IS 假设模型，不能称实地观察或甲方已签字。
+end note
+@enduml

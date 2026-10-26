@@ -1,0 +1,41 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title UC-06 系统序列图 · 准备收款
+actor "操作执行者" as actor
+boundary "React 页面\n边界" as ui
+control "业务路由 / sales.ts\n控制职责" as api
+database "MariaDB 实体表\n数据实体" as db
+autonumber
+actor -> ui : 准备收款
+ui -> api : POST /sales/{id}/prepare + version
+api -> db : 按顺序锁活动、销售/班次、产品/余额
+api -> db : 检查 DRAFT、底价、税率、佣金与可售库存
+api -> db : 写价格/成本/税/佣金快照，精确分计算
+api -> db : 写 ACTIVE holds、加 reserved、改 CHECKOUT
+api --> ui : 固定应收额；任何失败回滚全部副作用
+note over api,db
+业务写入共有：认证/角色/CSRF、UUID 幂等、事务与审计。
+展示为职责视图；当前控制与 SQL 同处业务路由模块。
+end note
+@enduml

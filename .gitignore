@@ -8,3 +8,7 @@ artifacts/
 *.sql.gz
 work/
 private_sources/
+
+# Private browser traces and transient test output
+test-results/
+playwright-report/

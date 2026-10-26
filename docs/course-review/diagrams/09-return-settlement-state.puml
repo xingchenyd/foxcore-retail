@@ -1,0 +1,46 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+skinparam ArrowColor #526A68
+skinparam classBorderColor #476C68
+skinparam classBackgroundColor #F1F7F5
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #AABCB7
+skinparam packageBackgroundColor #FAFCFB
+skinparam sequenceParticipantBackgroundColor #E9F3EF
+skinparam sequenceParticipantBorderColor #476C68
+skinparam sequenceLifeLineBorderColor #B8C7C2
+skinparam actorBorderColor #476C68
+skinparam usecaseBackgroundColor #EFF6F3
+skinparam usecaseBorderColor #476C68
+skinparam stateBackgroundColor #EFF6F3
+skinparam stateBorderColor #476C68
+skinparam noteBackgroundColor #FFF6E6
+skinparam noteBorderColor #D6AF6E
+title 状态图 · 退货与佣金结算
+state "退货单" as R {
+ [*] --> R_DRAFT
+ state "DRAFT" as R_DRAFT
+ state "AUTHORIZED" as R_AUTH
+ state "POSTED" as R_POST
+ state "CANCELLED" as R_CANCEL
+ R_DRAFT --> R_AUTH : authorize [未超累计可退量]\n/ 固定退款分摊
+ R_DRAFT --> R_CANCEL : cancel [原因]
+ R_AUTH --> R_POST : post [退款凭证 + 目标有效]\n/ 良品回库 + 佣金冲回
+ R_AUTH --> R_CANCEL : cancel [refundReconciled]
+}
+state "佣金结算" as S {
+ [*] --> PREPARED : prepare [净未结金额 > 0]\n/ claim 占用
+ PREPARED --> PAID : pay [线下付款凭证]
+ PREPARED --> S_CANCEL : cancel [paymentReconciled + 原因]\n/ 释放 claim，保留结算行
+ state "CANCELLED" as S_CANCEL
+}
+note bottom of S
+零或负未结余额不生成可支付结算。
+PAID 后退货产生后续负向流水，不改写已付历史。
+end note
+@enduml

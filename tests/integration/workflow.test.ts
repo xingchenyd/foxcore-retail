@@ -22,6 +22,10 @@ describe('real MariaDB HTTP workflow',()=>{
     const tag=randomUUID().slice(0,8),day=DateTime.now().setZone('America/Toronto');
     const venue=await ok('POST','/venues',{name:'Integration '+tag,street:'1 Test St',city:'Toronto',province:'Ontario',postalCode:'M5V 2T6'});
     const category=(await ok('GET','/categories')).items[0].id;
+    for(const invalidDate of ['2026-02-30','1900-02-29','2026-13-01']){
+      const rejected=await request('POST','/events',{venueId:venue.id,categoryId:category,name:'Invalid date '+tag,startDate:invalidDate,endDate:invalidDate,taxBps:1300,policyConfirmed:true});
+      expect(rejected.status).toBe(400);expect(rejected.data.code).toBe('BAD_REQUEST');
+    }
     const event=await ok('POST','/events',{venueId:venue.id,categoryId:category,name:'Integration Event '+tag,startDate:day.toISODate(),endDate:day.toISODate(),taxBps:1300,policyConfirmed:true});
     const booth=await ok('POST','/booths',{eventId:event.id,location:'S11'});
     await ok('POST',`/events/${event.id}/open`);
@@ -53,6 +57,7 @@ describe('real MariaDB HTTP workflow',()=>{
     const staffLogin=await fetch(base+'/api/v1/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:staffUsername,password:staffPassword})});
     expect(staffLogin.status).toBe(200);
     const staffCookie=staffLogin.headers.get('set-cookie')?.split(';')[0]??'';
+    const staffSession=await staffLogin.json() as Json;
     const staffGet=async(path:string)=>fetch(base+'/api/v1'+path,{headers:{Cookie:staffCookie}});
     expect((await staffGet('/salespeople')).status).toBe(403);
     expect((await staffGet('/audit')).status).toBe(403);
@@ -62,6 +67,15 @@ describe('real MariaDB HTTP workflow',()=>{
     expect((await staffGet(`/sales/${winner.id}`)).status).toBe(200);
     const staffReport=await (await staffGet('/reports/sales?group=product')).json() as Json;
     expect(staffReport.items.find((x:Json)=>x.id===product.id)?.estimated_margin_cents).toBeUndefined();
+    const staffSales=await (await staffGet('/sales?limit=1')).json() as Json;
+    expect(staffSales.total).toBe(21);expect(staffSales.hasMore).toBe(true);expect(staffSales.items).toHaveLength(1);
+    const staffLastPage=await (await staffGet('/sales?limit=1&offset=21')).json() as Json;
+    expect(staffLastPage.total).toBe(21);expect(staffLastPage.hasMore).toBe(false);expect(staffLastPage.items).toHaveLength(0);
+    for(const query of ['limit=1e2','offset=','offset=10000001']) expect((await staffGet('/sales?'+query)).status).toBe(400);
+    // Initial-password accounts must be able to revoke their session while business writes remain blocked.
+    expect(staffSession.user.mustChangePassword).toBe(true);
+    const staffLogout=await fetch(base+'/api/v1/auth/logout',{method:'POST',headers:{'Content-Type':'application/json',Cookie:staffCookie,'X-CSRF-Token':staffSession.csrf},body:'{}'});
+    expect(staffLogout.status).toBe(200);expect((await staffGet('/sales')).status).toBe(401);
     const ret=await ok('POST','/returns',{saleId:winner.id,reason:'Integration return',destinationLocationId:warehouse,lines:[{saleLineNo:1,quantity:1,disposition:'RESTOCK'}]});
     const authorized=await ok('POST',`/returns/${ret.id}/authorize`);expect(authorized.totalCents).toBe('1130');
     await ok('POST',`/returns/${ret.id}/post`,{refundReference:'INTEGRATION-'+tag});
