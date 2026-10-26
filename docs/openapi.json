@@ -3,7 +3,7 @@
   "info": {
     "title": "Foxcore Retail API",
     "version": "1.0.0",
-    "description": "同源 JSON API。金额输入为 CAD 十进制字符串，存储/输出为整数分字符串。写命令需要 CSRF；除登录、登出、改密外均需要 UUID 幂等键。请求字段表为静态源码提取，详细业务规则见 SRS/SDD。\nF01–F08 repair overlay applied. Runtime inputs are explicitly validated in handlers; this document is not automatic AJV registration. Full execution is not yet verified."
+    "description": "同源 JSON API。金额输入为 CAD 十进制字符串，存储/输出为整数分字符串。写命令需要 CSRF；除登录、登出、改密外均需要 UUID 幂等键。请求字段表为静态源码提取，详细业务规则见 SRS/SDD。\nF01–F08 repair overlay applied. Runtime inputs are explicitly validated in handlers; this document is not automatic AJV registration. Full execution is not yet verified.\n2026-10-26 staff mini-program extension: 3 compatible routes; bearer session uses existing sessions table. WeChat IDE/device verification pending."
   },
   "servers": [
     {
@@ -17,6 +17,11 @@
         "type": "apiKey",
         "in": "cookie",
         "name": "foxcore_session"
+      },
+      "staffBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "随机43字符会话，服务端只存哈希；不可与Cookie同时发送。写请求继续带X-CSRF-Token。"
       }
     },
     "schemas": {
@@ -4068,6 +4073,183 @@
             "session": []
           }
         ]
+      }
+    },
+    "/api/v1/auth/mini/login": {
+      "post": {
+        "operationId": "miniStaffLogin",
+        "summary": "工作人员小程序登录（随机会话 bearer，无 Cookie）",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "username": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "password": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "与网页登录共用员工口令、锁定与审计。返回 accessToken、csrf、user、expiresIn=43200、idleTimeout=1800；AppSecret 不需要；不使用微信 code2Session。",
+        "security": []
+      }
+    },
+    "/api/v1/sales/{id}/edit": {
+      "post": {
+        "operationId": "miniEditSale",
+        "summary": "原生小程序 POST 编辑销售草稿",
+        "tags": [
+          "sales"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "staffBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "version": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "lines": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "与原 PATCH 入口共用同一个 editSale 事务函数；版本、权限、CSRF、幂等规则一致。"
+      }
+    },
+    "/api/v1/commissions/settlements/{id}": {
+      "get": {
+        "operationId": "getCommissionSettlement",
+        "summary": "结算与来源明细（OWNER 或本人）",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "staffBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "settlement 与 lines；金额为整数分字符串，来源含销售正项与退货负项"
+          },
+          "401": {
+            "description": "无效或过期会话"
+          },
+          "404": {
+            "description": "不存在或不属于本人"
+          }
+        }
       }
     }
   }

@@ -53,6 +53,14 @@ function main(){
     assert.equal(release.mainModified,false);assert.equal(release.publicDeployment,false);
     assert.equal(evidence.checks.invariants.violations,0);
     assert.ok(evidence.notVerified.some(x=>x.startsWith('Docker')),'Native verification must not imply Docker validation');
+  }else if(release.status==='STAFF_MINIPROGRAM_NATIVE_RUNTIME_PENDING'){
+    assert.equal(release.evidence,'docs/miniprogram/verification.json');
+    const evidence=JSON.parse(readFileSync(join(root,release.evidence),'utf8'));
+    assert.equal(evidence.baseCommit,release.baseCommit);assert.equal(evidence.deliveryBranch,release.branch);
+    assert.equal(release.publicDeployment,false);assert.equal(release.miniProgramMergedToMain,false);
+    assert.equal(evidence.wechatIdeCompile,'NOT_RUN');assert.equal(evidence.wechatDeviceTest,'NOT_RUN');
+    assert.equal(release.webMergeCommit,'744c36ac67abb28963f32077c219fbb4047d28c4');
+    assert.equal(release.webBackupCommit,'3393bc3a4989b642f881cc891dc305cfda37ee5a');
   }else assert.equal(release.status,'REPAIR_CANDIDATE_RUNTIME_UNVERIFIED');
   console.log('Documentation checks passed: registry/references, seven SDD mappings, overlay/source routes and repair tracking. Not a proof that every prose statement or runtime contract is correct.');
 }

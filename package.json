@@ -12,8 +12,8 @@
   },
   "scripts": {
     "dev": "concurrently -k \"npm run dev -w @foxcore/server\" \"npm run dev -w @foxcore/web\"",
-    "build": "npm run build -w @foxcore/web && npm run build -w @foxcore/server",
-    "typecheck": "npm run typecheck -w @foxcore/server && npm run typecheck -w @foxcore/web",
+    "build": "npm run build -w @foxcore/web && npm run build -w @foxcore/server && npm run mini:build",
+    "typecheck": "npm run typecheck -w @foxcore/server && npm run typecheck -w @foxcore/web && npm run mini:typecheck",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
     "test:e2e": "playwright test",
@@ -27,7 +27,10 @@
     "docs:sync": "node scripts/sync-fix-docs.mjs",
     "docs:check": "node scripts/check-fix-docs.mjs",
     "verify:static": "npm run docs:check && npm run typecheck && npm run test:unit && npm run test:pure && npm run build",
-    "verify:full": "node scripts/verify-full.mjs"
+    "verify:full": "node scripts/verify-full.mjs",
+    "mini:typecheck": "tsc --noEmit -p apps/miniprogram/tsconfig.json",
+    "mini:build": "node scripts/build-miniprogram.mjs",
+    "mini:preview": "node scripts/mini-preview-server.mjs"
   },
   "dependencies": {
     "@fastify/cookie": "11.0.2",
@@ -42,6 +45,7 @@
     "@types/luxon": "3.7.1",
     "@types/node": "24.9.1",
     "concurrently": "9.2.5",
+    "miniprogram-api-typings": "5.2.3",
     "tsx": "4.20.6",
     "typescript": "5.9.3",
     "vitest": "4.1.12"

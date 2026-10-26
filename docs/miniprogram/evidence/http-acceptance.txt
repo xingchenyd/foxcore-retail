@@ -1,0 +1,23 @@
+Executing 14 existing HTTP scenarios with native MariaDB isolation adapter; Docker workflow is not being exercised.
+✔ F02 expired PLANNED cancellation, version, idempotency, audit and event close (936.491ms)
+✔ F02 cancel/start race cannot create a cancelled started shift (652.406ms)
+✔ F02/F03 staff cannot cancel/configure; active shift cancellation fails (735.3115ms)
+✔ F03 null/false draft configuration recovers; zero tax is valid; open policy immutable (515.2414ms)
+✔ F03 snapshots remain frozen through configuration update, posting and refund (1321.9468ms)
+✔ F03 commission zero creates no zero ledger and invalid writes roll back (831.0214ms)
+✔ F04 same product 3/7 across events and refund attributed to original event (1206.9825ms)
+✔ F04 invalid filters, staff intersection and cost redaction (1319.6335ms)
+✔ F05 cross-event targets rejected at create, authorize and post; legacy cancel still possible (1930.5774ms)
+✔ F05 authorized restock blocks close and repeated post is idempotent (920.7359ms)
+✔ F05 authorize/close race leaves a legal final state; MAIN after close works (1156.779ms)
+✔ F05 post/close race cannot create CLOSED event with positive stock; damaged no restock (1132.945ms)
+✔ F07 actual MariaDB contains 120 booth/product balances, all reachable without duplicates (3691.5383ms)
+✔ F07 101 real report groups and complete CSV; first-100 selectors no longer required (9365.3734ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 25842.6833

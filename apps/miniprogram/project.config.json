@@ -1,0 +1,9 @@
+{
+  "description": "Foxcore Retail 工作人员小程序",
+  "miniprogramRoot": "dist/",
+  "compileType": "miniprogram",
+  "appid": "touristappid",
+  "projectname": "foxcore-staff",
+  "setting": { "es6": true, "minified": true, "urlCheck": true },
+  "libVersion": "3.7.12"
+}

@@ -1,0 +1,12 @@
+{
+  "pages": ["pages/login/index", "pages/home/index", "pages/sales/index", "pages/sale-edit/index", "pages/sale-detail/index", "pages/inventory/index", "pages/inventory-action/index", "pages/returns/index", "pages/return-create/index", "pages/return-detail/index", "pages/commissions/index", "pages/settlement-detail/index", "pages/profile/index"],
+  "window": { "navigationBarBackgroundColor": "#F7F8F2", "navigationBarTextStyle": "black", "navigationBarTitleText": "Foxcore 员工工作台", "backgroundColor": "#F7F8F2", "backgroundTextStyle": "dark", "enablePullDownRefresh": true },
+  "tabBar": { "color": "#7D8982", "selectedColor": "#214E42", "backgroundColor": "#FFFFFF", "borderStyle": "white", "list": [
+    { "pagePath": "pages/home/index", "text": "工作台", "iconPath": "assets/home.png", "selectedIconPath": "assets/home-active.png" },
+    { "pagePath": "pages/sales/index", "text": "销售", "iconPath": "assets/sales.png", "selectedIconPath": "assets/sales-active.png" },
+    { "pagePath": "pages/inventory/index", "text": "库存", "iconPath": "assets/stock.png", "selectedIconPath": "assets/stock-active.png" },
+    { "pagePath": "pages/commissions/index", "text": "佣金", "iconPath": "assets/wallet.png", "selectedIconPath": "assets/wallet-active.png" },
+    { "pagePath": "pages/profile/index", "text": "我的", "iconPath": "assets/profile.png", "selectedIconPath": "assets/profile-active.png" }
+  ]},
+  "style": "v2", "sitemapLocation": "sitemap.json", "lazyCodeLoading": "requiredComponents"
+}

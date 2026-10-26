@@ -57,7 +57,7 @@ export function registerSales(app:FastifyInstance):void {
       await audit(db,a.id,'SALE_DRAFT_CREATED','SALE',saleId); return {id:saleId,state:'DRAFT',version:1};
     }));
   });
-  app.patch('/api/v1/sales/:id',async req=>{
+  const editSale = async (req:FastifyRequest) => {
     const a=await actor(req); writable(req,a); const saleId=id(params(req).id),d=body(req.body,['version','lines']),lines=inputLines(d.lines),k=requireKey(req.headers['idempotency-key']);
     return tx(db=>command(db,a.id,'sale.edit',k,{saleId,...d},async()=>{
       const pre=await getSale(db,saleId); await first<RowDataPacket>(db,'SELECT id FROM events WHERE id=? FOR UPDATE',[pre.event_id]); const s=await getSale(db,saleId,true); access(a,s);
@@ -69,7 +69,10 @@ export function registerSales(app:FastifyInstance):void {
       }
       await exec(db,'UPDATE sales SET version=version+1 WHERE id=?',[saleId]); await audit(db,a.id,'SALE_DRAFT_EDITED','SALE',saleId); return {id:saleId,state:'DRAFT',version:s.version+1};
     }));
-  });
+  };
+  app.patch('/api/v1/sales/:id',editSale);
+  // wx.request supports POST but not PATCH. Both entrypoints share the exact transaction.
+  app.post('/api/v1/sales/:id/edit',editSale);
   app.post('/api/v1/sales/:id/prepare',async req=>{
     const a=await actor(req); writable(req,a); const saleId=id(params(req).id),d=body(req.body,['version']),k=requireKey(req.headers['idempotency-key']);
     return tx(db=>command(db,a.id,'sale.prepare',k,{saleId,...d},async()=>{

@@ -1,4 +1,6 @@
-> **2026-10-24 当前交付**：请先阅读 [系统审查与课程设计](docs/course-review/README.md)、[离线可视化手册](docs/course-review/index.html) 与 [本轮验证记录](docs/course-review/验证记录.md)。本轮已修复业务边界并更新 UI，重新生成 34 张可编辑图；旧 PDF/旧图和下文历史验证不能替代本轮证据。通过独立分支 `codex/retail-review-ui-docs-20261024` 交付，不合并 main，未部署线上。
+> **2026-10-26 工作人员微信小程序**：原生 WXML/WXSS/TypeScript，复用同一业务 API 和 MariaDB。查看 [开发、导入、权限与验证说明](docs/miniprogram/README.md)。本次小程序独立分支交付；上次网页改进已由 PR #1 合并 main，合并前旧版保存在 `backup/main-before-web-review-20261026`。
+
+> **2026-10-24 历史审查交付**：请先阅读 [系统审查与课程设计](docs/course-review/README.md)、[离线可视化手册](docs/course-review/index.html) 与 [本轮验证记录](docs/course-review/验证记录.md)。本轮已修复业务边界并更新 UI，重新生成 34 张可编辑图；旧 PDF/旧图和下文历史验证不能替代本轮证据。通过独立分支 `codex/retail-review-ui-docs-20261024` 交付，不合并 main，未部署线上。
 
 <!-- foxcore-fixes-current -->
 > 本轮修复：实现与验证状态以 [修复说明](docs/fixes/README.md)、[决策](docs/fixes/decisions.md)、[验证记录](docs/fixes/verification.md) 和 `docs/use-cases.json` 为准。下文未更新的历史运行统计不代表本轮通过。PDF/既有图片是旧基线派生物，尚未重新生成；修复后以 Markdown、源码及新合同为准。
@@ -36,7 +38,7 @@ B/S 单体同源架构：客户端仅需浏览器；服务端为 Node.js 单进�
    │  同源 HTTP :3000
    ▼
 Fastify 应用 ── 静态资源 (apps/web 构建产物)
-   │  └─ /api/v1/*  56 个业务方法操作（显式服务端输入校验）
+   │  └─ /api/v1/*  59 个业务方法操作（显式服务端输入校验）
    │  └─ 会话 Cookie + CSRF；错误处理器：4 类约束冲突 → 409
    ▼
 mysql2 连接池 · READ COMMITTED · 关键行 FOR UPDATE
@@ -174,7 +176,7 @@ foxcore-retail/
 | [06-user-operations](docs/06-user-operations.md) | 用户手册：6 条核心流程、操作禁忌 |
 | [07-deployment-local](docs/07-deployment-local.md) | 本地 Docker 部署：验收清单、备份恢复、故障处置 |
 | [08-deployment-vercel](docs/08-deployment-vercel.md) | Vercel + TiDB Cloud 云端部署 |
-| [diagrams/](docs/diagrams) · [openapi.json](docs/openapi.json) | PlantUML/SVG 架构图源 · 48 个路径（含健康检查）/ 58 个方法契约 |
+| [diagrams/](docs/diagrams) · [openapi.json](docs/openapi.json) | PlantUML/SVG 架构图源 · 51 个路径（含健康检查）/ 61 个方法契约 |
 
 **历史实测说明（本轮结果见新验证记录）**：真实本地 MariaDB 上业务、并发、数据不变量、生产构建及浏览器测试通过。本机 Docker Desktop 服务无法启动，因此 Compose 静态配置已验证，容器首次启动与备份恢复需要在目标 Docker 环境按 STD 验收。发布包不含案例原件、密码、数据库备份或任何公网部署凭据。
 

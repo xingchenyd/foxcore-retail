@@ -15,6 +15,7 @@ async function request(method:string,path:string,payload?:unknown,key?:string):P
   return {status:response.status,data};
 }
 async function ok(method:string,path:string,payload?:unknown,key?:string):Promise<Json>{const r=await request(method,path,payload,key);expect(r.status,`${method} ${path}: ${JSON.stringify(r.data)}`).toBeGreaterThanOrEqual(200);expect(r.status).toBeLessThan(300);return r.data;}
+async function all(path:string):Promise<Json[]>{const items:Json[]=[];for(;;){const page=await ok('GET',path+'?limit=100&offset='+items.length);items.push(...page.items);if(!page.hasMore)return items;}}
 
 describe('real MariaDB HTTP workflow',()=>{
   it('protects stock, history, refund and commission under concurrent commands',async()=>{
@@ -35,7 +36,7 @@ describe('real MariaDB HTTP workflow',()=>{
     await ok('POST','/users',{username:staffUsername,password:staffPassword,salespersonId:person.id});
     const shift=await ok('POST','/shifts',{salespersonId:person.id,boothId:booth.id,plannedStart:day.startOf('day').toISO(),plannedEnd:day.endOf('day').toISO()});
     await ok('POST',`/shifts/${shift.id}/start`);
-    const locations=(await ok('GET','/stock/locations')).items;
+    const locations=await all('/stock/locations');
     const warehouse=locations.find((x:Json)=>x.code==='MAIN').id;
     const boothLocation=locations.find((x:Json)=>x.booth_id===booth.id).id;
     await ok('POST','/stock/receive',{productId:product.id,quantity:1,reason:'Integration receipt'});
@@ -79,7 +80,7 @@ describe('real MariaDB HTTP workflow',()=>{
     const ret=await ok('POST','/returns',{saleId:winner.id,reason:'Integration return',destinationLocationId:warehouse,lines:[{saleLineNo:1,quantity:1,disposition:'RESTOCK'}]});
     const authorized=await ok('POST',`/returns/${ret.id}/authorize`);expect(authorized.totalCents).toBe('1130');
     await ok('POST',`/returns/${ret.id}/post`,{refundReference:'INTEGRATION-'+tag});
-    const reports=(await ok('GET','/reports/sales?group=event')).items;const row=reports.find((x:Json)=>x.id===event.id);expect(row.net_cents).toBe('0');
+    const reports=(await ok('GET','/reports/sales?group=event&eventId='+event.id)).items;const row=reports.find((x:Json)=>x.id===event.id);expect(row.net_cents).toBe('0');
     expect((await request('GET','/no-such-route')).status).toBe(404);
   },120_000);
 });

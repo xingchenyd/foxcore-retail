@@ -1,17 +1,13 @@
 {
-  "status": "BRANCH_REVIEW_NATIVE_VALIDATED_DOCKER_PENDING",
-  "baseCommit": "3393bc3a4989b642f881cc891dc305cfda37ee5a",
-  "branch": "codex/retail-review-ui-docs-20261024",
-  "date": "2026-10-24",
-  "changes": [
-    "UI and interaction overhaul",
-    "calendar validation, consistent sales pagination, initial-password logout",
-    "34 editable UML/ERD diagrams and course handbook",
-    "compatible dependency security patches"
-  ],
-  "evidence": "docs/course-review/verification.json",
-  "mainModified": false,
+  "status": "STAFF_MINIPROGRAM_NATIVE_RUNTIME_PENDING",
+  "baseCommit": "744c36ac67abb28963f32077c219fbb4047d28c4",
+  "branch": "codex/staff-miniprogram-20261026",
+  "date": "2026-10-26",
+  "evidence": "docs/miniprogram/verification.json",
+  "webMergeCommit": "744c36ac67abb28963f32077c219fbb4047d28c4",
+  "webBackupBranch": "backup/main-before-web-review-20261026",
+  "webBackupCommit": "3393bc3a4989b642f881cc891dc305cfda37ee5a",
+  "miniProgramMergedToMain": false,
   "publicDeployment": false,
-  "oldPdfDerivatives": "historical, not regenerated",
-  "newPdfDerivatives": "docs/course-review/deliverables"
+  "oldPdfDerivatives": "historical snapshots"
 }

@@ -16,6 +16,15 @@ export function registerCommissions(app:FastifyInstance):void {
   app.get('/api/v1/commissions/settlements',async req=>{
     const a=await actor(req);return listPage('SELECT * FROM commission_settlements'+(a.role==='OWNER'?'':' WHERE salesperson_id=?')+' ORDER BY id DESC',a.role==='OWNER'?[]:[a.salespersonId],req.query as Record<string,unknown>,100);
   });
+  app.get('/api/v1/commissions/settlements/:id',async req=>{
+    const a=await actor(req),settlementId=id(params(req).id),db=await pool.getConnection();
+    try {
+      const settlement=await first<Settlement>(db,'SELECT * FROM commission_settlements WHERE id=?',[settlementId]);
+      if(!settlement||(a.role!=='OWNER'&&settlement.salesperson_id!==a.salespersonId))throw missing();
+      const lines=await rows<RowDataPacket>(db,'SELECT sl.entry_id,sl.amount_cents,ce.source_kind,ce.source_id,ce.source_line_no FROM commission_settlement_lines sl JOIN commission_entries ce ON ce.id=sl.entry_id WHERE sl.settlement_id=? ORDER BY sl.entry_id',[settlementId]);
+      return {settlement,lines};
+    }finally{db.release();}
+  });
   app.post('/api/v1/commissions/prepare',async req=>{
     const a=await ownerWrite(req),d=body(req.body,['salespersonId']),salespersonId=id(d.salespersonId),k=requireKey(req.headers['idempotency-key']);
     return tx(db=>command(db,a.id,'commission.prepare',k,d,async()=>{

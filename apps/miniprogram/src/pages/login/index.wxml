@@ -1,0 +1,20 @@
+<view class="page login-page">
+  <view class="brand-mark">F.</view><view class="eyebrow">FOXCORE / RETAIL OPERATIONS</view>
+  <view class="title">{{changing ? '设置你的新密码' : '每一笔，都有据可循。'}}</view>
+  <view class="subtitle">{{changing ? '首次使用请更换初始密码，完成后重新登录。' : '工作人员专属 · 连接现场经营的每一步'}}</view>
+  <view class="card gap">
+    <block wx:if="{{!changing}}">
+      <label class="label" for="username">员工账号</label><input id="username" value="{{username}}" data-field="username" bindinput="input" placeholder="请输入管理员分配的账号" maxlength="80" disabled="{{busy}}"/>
+      <label class="label" for="password">登录密码</label><input id="password" password value="{{password}}" data-field="password" bindinput="input" placeholder="请输入密码" maxlength="200" disabled="{{busy}}" bindconfirm="submit"/>
+    </block>
+    <block wx:else>
+      <label class="label" for="current">当前密码</label><input id="current" password value="{{currentPassword}}" data-field="currentPassword" bindinput="input" maxlength="200" disabled="{{busy}}"/>
+      <label class="label" for="new">新密码</label><input id="new" password value="{{newPassword}}" data-field="newPassword" bindinput="input" placeholder="至少 16 个字符" maxlength="200" disabled="{{busy}}"/>
+      <label class="label" for="confirm">再次输入新密码</label><input id="confirm" password value="{{confirmPassword}}" data-field="confirmPassword" bindinput="input" maxlength="200" disabled="{{busy}}"/>
+    </block>
+    <view wx:if="{{error}}" class="error">{{error}}</view>
+    <button class="primary gap" bindtap="submit" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed">{{changing ? '更新密码' : '登录工作台'}}</button>
+    <button wx:if="{{changing}}" class="ghost gap" bindtap="exit" disabled="{{busy}}">退出并切换账号</button>
+  </view>
+  <view class="hint">账号权限由管理员分配。销售、库存及佣金与管理网页实时共用。</view><view class="footer">FOXCORE RETAIL · STAFF ONLY</view>
+</view>
