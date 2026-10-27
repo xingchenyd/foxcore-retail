@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-27",
+  "status": "CHANGES_REQUIRED",
+  "sourceCommit": "9e25f1254e24927ae32e2e1aab328381b5f951ec",
+  "mainBaseline": "744c36ac67abb28963f32077c219fbb4047d28c4",
+  "specKitCommit": "ee94598c3c87ae231027b22fb2be2b5a13e8820f",
+  "applicationAndMigrationChanges": false,
+  "oldRegression": {
+    "static": "PASS",
+    "unit": 73,
+    "pure": 94,
+    "integration": 3,
+    "invariants": 19,
+    "violations": 0,
+    "npmAudit": 0
+  },
+  "newReviewProbes": {
+    "passed": 1,
+    "failed": 3,
+    "exitCode": 1,
+    "knownFailuresNotSuppressed": true
+  },
+  "confirmedFunctionalDefects": 3,
+  "otherFindings": 6,
+  "notRun": [
+    "WeChat IDE compile",
+    "iOS/Android devices",
+    "browser-renderer fault injection",
+    "Docker lifecycle",
+    "backup and restore",
+    "public deployment",
+    "production capacity benchmark"
+  ],
+  "specKit": {
+    "mode": "pinned upstream source templates + agent analysis + original Python precheck",
+    "cliInit": "NOT_RUN_INSTALL_FAILED_SSL_EOF",
+    "analysis": "READ_ONLY",
+    "bugFix": "NOT_RUN",
+    "converge": "NOT_CONVERGED"
+  }
+}

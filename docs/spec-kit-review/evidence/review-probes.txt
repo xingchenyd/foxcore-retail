@@ -1,0 +1,68 @@
+
+ RUN  v4.1.12 C:/Users/lenovo/Documents/Codex/2026-10-24/https-github-com-xingchenyd-foxcore-retail/work/foxcore-retail
+
+ ❯ tests/review/spec-kit-review.test.ts (4 tests | 3 failed) 756ms
+     × SK-B01: first stock count at a product/location with no balance row can be recorded 298ms
+     × SK-B02: re-opening an existing draft restores the locally saved edits 31ms
+     × SK-B03: a web receipt retried after reload and a lost response does not create a second document 240ms
+     ✓ control: mini command replay after response loss and module restart records the receipt once 185ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/review/spec-kit-review.test.ts > Spec Kit independent acceptance review — unfixed findings remain red > SK-B01: first stock count at a product/location with no balance row can be recorded
+AssertionError: Fresh product should support a version-safe first count: expected '库存已变化，请重新盘点（编号 req-6i）' to be '' // Object.is equality
+
+- Expected
++ Received
+
++ 库存已变化，请重新盘点（编号 req-6i）
+
+ ❯ tests/review/spec-kit-review.test.ts:50:84
+     48|     p.setData({quantity:'3',reason:'Independent initial physical count…
+     49|     // Actual: 409 库存已变化，请重新盘点. Re-selecting the same empty row repeat…
+     50|     expect(p.data.error,'Fresh product should support a version-safe f…
+       |                                                                                    ^
+     51|     expect(p.data.result).toContain('已登记');
+     52|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/review/spec-kit-review.test.ts > Spec Kit independent acceptance review — unfixed findings remain red > SK-B02: re-opening an existing draft restores the locally saved edits
+AssertionError: The locally saved quantity must survive page recreation: expected '1' to be '3' // Object.is equality
+
+Expected: "3"
+Received: "1"
+
+ ❯ tests/review/spec-kit-review.test.ts:65:103
+     63|     expect(first.data.saved).toBe(true);
+     64|     const reopened=await page('sale-edit');await reopened.load('30');
+     65|     expect(reopened.data.lines[0].quantity,'The locally saved quantity…
+       |                                                                                                       ^
+     66|   });
+     67|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/review/spec-kit-review.test.ts > Spec Kit independent acceptance review — unfixed findings remain red > SK-B03: a web receipt retried after reload and a lost response does not create a second document
+AssertionError: One physical delivery must be recorded exactly once across a page reload: expected '2' to be '1' // Object.is equality
+
+Expected: "1"
+Received: "2"
+
+ ❯ tests/review/spec-kit-review.test.ts:90:112
+     88|     const locations=await api.choices<P>('/stock/locations'),main=loca…
+     89|     const balances=await api.choices<P>('/stock/balances?locationId='+…
+     90|     expect(String(balance.on_hand),'One physical delivery must be reco…
+       |                                                                                                                ^
+     91|   });
+     92|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 1 passed (4)
+   Start at  16:37:51
+   Duration  1.63s (transform 295ms, setup 0ms, import 573ms, tests 756ms, environment 0ms)
+
+JSON report written to C:/Users/lenovo/Documents/Codex/2026-10-24/https-github-com-xingchenyd-foxcore-retail/work/spec-review-probes.json

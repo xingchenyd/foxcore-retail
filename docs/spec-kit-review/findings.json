@@ -1,0 +1,140 @@
+[
+  {
+    "id": "SK-B03",
+    "slug": "web-reload-duplicate-receipt",
+    "kind": "已复现功能缺陷",
+    "severity": "high",
+    "priority": "P1",
+    "title": "网页重载后丢失幂等键，可重复登记同一收货",
+    "files": [
+      "apps/web/src/main.tsx:16",
+      "apps/web/src/main.tsx:31",
+      "apps/server/src/core.ts:65"
+    ],
+    "expected": "一件实物只登记一次，刷新后继续原请求应返回原结果，库存为 1。",
+    "actual": "真实 API 先提交，再在客户端注入响应丢失；重建网页 hook 内存后重试，库存实测为 2。",
+    "cause": "pending 仅为模块内 Map；页面重载后原 UUID 丢失。服务端只知道不同 UUID 是不同命令。已核对 main 744c36a 也使用该内存机制。",
+    "fix": "引入用户隔离的持久命令收件箱，发送前存原 UUID/原体；恢复入口重放原请求，存储失败阻断发送；补多标签页和改体冲突策略。",
+    "test": "SK-B03",
+    "boundary": "原始 useAction 的 TS 转译/VM 重载 + 真实 HTTP/MariaDB；不是实际浏览器网络拦截或微信真机。"
+  },
+  {
+    "id": "SK-B01",
+    "slug": "initial-count-version",
+    "kind": "已复现功能缺陷",
+    "severity": "medium",
+    "priority": "P2",
+    "title": "首次盘点缺行版本不一致，无法登记盘盈",
+    "files": [
+      "apps/miniprogram/src/pages/inventory-action/index.ts:11",
+      "apps/server/src/inventory.ts:26",
+      "apps/server/src/inventory.ts:99",
+      "db/migrations/001_core.sql:186"
+    ],
+    "expected": "新商品在 MAIN 尚无余额行，实物数 3，可合法登记首次盘点并建立余额。",
+    "actual": "实际 Page 读缺行为 version 0；服务端临时建行默认 version 1，比较后返回 409。事务回滚，刷新仍读缺行，反复失败。",
+    "cause": "客户端“尚无行”的 0 与数据库新行默认版本 1 没有统一协议。",
+    "fix": "明确缺行前提并在服务端序列化首次创建与盘点，保留已有行版本/占用检查；不能全局跳过版本核验。",
+    "test": "SK-B01",
+    "boundary": "真实 Page 控制器 + wx.request 适配器 + HTTP/MariaDB；不含微信渲染。"
+  },
+  {
+    "id": "SK-B02",
+    "slug": "existing-draft-local-restore",
+    "kind": "已复现功能缺陷",
+    "severity": "medium",
+    "priority": "P2",
+    "title": "已有销售草稿的本机修改不能恢复",
+    "files": [
+      "apps/miniprogram/src/pages/sale-edit/index.ts:17",
+      "apps/miniprogram/src/pages/sale-edit/index.ts:18",
+      "apps/miniprogram/src/pages/sale-edit/index.ts:25"
+    ],
+    "expected": "原数量 1 改为 3，看到本机保存成功，重开编辑页应恢复 3，或明确展示冲突。",
+    "actual": "真实 Page 将数量 3 写入用户/单据隔离存储并显示 saved=true；重建 Page 后显示服务器数量 1，本机副本未读取使用。",
+    "cause": "load 在 saleId 存在时无条件加载服务器明细，仅新单分支使用 local。",
+    "fix": "恢复已有草稿副本时核对 baseVersion 和状态；服务器已变化时保留副本并提示冲突，不能无条件覆盖。",
+    "test": "SK-B02",
+    "boundary": "真实 Page 控制器和存储适配器；服务器 GET 用固定响应隔离问题，非真机存储证据。"
+  },
+  {
+    "id": "SK-D01",
+    "kind": "静态设计风险",
+    "severity": "medium",
+    "priority": "P2",
+    "title": "工作台最近 20 班次也承担开关班入口",
+    "files": [
+      "apps/miniprogram/src/pages/home/index.ts:12"
+    ],
+    "expected": "员工能到达需要开班或关班的班次。",
+    "actual": "按 id 倒序只取 20 条，没有该页面翻页；较早班次被后建计划挤出时没有完整班次入口。未做目标规模复现。",
+    "fix": "单独查询当前可操作班次，增加分页/日期筛选，不用最近记录统计代替任务清单。"
+  },
+  {
+    "id": "SK-D02",
+    "kind": "已确认文档差异",
+    "severity": "medium",
+    "priority": "P2",
+    "title": "主规格与当前合同、认证和验证入口不同步",
+    "files": [
+      "docs/02-SRS.md:5",
+      "docs/02-SRS.md:100",
+      ".ai/STATE.md:5"
+    ],
+    "expected": "一个有日期版本边界的当前规格与证据入口，覆盖网页与小程序。",
+    "actual": "SRS 写 48 路径/58 操作；本轮基线实际 51/61。主运行环境与认证约束未纳入小程序；状态文件仍嵌多个历史“当前/唯一”入口。",
+    "fix": "建立现行版本索引，更新 SRS/SDD/STD 与追踪表，保留历史快照但避免现行语义冲突。"
+  },
+  {
+    "id": "SK-Q01",
+    "kind": "验收缺口",
+    "severity": "high",
+    "priority": "P1",
+    "title": "微信原生编译与真实设备未验收",
+    "files": [
+      "docs/miniprogram/verification.json:1"
+    ],
+    "expected": "真实 AppID 下编译并验证 iOS/Android、弱网、切后台和存储恢复。",
+    "actual": "没有账号与 AppID；尚未执行。控制器/网页适配器不能证明原生渲染和设备行为。",
+    "fix": "用户具备账号后在正式工具与真机逐项验收；不把未执行写成失败或通过。"
+  },
+  {
+    "id": "SK-Q02",
+    "kind": "验收缺口",
+    "severity": "high",
+    "priority": "P1",
+    "title": "目标部署、备份恢复及线上运营配置未验收",
+    "files": [
+      "docs/07-deployment-local.md:1"
+    ],
+    "expected": "目标容器环境启动、持久化、备份恢复、HTTPS/账号配置均有证据。",
+    "actual": "原生 MariaDB 验证通过；Docker、恢复演练、公网服务与微信发布未执行。",
+    "fix": "在目标环境执行部署门禁与独立空实例恢复，再开展小范围体验。"
+  },
+  {
+    "id": "SK-Q03",
+    "kind": "质量规格不足",
+    "severity": "medium",
+    "priority": "P2",
+    "title": "容量与响应指标尚不可重复验收",
+    "files": [
+      "docs/02-SRS.md:201"
+    ],
+    "expected": "说明数据量、分布、并发、硬件、P95/错误率及可运行负载脚本。",
+    "actual": "“数万级、秒级”等描述没有完整负载协议；本轮未作性能测量。",
+    "fix": "先定义实际业务容量与验收脚本，再评估事件级锁和大目录分页成本，不先声称需要微服务。"
+  },
+  {
+    "id": "SK-D03",
+    "kind": "业务待决项",
+    "severity": "medium",
+    "priority": "P2",
+    "title": "现金日结、损坏品处置与已付佣金后退货的责任规则待定",
+    "files": [
+      "docs/course-review/README.md:52"
+    ],
+    "expected": "真实经营前明确现金差异、损坏实物、员工离职和负佣金追偿规则。",
+    "actual": "当前系统能记录销售/退货/佣金事实，但这些管理制度未形成经过经营方确认的完整规约；不是缺少总账就判定案例实现失败。",
+    "fix": "由实际经营方确认流程与责任，再按新增需求单独设计，不在本轮擅自补法规或财务规则。"
+  }
+]

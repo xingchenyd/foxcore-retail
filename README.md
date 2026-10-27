@@ -1,3 +1,5 @@
+> **2026-10-27 Spec Kit 复核**：查看 [复核与对比报告](docs/spec-kit-review/README.md)、[可视化报告](docs/spec-kit-review/index.html) 和 [重建规格](specs/001-retail-reassessment/spec.md)。原回归通过，但新增边界验收为 **3 FAIL + 1 PASS**，已复现网页重载重复收货、首次盘点版本冲突及已有草稿本机恢复失败。本轮只交付复核、设计与失败用例，未修业务代码，main 与原小程序分支不变；不是发布验收通过。
+
 > **2026-10-26 工作人员微信小程序**：原生 WXML/WXSS/TypeScript，复用同一业务 API 和 MariaDB。查看 [开发、导入、权限与验证说明](docs/miniprogram/README.md)。本次小程序独立分支交付；上次网页改进已由 PR #1 合并 main，合并前旧版保存在 `backup/main-before-web-review-20261026`。
 
 > **2026-10-24 历史审查交付**：请先阅读 [系统审查与课程设计](docs/course-review/README.md)、[离线可视化手册](docs/course-review/index.html) 与 [本轮验证记录](docs/course-review/验证记录.md)。本轮已修复业务边界并更新 UI，重新生成 34 张可编辑图；旧 PDF/旧图和下文历史验证不能替代本轮证据。通过独立分支 `codex/retail-review-ui-docs-20261024` 交付，不合并 main，未部署线上。
