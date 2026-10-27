@@ -1,0 +1,23 @@
+[
+  {
+    "name": "课程总结.txt",
+    "bytes": 3845,
+    "sha256": "9bce77de9f7f987e9ed4c8d124f496a37e012da30e4d976bd014757e188f80ea",
+    "available": true,
+    "distributed": false
+  },
+  {
+    "name": "Quickbooks 1.0 ERD.pdf",
+    "bytes": 243890,
+    "sha256": "b7ef7cf04ed922808cf5a301f6cfa25ecc43be5e4158117eb2bcf474da7044cf",
+    "available": true,
+    "distributed": false
+  },
+  {
+    "name": "Shopify ERD.pdf",
+    "bytes": 246296,
+    "sha256": "8ffc02c8d9966e44be0ff2aac1a9349c88a880f3713a6de255b25a4251578065",
+    "available": true,
+    "distributed": false
+  }
+]
