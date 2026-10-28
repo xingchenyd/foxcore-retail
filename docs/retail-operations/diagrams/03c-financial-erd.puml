@@ -1,0 +1,124 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 15
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #356553
+skinparam LineColor #356553
+skinparam packageStyle rectangle
+skinparam classBackgroundColor #F4F7EF
+skinparam classBorderColor #356553
+skinparam usecaseBackgroundColor #F4F7EF
+skinparam usecaseBorderColor #356553
+skinparam stateBackgroundColor #F4F7EF
+skinparam stateBorderColor #356553
+skinparam noteBackgroundColor #FFF6DC
+skinparam noteBorderColor #C7AB63
+hide empty members
+title 销售退换货与佣金 ERD
+left to right direction
+hide methods
+skinparam linetype ortho
+skinparam nodesep 65
+skinparam ranksep 95
+entity "cash_handovers" as cash_handovers {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * shift_id : bigint(20) unsigned <<UK,FK>>
+ {field} * difference_cents : bigint(20)
+ {field} * state : enum('SUBMITTED','VERIFIED','RETURNED')
+ {field} * submitted_by : bigint(20) unsigned <<FK>>
+ {field} reviewed_by : bigint(20) unsigned <<FK>>
+ {field} * version : int(10) unsigned
+}
+entity "commission_claims" as commission_claims {
+ {field} * entry_id : bigint(20) unsigned <<PK,FK>>
+ {field} * settlement_id : bigint(20) unsigned <<FK>>
+}
+entity "commission_entries" as commission_entries {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * salesperson_id : bigint(20) unsigned <<FK>>
+ {field} * source_kind : enum('SALE','RETURN')
+ {field} * currency : char(3)
+}
+entity "commission_settlements" as commission_settlements {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * salesperson_id : bigint(20) unsigned <<FK>>
+ {field} * state : enum('PREPARED','PAID','CANCELLED')
+ {field} * total_cents : bigint(20)
+ {field} * created_by : bigint(20) unsigned <<FK>>
+ {field} * currency : char(3)
+}
+entity "commission_settlement_lines" as commission_settlement_lines {
+ {field} * settlement_id : bigint(20) unsigned <<PK,FK>>
+ {field} * entry_id : bigint(20) unsigned <<PK,FK>>
+}
+entity "exchanges" as exchanges {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * original_sale_id : bigint(20) unsigned <<FK>>
+ {field} return_id : bigint(20) unsigned <<UK,FK>>
+ {field} new_sale_id : bigint(20) unsigned <<UK,FK>>
+ {field} * state : enum('PREPARED','POSTED','CANCELLED')
+ {field} * currency : char(3)
+ {field} * difference_cents : bigint(20)
+ {field} * created_by : bigint(20) unsigned <<FK>>
+}
+entity "returns" as returns {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * sale_id : bigint(20) unsigned <<FK>>
+ {field} * state : enum('DRAFT','AUTHORIZED','POSTED','CANCELLED')
+ {field} destination_location_id : bigint(20) unsigned <<FK>>
+ {field} * created_by : bigint(20) unsigned <<FK>>
+ {field} * total_cents : bigint(20) unsigned
+ {field} cash_shift_id : bigint(20) unsigned <<FK>>
+ {field} exchange_id : bigint(20) unsigned <<FK>>
+ {field} refund_method : enum('CASH','TERMINAL','EXCHANGE')
+}
+entity "return_lines" as return_lines {
+ {field} * return_id : bigint(20) unsigned <<PK,FK>>
+ {field} * line_no : smallint(5) unsigned <<PK>>
+ {field} * quantity : int(10) unsigned
+}
+entity "sales" as sales {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} sale_no : varchar(40) <<UK>>
+ {field} * shift_id : bigint(20) unsigned <<FK>>
+ {field} * event_id : bigint(20) unsigned <<FK>>
+ {field} * state : enum('DRAFT','CHECKOUT','POSTED','CANCELLED')
+ {field} * created_by : bigint(20) unsigned <<FK>>
+ {field} posted_by : bigint(20) unsigned <<FK>>
+ {field} * total_cents : bigint(20) unsigned
+ {field} * version : int(10) unsigned
+ {field} * currency : char(3)
+ {field} * price_basis : enum('EXCLUSIVE','INCLUSIVE')
+ {field} return_days : smallint(5) unsigned
+ {field} exchange_id : bigint(20) unsigned <<FK>>
+}
+entity "sale_lines" as sale_lines {
+ {field} * sale_id : bigint(20) unsigned <<PK,FK>>
+ {field} * line_no : smallint(5) unsigned <<PK>>
+ {field} * product_id : bigint(20) unsigned <<FK>>
+ {field} * quantity : int(10) unsigned
+}
+entity "shifts" as shifts {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * salesperson_id : bigint(20) unsigned <<FK>>
+ {field} * booth_id : bigint(20) unsigned <<FK>>
+ {field} * status : enum('PLANNED','ACTIVE','CLOSED','CANCELLED')
+ {field} * version : int(10) unsigned
+}
+shifts ||--o| cash_handovers
+commission_entries ||--o| commission_claims
+commission_settlements ||--o{ commission_claims
+commission_entries ||--o{ commission_settlement_lines
+commission_settlements ||--o{ commission_settlement_lines
+sales |o--o{ exchanges
+returns |o--o| exchanges
+shifts |o--o{ returns
+exchanges |o--o{ returns
+sales ||--o{ returns
+returns ||--o{ return_lines
+exchanges |o--o{ sales
+shifts ||--o{ sales
+sales ||--o{ sale_lines
+@enduml

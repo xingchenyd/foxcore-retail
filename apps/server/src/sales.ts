@@ -5,6 +5,8 @@ import { pool, exec, first, rows, tx, type Db } from './db.js';
 import { actor, owner, writable, type Actor } from './auth.js';
 import { audit, bad, body, command, conflict, halfUp, id, missing, money, nonempty, positiveInt, requireKey } from './core.js';
 import { listPage } from './pagination.js';
+import {priceAmounts,cashOpen} from './business.js';
+import {consumeWorkspace} from './workspaces.js';
 
 interface Sale extends RowDataPacket { id:string; shift_id:string; event_id:string; state:string; version:number; total_cents:string; net_cents:string; tax_cents:string; posted_at:string|null; sale_no:string|null; salesperson_id:string; booth_id:string; shift_status:string; event_status:string; planned_start:string; planned_end:string; actual_end:string|null; tax_bps:number|null; policy_confirmed:number; commission_bps:number|null }
 interface Line extends RowDataPacket { sale_id:string; line_no:number; product_id:string; quantity:number; final_unit_price_cents:string; line_net_cents:string; line_tax_cents:string; line_commission_cents:string }
@@ -19,7 +21,7 @@ function verifyNew(s:Sale):void {
   const now=nowSql();
   if(s.shift_status!=='ACTIVE'||s.event_status!=='OPEN'||now<s.planned_start||now>=s.planned_end) throw conflict('活动或班次当前不可新建销售');
 }
-function inputLines(value:unknown):{productId:string;quantity:number;unitCents:bigint}[] {
+export function inputLines(value:unknown):{productId:string;quantity:number;unitCents:bigint}[] {
   if(!Array.isArray(value)||value.length<1||value.length>100) throw bad('销售须包含 1–100 行商品');
   const seen=new Set<string>(); return value.map(raw=>{
     const d=body(raw,['productId','quantity','finalUnitPrice']);
@@ -29,44 +31,49 @@ function inputLines(value:unknown):{productId:string;quantity:number;unitCents:b
   });
 }
 async function readableSale(db:Db,saleId:string,a:Actor):Promise<unknown> {
-  const sale=await getSale(db,saleId); access(a,sale);
+  const sale=await getSale(db,saleId);
   const fields=a.role==='OWNER'?'l.*':'l.sale_id,l.line_no,l.product_id,l.quantity,l.final_unit_price_cents,l.line_net_cents,l.line_tax_cents,l.line_commission_cents,l.name_snapshot,l.sku_snapshot';
-  const lines=await rows<RowDataPacket>(db,`SELECT ${fields},p.name AS current_name FROM sale_lines l JOIN products p ON p.id=l.product_id WHERE l.sale_id=? ORDER BY l.line_no`,[saleId]);
+  const lines=await rows<RowDataPacket>(db,`SELECT ${fields},p.name AS current_name,(SELECT COALESCE(SUM(rl.quantity),0) FROM return_lines rl JOIN returns r ON r.id=rl.return_id WHERE r.sale_id=l.sale_id AND rl.sale_line_no=l.line_no AND r.state IN ('AUTHORIZED','POSTED')) AS returned_quantity FROM sale_lines l JOIN products p ON p.id=l.product_id WHERE l.sale_id=? ORDER BY l.line_no`,[saleId]);
+  if(a.role!=='OWNER'&&sale.salesperson_id!==a.salespersonId){delete (sale as RowDataPacket).commission_bps;for(const line of lines)delete line.line_commission_cents;}
   return {sale,lines};
 }
 
 export function registerSales(app:FastifyInstance):void {
   app.get('/api/v1/sales',async req=>{
     const a=await actor(req),q=req.query as Record<string,unknown>;
-    const filter=a.role==='OWNER'?'':' WHERE sh.salesperson_id=?';
-    return listPage(`SELECT sa.id,sa.sale_no,sa.shift_id,sa.event_id,sa.state,sa.created_at,sa.posted_at,sa.net_cents,sa.tax_cents,sa.total_cents,sh.salesperson_id,b.location AS booth_location FROM sales sa JOIN shifts sh ON sh.id=sa.shift_id JOIN booths b ON b.id=sh.booth_id${filter} ORDER BY sa.id DESC`,a.role==='OWNER'?[]:[a.salespersonId],q,100);
+    const filter=q.state===undefined?'':' WHERE sa.state=?';
+    if(q.state!==undefined&&!['DRAFT','CHECKOUT','POSTED','CANCELLED'].includes(String(q.state)))throw bad('销售状态无效');
+    return listPage(`SELECT sa.id,sa.sale_no,sa.shift_id,sa.event_id,sa.state,sa.currency,sa.price_basis,sa.created_at,sa.posted_at,sa.net_cents,sa.tax_cents,sa.total_cents,sh.salesperson_id,b.location AS booth_location FROM sales sa JOIN shifts sh ON sh.id=sa.shift_id JOIN booths b ON b.id=sh.booth_id${filter} ORDER BY sa.id DESC`,q.state===undefined?[]:[q.state],q,100);
   });
   app.get('/api/v1/sales/:id',async req=>{const a=await actor(req),db=await pool.getConnection();try{return await readableSale(db,id(params(req).id),a);}finally{db.release();}});
   app.post('/api/v1/sales',async req=>{
-    const a=await actor(req); writable(req,a); const d=body(req.body,['shiftId','lines']); const shiftId=id(d.shiftId),lines=inputLines(d.lines),k=requireKey(req.headers['idempotency-key']);
+    const a=await actor(req); writable(req,a); const d=body(req.body,['shiftId','lines','workspaceRevision']); const shiftId=id(d.shiftId),lines=inputLines(d.lines),k=requireKey(req.headers['idempotency-key']);
     return tx(db=>command(db,a.id,'sale.create',k,d,async()=>{
       const shift=await first<RowDataPacket>(db,'SELECT event_id FROM shifts WHERE id=?',[shiftId]); if(!shift) throw missing();
       await first<RowDataPacket>(db,'SELECT id FROM events WHERE id=? FOR UPDATE',[shift.event_id]);
       const s=await first<Sale>(db,`SELECT sh.id,sh.salesperson_id,sh.booth_id,sh.status AS shift_status,sh.planned_start,sh.planned_end,e.status AS event_status FROM shifts sh JOIN events e ON e.id=sh.event_id WHERE sh.id=? FOR UPDATE`,[shiftId]); if(!s) throw missing();
       if(a.role==='SALESPERSON'&&s.salesperson_id!==a.salespersonId) throw missing(); verifyNew(s);
-      const r=await exec(db,'INSERT INTO sales(shift_id,event_id,created_by) VALUES(?,?,?)',[shiftId,shift.event_id,a.id]); const saleId=String(r.insertId);
+      const profile=await first<RowDataPacket>(db,'SELECT currency,price_basis,return_days FROM events WHERE id=?',[shift.event_id]);
+      const r=await exec(db,'INSERT INTO sales(shift_id,event_id,created_by,currency,price_basis,return_days) VALUES(?,?,?,?,?,?)',[shiftId,shift.event_id,a.id,profile!.currency,profile!.price_basis,profile!.return_days]); const saleId=String(r.insertId);
       for(const [i,line] of lines.entries()) {
         const product=await first<Product>(db,'SELECT * FROM products WHERE id=? AND active=TRUE',[line.productId]); if(!product) throw missing();
         await exec(db,'INSERT INTO sale_lines(sale_id,line_no,product_id,quantity,final_unit_price_cents) VALUES(?,?,?,?,?)',[saleId,i+1,line.productId,line.quantity,String(line.unitCents)]);
       }
+      await consumeWorkspace(db,a.id,'new',d.workspaceRevision);
       await audit(db,a.id,'SALE_DRAFT_CREATED','SALE',saleId); return {id:saleId,state:'DRAFT',version:1};
     }));
   });
   const editSale = async (req:FastifyRequest) => {
-    const a=await actor(req); writable(req,a); const saleId=id(params(req).id),d=body(req.body,['version','lines']),lines=inputLines(d.lines),k=requireKey(req.headers['idempotency-key']);
+    const a=await actor(req); writable(req,a); const saleId=id(params(req).id),d=body(req.body,['version','lines','workspaceRevision']),lines=inputLines(d.lines),k=requireKey(req.headers['idempotency-key']);
     return tx(db=>command(db,a.id,'sale.edit',k,{saleId,...d},async()=>{
       const pre=await getSale(db,saleId); await first<RowDataPacket>(db,'SELECT id FROM events WHERE id=? FOR UPDATE',[pre.event_id]); const s=await getSale(db,saleId,true); access(a,s);
-      if(s.state!=='DRAFT'||s.version!==d.version) throw conflict('销售已变化或不能编辑'); verifyNew(s);
+      if(s.exchange_id)throw conflict('关联换货单不能单独编辑');if(s.state!=='DRAFT'||s.version!==d.version) throw conflict('销售已变化或不能编辑'); verifyNew(s);
       await exec(db,'DELETE FROM sale_lines WHERE sale_id=?',[saleId]);
       for(const [i,line] of lines.entries()) {
         const product=await first<Product>(db,'SELECT * FROM products WHERE id=? AND active=TRUE',[line.productId]); if(!product) throw missing();
         await exec(db,'INSERT INTO sale_lines(sale_id,line_no,product_id,quantity,final_unit_price_cents) VALUES(?,?,?,?,?)',[saleId,i+1,line.productId,line.quantity,String(line.unitCents)]);
       }
+      await consumeWorkspace(db,a.id,'sale-'+saleId,d.workspaceRevision);
       await exec(db,'UPDATE sales SET version=version+1 WHERE id=?',[saleId]); await audit(db,a.id,'SALE_DRAFT_EDITED','SALE',saleId); return {id:saleId,state:'DRAFT',version:s.version+1};
     }));
   };
@@ -75,9 +82,33 @@ export function registerSales(app:FastifyInstance):void {
   app.post('/api/v1/sales/:id/edit',editSale);
   app.post('/api/v1/sales/:id/prepare',async req=>{
     const a=await actor(req); writable(req,a); const saleId=id(params(req).id),d=body(req.body,['version']),k=requireKey(req.headers['idempotency-key']);
-    return tx(db=>command(db,a.id,'sale.prepare',k,{saleId,...d},async()=>{
+    return tx(db=>command(db,a.id,'sale.prepare',k,{saleId,...d},()=>prepareSaleInTx(db,a,saleId,d)));
+  });
+  app.post('/api/v1/sales/:id/post',async req=>{
+    const a=await actor(req); writable(req,a); const saleId=id(params(req).id),d=body(req.body,['paymentMethod','paymentReference','cashReceived']),k=requireKey(req.headers['idempotency-key']);
+    return tx(db=>command(db,a.id,'sale.post',k,{saleId,...d},()=>postSaleInTx(db,a,saleId,d)));
+  });
+  app.post('/api/v1/sales/:id/cancel',async req=>{
+    const a=await actor(req); writable(req,a); const saleId=id(params(req).id),d=body(req.body,['reason','paymentReconciled','goodsRecovered']),k=requireKey(req.headers['idempotency-key']);
+    return tx(db=>command(db,a.id,'sale.cancel',k,{saleId,...d},async()=>{
+      const pre=await getSale(db,saleId); await first<RowDataPacket>(db,'SELECT id FROM events WHERE id=? FOR UPDATE',[pre.event_id]); const s=await getSale(db,saleId,true); if(s.exchange_id)throw conflict('请通过关联换货单取消');
+      if(s.state!=='DRAFT'&&s.state!=='CHECKOUT') throw conflict('只能取消未成交销售');
+      const reason=nonempty(d.reason,500);
+      if(s.state==='CHECKOUT') {
+        if(d.paymentReconciled!==true||d.goodsRecovered!==true) throw bad('须确认收款已核对且商品未交付或已收回');
+        const holds=await rows<RowDataPacket>(db,"SELECT * FROM stock_holds WHERE sale_id=? AND status='ACTIVE' ORDER BY product_id FOR UPDATE",[saleId]);
+        for(const h of holds){await exec(db,'UPDATE stock_balances SET reserved=reserved-?,version=version+1 WHERE location_id=? AND product_id=?',[h.quantity,h.location_id,h.product_id]); await exec(db,"UPDATE stock_holds SET status='RELEASED' WHERE sale_id=? AND line_no=?",[saleId,h.line_no]);}
+      }
+      await exec(db,"UPDATE sales SET state='CANCELLED',version=version+1 WHERE id=?",[saleId]); await audit(db,a.id,'SALE_CANCELLED','SALE',saleId,{reason}); return {id:saleId,state:'CANCELLED'};
+    }));
+  });
+}
+
+export async function prepareSaleInTx(db:Db,a:Actor,saleId:string,d:Record<string,unknown>,exchangeId?:string) {
+
       const pre=await getSale(db,saleId); await first<RowDataPacket>(db,'SELECT id FROM events WHERE id=? FOR UPDATE',[pre.event_id]);
       const s=await getSale(db,saleId,true); access(a,s); if(s.state!=='DRAFT'||s.version!==d.version) throw conflict('销售状态或版本已变化'); verifyNew(s);
+      if(s.exchange_id&&String(s.exchange_id)!==exchangeId)throw conflict('关联换货单请通过换货流程办理');
       if(!s.policy_confirmed||s.tax_bps===null||s.commission_bps===null) throw conflict('税率或员工佣金率尚未配置');
       const location=await first<RowDataPacket>(db,'SELECT id FROM stock_locations WHERE booth_id=? AND active=TRUE',[s.booth_id]); if(!location) throw conflict('展位库存位置不可用');
       const lines=await rows<Line>(db,'SELECT * FROM sale_lines WHERE sale_id=? ORDER BY product_id FOR UPDATE',[saleId]); if(!lines.length) throw bad('销售没有商品');
@@ -87,7 +118,9 @@ export function registerSales(app:FastifyInstance):void {
         const unit=BigInt(line.final_unit_price_cents); if(unit<BigInt(p.min_price_cents)) throw conflict(`${p.name} 成交价低于当前最低价`);
         const bal=await first<Balance>(db,'SELECT * FROM stock_balances WHERE location_id=? AND product_id=? FOR UPDATE',[location.id,p.id]);
         if(!bal||BigInt(bal.on_hand)-BigInt(bal.reserved)<BigInt(line.quantity)) throw conflict(`${p.name} 展位可售库存不足`);
-        const lineNet=BigInt(line.quantity)*unit, lineTax=halfUp(lineNet*BigInt(s.tax_bps)), lineCommission=halfUp(lineNet*BigInt(s.commission_bps));
+        if(p.currency!==s.currency)throw conflict('商品与销售货币不同，请管理员核对价格');
+        const amounts=priceAmounts(unit,line.quantity,s.tax_bps,s.commission_bps,s.price_basis);
+        const lineNet=amounts.net,lineTax=amounts.tax,lineCommission=amounts.commission;
         net+=lineNet; tax+=lineTax; if(net+tax>9_000_000_000_000n) throw bad('单据金额超过上限');
         await exec(db,'UPDATE stock_balances SET reserved=reserved+?,version=version+1 WHERE location_id=? AND product_id=?',[line.quantity,location.id,p.id]);
         await exec(db,'INSERT INTO stock_holds(sale_id,line_no,location_id,product_id,quantity) VALUES(?,?,?,?,?)',[saleId,line.line_no,location.id,p.id,line.quantity]);
@@ -98,15 +131,16 @@ export function registerSales(app:FastifyInstance):void {
       await exec(db,"UPDATE sales SET state='CHECKOUT',prepared_at=UTC_TIMESTAMP(3),net_cents=?,tax_cents=?,total_cents=?,version=version+1 WHERE id=?",[String(net),String(tax),String(net+tax),saleId]);
       await audit(db,a.id,'SALE_PREPARED','SALE',saleId,{totalCents:String(net+tax)});
       return {id:saleId,state:'CHECKOUT',version:s.version+1,netCents:String(net),taxCents:String(tax),totalCents:String(net+tax),lines:details};
-    }));
-  });
-  app.post('/api/v1/sales/:id/post',async req=>{
-    const a=await actor(req); writable(req,a); const saleId=id(params(req).id),d=body(req.body,['paymentMethod','paymentReference','cashReceived']),k=requireKey(req.headers['idempotency-key']);
-    return tx(db=>command(db,a.id,'sale.post',k,{saleId,...d},async()=>{
+}
+
+export async function postSaleInTx(db:Db,a:Actor,saleId:string,d:Record<string,unknown>,exchangeId?:string) {
+
       const pre=await getSale(db,saleId); await first<RowDataPacket>(db,'SELECT id FROM events WHERE id=? FOR UPDATE',[pre.event_id]);
       const s=await getSale(db,saleId,true); access(a,s); if(s.state!=='CHECKOUT') throw conflict('销售尚未准备收款或已经处理');
+      if(s.exchange_id&&String(s.exchange_id)!==exchangeId)throw conflict('关联换货单请通过换货流程办理');
       if(s.shift_status!=='ACTIVE'||s.actual_end) throw conflict('班次已关闭，请管理员核对');
-      const method=d.paymentMethod; if(method!=='CASH'&&method!=='TERMINAL') throw bad('付款方式无效');
+      const method=d.paymentMethod; if(method!=='CASH'&&method!=='TERMINAL'&&!(method==='EXCHANGE'&&exchangeId)) throw bad('付款方式无效');
+      if(method==='CASH')await cashOpen(db,s.shift_id);
       const reference=d.paymentReference===undefined?null:nonempty(d.paymentReference,120);
       let received:null|bigint=null;
       if(method==='CASH'){received=money(d.cashReceived); if(received<BigInt(s.total_cents)) throw bad('现金实收不足');}
@@ -119,26 +153,10 @@ export function registerSales(app:FastifyInstance):void {
         await exec(db,'UPDATE stock_balances SET on_hand=on_hand-?,reserved=reserved-?,version=version+1 WHERE location_id=? AND product_id=?',[line.quantity,line.quantity,hold.location_id,line.product_id]);
         await exec(db,"UPDATE stock_holds SET status='CONSUMED' WHERE sale_id=? AND line_no=?",[saleId,line.line_no]);
         await exec(db,"INSERT INTO stock_ledger(location_id,product_id,delta,source_kind,source_id,source_line_no) VALUES(?,?,?,?,?,?)",[hold.location_id,line.product_id,-line.quantity,'SALE',saleId,line.line_no]);
-        if(BigInt(line.line_commission_cents)>0n) await exec(db,"INSERT INTO commission_entries(salesperson_id,amount_cents,source_kind,source_id,source_line_no) VALUES(?,?,?,?,?)",[s.salesperson_id,line.line_commission_cents,'SALE',saleId,line.line_no]);
+        if(BigInt(line.line_commission_cents)>0n) await exec(db,"INSERT INTO commission_entries(salesperson_id,amount_cents,source_kind,source_id,source_line_no,currency) VALUES(?,?,?,?,?,?)",[s.salesperson_id,line.line_commission_cents,'SALE',saleId,line.line_no,s.currency]);
       }
       const saleNo=`FX-${saleId.padStart(8,'0')}`;
       await exec(db,"UPDATE sales SET state='POSTED',sale_no=?,posted_at=UTC_TIMESTAMP(3),posted_by=?,payment_method=?,payment_reference=?,cash_received_cents=?,version=version+1 WHERE id=?",[saleNo,a.id,method,reference,received===null?null:String(received),saleId]);
       await audit(db,a.id,'SALE_POSTED','SALE',saleId,{paymentMethod:method,reference});
       return {id:saleId,saleNo,state:'POSTED',totalCents:s.total_cents,changeCents:received===null?null:String(received-BigInt(s.total_cents))};
-    }));
-  });
-  app.post('/api/v1/sales/:id/cancel',async req=>{
-    const a=await actor(req); writable(req,a); const saleId=id(params(req).id),d=body(req.body,['reason','paymentReconciled','goodsRecovered']),k=requireKey(req.headers['idempotency-key']);
-    return tx(db=>command(db,a.id,'sale.cancel',k,{saleId,...d},async()=>{
-      const pre=await getSale(db,saleId); await first<RowDataPacket>(db,'SELECT id FROM events WHERE id=? FOR UPDATE',[pre.event_id]); const s=await getSale(db,saleId,true); access(a,s);
-      if(s.state!=='DRAFT'&&s.state!=='CHECKOUT') throw conflict('只能取消未成交销售');
-      const reason=nonempty(d.reason,500);
-      if(s.state==='CHECKOUT') {
-        owner(a); if(d.paymentReconciled!==true||d.goodsRecovered!==true) throw bad('须确认收款已核对且商品未交付或已收回');
-        const holds=await rows<RowDataPacket>(db,"SELECT * FROM stock_holds WHERE sale_id=? AND status='ACTIVE' ORDER BY product_id FOR UPDATE",[saleId]);
-        for(const h of holds){await exec(db,'UPDATE stock_balances SET reserved=reserved-?,version=version+1 WHERE location_id=? AND product_id=?',[h.quantity,h.location_id,h.product_id]); await exec(db,"UPDATE stock_holds SET status='RELEASED' WHERE sale_id=? AND line_no=?",[saleId,h.line_no]);}
-      }
-      await exec(db,"UPDATE sales SET state='CANCELLED',version=version+1 WHERE id=?",[saleId]); await audit(db,a.id,'SALE_CANCELLED','SALE',saleId,{reason}); return {id:saleId,state:'CANCELLED'};
-    }));
-  });
 }

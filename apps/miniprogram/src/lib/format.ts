@@ -19,6 +19,6 @@ export function quantity(value: string, allowZero = false): number {
   if (!Number.isSafeInteger(n) || n < (allowZero ? 0 : 1) || n > 1_000_000) throw new Error('数量超出允许范围');
   return n;
 }
-export function localText(value: string | undefined): string { return value ? value.replace('T', ' ').slice(0, 16) : '—'; }
+export function localText(value: string | undefined): string { if(!value)return '—';const d=new Date(/(?:Z|[+-]\d\d:\d\d)$/.test(value)?value:value.replace(' ','T')+'Z');return Number.isFinite(d.getTime())?new Date(d.getTime()+8*3600000).toISOString().slice(0,16).replace('T',' ')+' 北京时间':'—'; }
 export function errorText(error: unknown): string { return error instanceof Error ? error.message : '操作失败，请重试'; }
 export const rawMoney = (value: string): string => cents(value).replace(/,/g, '');

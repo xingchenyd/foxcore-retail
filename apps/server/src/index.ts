@@ -17,6 +17,8 @@ import { registerReturns } from './returns.js';
 import { registerCommissions } from './commissions.js';
 import { registerCatalogUpdates } from './catalog-updates.js';
 import { registerReports } from './reports.js';
+import {registerOperations} from './operations.js';
+import {registerExchanges} from './exchanges.js';
 import { RuleError } from './fix-rules.js';
 import { listPage } from './pagination.js';
 
@@ -68,6 +70,7 @@ app.patch('/api/v1/users/:id/active',async req=>{
   }));
 });
 registerCatalog(app);registerCatalogUpdates(app);registerInventory(app);registerSales(app);registerReturns(app);registerCommissions(app);registerReports(app);
+registerOperations(app);registerExchanges(app);
 
 app.get('/api/v1/audit',async req=>{const a=await actor(req);owner(a);return listPage('SELECT id,actor_id,action,subject_type,subject_id,detail_json,created_at FROM audit_events ORDER BY id DESC',[],req.query as Record<string,unknown>,100);});
 

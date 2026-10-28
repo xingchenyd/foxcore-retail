@@ -13,7 +13,7 @@ const plan=process.argv.includes('--plan'),writes=new Map();
 const read=path=>readFileSync(join(root,path),'utf8');
 // The old overlay is a one-time baseline repair. Never roll a later reviewed
 // version back to its historical NOT_RUN banners or release record.
-if(existsSync(join(root,'RELEASE_STATUS.json'))&&['BRANCH_REVIEW_NATIVE_VALIDATED_DOCKER_PENDING','STAFF_MINIPROGRAM_NATIVE_RUNTIME_PENDING'].includes(JSON.parse(read('RELEASE_STATUS.json')).status)){
+if(existsSync(join(root,'RELEASE_STATUS.json'))&&['BRANCH_REVIEW_NATIVE_VALIDATED_DOCKER_PENDING','STAFF_MINIPROGRAM_NATIVE_RUNTIME_PENDING','RETAIL_OPERATIONS_CODE_DELIVERY_EXTERNAL_GATES_PENDING'].includes(JSON.parse(read('RELEASE_STATUS.json')).status)){
   execFileSync(process.execPath,[join(root,'scripts/check-fix-docs.mjs')],{cwd:root,stdio:'inherit'});
   if(!plan)writeManifest();
   console.log(plan?'Current review validated; no writes planned.':'Current review preserved; SHA256SUMS regenerated.');

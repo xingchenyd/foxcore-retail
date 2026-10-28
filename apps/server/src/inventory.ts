@@ -9,7 +9,7 @@ import { listPage } from './pagination.js';
 interface Balance extends RowDataPacket { on_hand: string; reserved: string; version: number }
 interface Location extends RowDataPacket { id: string; kind: string; active: number; booth_id: string | null }
 async function location(db: Db, value: string): Promise<Location> {
-  const loc=await first<Location>(db,'SELECT * FROM stock_locations WHERE id=?',[value]); if(!loc||!loc.active) throw missing(); return loc;
+  const loc=await first<Location>(db,'SELECT * FROM stock_locations WHERE id=?',[value]); if(!loc||!loc.active) throw missing();if(!['WAREHOUSE','BOOTH'].includes(loc.kind))throw bad('在途和损坏库位只能通过对应业务单处理'); return loc;
 }
 async function lockLocationEvents(db: Db, locationIds: string[]): Promise<void> {
   const eventIds = new Set<string>();
@@ -47,24 +47,22 @@ const params = (req: FastifyRequest) => req.params as Record<string, unknown>;
 
 export function registerInventory(app: FastifyInstance): void {
   app.get('/api/v1/stock/locations', async req => {
-    const a=await actor(req); owner(a);
-    return listPage('SELECT l.*,b.active AS booth_active,b.event_id,e.status AS event_status FROM stock_locations l LEFT JOIN booths b ON b.id=l.booth_id LEFT JOIN events e ON e.id=b.event_id ORDER BY l.id',[],req.query as Record<string,unknown>,100);
+    const a=await actor(req);
+    const q=req.query as Record<string,unknown>,filter=q.operational==='true'?" WHERE l.active=TRUE AND l.kind IN ('WAREHOUSE','BOOTH')":'';return listPage('SELECT l.*,b.active AS booth_active,b.event_id,e.status AS event_status FROM stock_locations l LEFT JOIN booths b ON b.id=l.booth_id LEFT JOIN events e ON e.id=b.event_id'+filter+' ORDER BY l.id',[],q,100);
   });
   app.get('/api/v1/stock/balances', async req => {
     const a=await actor(req),q=req.query as Record<string,unknown>,conditions:string[]=[],values:unknown[]=[];
-    if(a.role!=='OWNER'){
-      conditions.push("l.booth_id IN (SELECT booth_id FROM shifts WHERE salesperson_id=? AND status='ACTIVE')");values.push(a.salespersonId);
-    }
     if(q.locationId!==undefined){conditions.push('b.location_id=?');values.push(id(q.locationId));}
+    if(q.productId!==undefined){conditions.push('b.product_id=?');values.push(id(q.productId));}
     const where=conditions.length?' WHERE '+conditions.join(' AND '):'';
     return listPage(`SELECT b.*,l.name AS location_name,l.kind,p.name AS product_name,p.sku FROM stock_balances b JOIN stock_locations l ON l.id=b.location_id JOIN products p ON p.id=b.product_id${where} ORDER BY b.location_id,b.product_id`,values,q,100);
   });
   app.get('/api/v1/stock/ledger', async req => {
-    const a=await actor(req); owner(a);
+    const a=await actor(req);
     return listPage('SELECT * FROM stock_ledger ORDER BY id DESC',[],req.query as Record<string,unknown>,100);
   });
   app.post('/api/v1/stock/receive', async req => {
-    const a=await actor(req); owner(a); writable(req,a); const d=body(req.body,['productId','quantity','reason']); const k=requireKey(req.headers['idempotency-key']);
+    const a=await actor(req); writable(req,a); const d=body(req.body,['productId','quantity','reason']); const k=requireKey(req.headers['idempotency-key']);
     return tx(db => command(db,a.id,'stock.receive',k,d,async () => {
       const productId=id(d.productId),qty=positiveInt(d.quantity,1_000_000),reason=nonempty(d.reason,500);
       const product=await first<RowDataPacket>(db,'SELECT id FROM products WHERE id=? AND active=TRUE FOR UPDATE',[productId]); if(!product) throw missing();
@@ -76,13 +74,13 @@ export function registerInventory(app: FastifyInstance): void {
     }));
   });
   app.post('/api/v1/stock/transfer', async req => {
-    const a=await actor(req); owner(a); writable(req,a); const d=body(req.body,['productId','quantity','fromLocationId','toLocationId','reason','handoverConfirmed']); const k=requireKey(req.headers['idempotency-key']);
+    const a=await actor(req); writable(req,a); const d=body(req.body,['productId','quantity','fromLocationId','toLocationId','reason','handoverConfirmed']); const k=requireKey(req.headers['idempotency-key']);
     return tx(db => command(db,a.id,'stock.transfer',k,d,async () => {
       const productId=id(d.productId),qty=positiveInt(d.quantity,1_000_000),from=id(d.fromLocationId),to=id(d.toLocationId),reason=nonempty(d.reason,500);
       if(from===to) throw bad('调拨起点和终点不能相同'); if(d.handoverConfirmed!==true) throw bad('请确认实物已经交接');
       await lockLocationEvents(db,[from,to]);
       for(const locId of [from,to].sort((x,y)=>BigInt(x)<BigInt(y)?-1:1)) await location(db,locId);
-      await first<RowDataPacket>(db,'SELECT id FROM products WHERE id=? FOR UPDATE',[productId]);
+      const legacyProduct=await first<RowDataPacket>(db,'SELECT currency FROM products WHERE id=? FOR UPDATE',[productId]);if(legacyProduct?.currency!=='CAD')throw conflict('请使用在途调拨：先发货，再签收');
       for(const locId of [from,to].sort((x,y)=>BigInt(x)<BigInt(y)?-1:1)) await balance(db,locId,productId);
       await updateBalance(db,from,productId,-BigInt(qty)); await updateBalance(db,to,productId,BigInt(qty));
       const docId=await document(db,'TRANSFER',from,to,reason,a.id,productId,qty);
@@ -91,20 +89,27 @@ export function registerInventory(app: FastifyInstance): void {
     }));
   });
   app.post('/api/v1/stock/adjust', async req => {
-    const a=await actor(req); owner(a); writable(req,a); const d=body(req.body,['productId','locationId','countedQuantity','expectedVersion','reason']); const k=requireKey(req.headers['idempotency-key']);
+    const a=await actor(req); writable(req,a); const d=body(req.body,['productId','locationId','countedQuantity','expectedVersion','reason']); const k=requireKey(req.headers['idempotency-key']);
     return tx(db => command(db,a.id,'stock.adjust',k,d,async () => {
       const productId=id(d.productId),locId=id(d.locationId),count=d.countedQuantity,expected=d.expectedVersion,reason=nonempty(d.reason,500);
       if(!Number.isSafeInteger(count)||(count as number)<0||(count as number)>1_000_000||!Number.isInteger(expected)) throw bad('盘点数或版本无效');
       await lockLocationEvents(db,[locId]);
-      await location(db,locId); const old=await balance(db,locId,productId); if(old.version!==expected) throw conflict('库存已变化，请重新盘点');
+      await location(db,locId);
+      // Serialize a missing-row count with receipt/transfer by locking the product.
+      // Version 0 means the caller observed NO balance row, not an existing v1 row.
+      const product=await first<RowDataPacket>(db,'SELECT id FROM products WHERE id=? FOR UPDATE',[productId]);if(!product)throw missing();
+      const observed=await first<Balance>(db,'SELECT * FROM stock_balances WHERE location_id=? AND product_id=? FOR UPDATE',[locId,productId]);
+      if(observed?observed.version!==expected:expected!==0)throw conflict('库存已变化，请重新盘点');
+      const old=observed??await balance(db,locId,productId);
       const delta=BigInt(count as number)-BigInt(old.on_hand); if(delta===0n) throw bad('盘点数量与当前库存相同');
       await updateBalance(db,locId,productId,delta);
       const docId=await document(db,'ADJUST',delta<0n?locId:null,delta>0n?locId:null,reason,a.id,productId,Number(delta));
       await ledger(db,locId,productId,delta,docId,1); await audit(db,a.id,'STOCK_ADJUSTED','STOCK_DOCUMENT',docId,{delta:String(delta)}); return {id:docId};
     }));
   });
+  app.get('/api/v1/stock/documents',async req=>{await actor(req);return listPage('SELECT d.*,dl.quantity,p.name AS product_name,f.name AS from_name,t.name AS to_name FROM stock_documents d JOIN stock_document_lines dl ON dl.document_id=d.id JOIN products p ON p.id=dl.product_id LEFT JOIN stock_locations f ON f.id=d.from_location_id LEFT JOIN stock_locations t ON t.id=d.to_location_id ORDER BY d.id DESC,dl.line_no',[],req.query as Record<string,unknown>,20);});
   app.get('/api/v1/stock/documents/:id', async req => {
-    const a=await actor(req); owner(a); const docId=id(params(req).id); const db=await pool.getConnection();
+    const a=await actor(req); const docId=id(params(req).id); const db=await pool.getConnection();
     try {const doc=await first<RowDataPacket>(db,'SELECT * FROM stock_documents WHERE id=?',[docId]); if(!doc) throw missing(); return {document:doc,lines:await rows<RowDataPacket>(db,'SELECT * FROM stock_document_lines WHERE document_id=? ORDER BY line_no',[docId])};} finally {db.release();}
   });
 }

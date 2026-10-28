@@ -1,0 +1,124 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 15
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #356553
+skinparam LineColor #356553
+skinparam packageStyle rectangle
+skinparam classBackgroundColor #F4F7EF
+skinparam classBorderColor #356553
+skinparam usecaseBackgroundColor #F4F7EF
+skinparam usecaseBorderColor #356553
+skinparam stateBackgroundColor #F4F7EF
+skinparam stateBorderColor #356553
+skinparam noteBackgroundColor #FFF6DC
+skinparam noteBorderColor #C7AB63
+hide empty members
+title 概念类图 · 业务实体与事务服务
+class Event {
+id
+ currency
+ priceBasis
+ returnDays
+ status
+}
+class Shift {
+id
+ salespersonId
+ plannedEnd
+ openingCash
+ version
+}
+class Sale {
+id
+ state
+ version
+ currency
+ net
+ tax
+ total
+}
+class SaleLine {
+productId
+ quantity
+ frozenTax
+ frozenCommission
+ frozenCost
+}
+class Return {
+id
+ originalSaleId
+ state
+ refundMethod
+ cashShiftId
+}
+class Exchange {
+id
+ originalSaleId
+ returnId
+ newSaleId
+ difference
+ state
+}
+class StockTransfer {
+id
+ transitLocationId
+ quantity
+ received
+ damaged
+ missing
+ version
+}
+class StockBalance {
+locationId
+ productId
+ onHand
+ reserved
+ version
+}
+class CashHandover {
+shiftId
+ expected
+ actual
+ difference
+ state
+ version
+}
+class CommissionEntry {
+personId
+ sourceKind
+ sourceId
+ signedAmount
+ currency
+}
+class Workspace {
+ownerId
+ key
+ revision
+ payload
+}
+class "事务内业务函数\n（实际函数模块）" as Service {
+prepareSaleInTx()
+postSaleInTx()
+authorizeReturnInTx()
+postReturnInTx()
+consumeWorkspace()
+}
+Event "1" *-- "0..*" Shift
+Shift "1" -- "0..*" Sale
+Sale "1" *-- "1..100" SaleLine
+Sale "1" -- "0..*" Return : 原单
+Exchange --> Sale : 原销售 / 换出销售
+Exchange --> Return : 退入单
+Shift "1" -- "0..1" CashHandover
+SaleLine --> CommissionEntry : 正向计提
+Return --> CommissionEntry : 原费率负向冲回
+StockTransfer --> StockBalance : 来源 / 在途 / 目标
+Workspace ..> Sale : 保存时同事务消耗版本
+Service ..> Exchange
+Service ..> Sale
+Service ..> Return
+note bottom of Service : 概念类不表示项目使用 ORM 类；\n实际实现为 Fastify 路由和 TypeScript 事务函数
+@enduml

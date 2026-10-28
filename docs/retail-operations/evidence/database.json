@@ -1,0 +1,318 @@
+{
+  "environment": "native MariaDB loopback",
+  "migration": "PASS",
+  "backupRestore": "PASS",
+  "appendOnly": "PASS",
+  "invariants": [
+    {
+      "issue": "sale_event_shift_mismatch",
+      "violations": "0"
+    },
+    {
+      "issue": "shift_event_booth_mismatch",
+      "violations": "0"
+    },
+    {
+      "issue": "balance_ledger_difference",
+      "violations": "0"
+    },
+    {
+      "issue": "ledger_without_balance",
+      "violations": "0"
+    },
+    {
+      "issue": "balance_hold_difference",
+      "violations": "0"
+    },
+    {
+      "issue": "negative_available",
+      "violations": "0"
+    },
+    {
+      "issue": "posted_sale_amount_difference",
+      "violations": "0"
+    },
+    {
+      "issue": "posted_sale_missing_ledger",
+      "violations": "0"
+    },
+    {
+      "issue": "posted_sale_missing_commission",
+      "violations": "0"
+    },
+    {
+      "issue": "return_amount_difference",
+      "violations": "0"
+    },
+    {
+      "issue": "return_over_original_quantity",
+      "violations": "0"
+    },
+    {
+      "issue": "return_wrong_original_line",
+      "violations": "0"
+    },
+    {
+      "issue": "posted_return_missing_restock_ledger",
+      "violations": "0"
+    },
+    {
+      "issue": "posted_return_missing_commission",
+      "violations": "0"
+    },
+    {
+      "issue": "cancelled_settlement_has_claim",
+      "violations": "0"
+    },
+    {
+      "issue": "settlement_amount_difference",
+      "violations": "0"
+    },
+    {
+      "issue": "closed_event_positive_stock",
+      "violations": "0"
+    },
+    {
+      "issue": "closed_event_authorized_restock",
+      "violations": "0"
+    },
+    {
+      "issue": "cancelled_shift_has_execution",
+      "violations": "0"
+    },
+    {
+      "issue": "event_timezone_alias",
+      "violations": "0"
+    },
+    {
+      "issue": "chinese_profile",
+      "violations": "0"
+    },
+    {
+      "issue": "inclusive_sale_totals",
+      "violations": "0"
+    },
+    {
+      "issue": "transfer_transit_quantity",
+      "violations": "0"
+    },
+    {
+      "issue": "transfer_receipt_components",
+      "violations": "0"
+    },
+    {
+      "issue": "damage_processed_limit",
+      "violations": "0"
+    },
+    {
+      "issue": "damaged_inventory_matches_records",
+      "violations": "0"
+    },
+    {
+      "issue": "exchange_child_state",
+      "violations": "0"
+    },
+    {
+      "issue": "exchange_amount_and_currency",
+      "violations": "0"
+    },
+    {
+      "issue": "workspace_current_revision",
+      "violations": "0"
+    },
+    {
+      "issue": "cash_refund_currency",
+      "violations": "0"
+    },
+    {
+      "issue": "settlement_currency",
+      "violations": "0"
+    }
+  ],
+  "tables": 34,
+  "tableComparisons": [
+    {
+      "table": "audit_events",
+      "rows": 23817,
+      "digestMatch": true
+    },
+    {
+      "table": "booths",
+      "rows": 124,
+      "digestMatch": true
+    },
+    {
+      "table": "business_settings",
+      "rows": 1,
+      "digestMatch": true
+    },
+    {
+      "table": "cash_handovers",
+      "rows": 17,
+      "digestMatch": true
+    },
+    {
+      "table": "commission_claims",
+      "rows": 97,
+      "digestMatch": true
+    },
+    {
+      "table": "commission_entries",
+      "rows": 6382,
+      "digestMatch": true
+    },
+    {
+      "table": "commission_settlement_lines",
+      "rows": 97,
+      "digestMatch": true
+    },
+    {
+      "table": "commission_settlements",
+      "rows": 37,
+      "digestMatch": true
+    },
+    {
+      "table": "damage_records",
+      "rows": 11,
+      "digestMatch": true
+    },
+    {
+      "table": "event_categories",
+      "rows": 7,
+      "digestMatch": true
+    },
+    {
+      "table": "events",
+      "rows": 117,
+      "digestMatch": true
+    },
+    {
+      "table": "exchanges",
+      "rows": 10,
+      "digestMatch": true
+    },
+    {
+      "table": "idempotency_keys",
+      "rows": 23227,
+      "digestMatch": true
+    },
+    {
+      "table": "products",
+      "rows": 1376,
+      "digestMatch": true
+    },
+    {
+      "table": "return_lines",
+      "rows": 81,
+      "digestMatch": true
+    },
+    {
+      "table": "returns",
+      "rows": 81,
+      "digestMatch": true
+    },
+    {
+      "table": "sale_lines",
+      "rows": 6593,
+      "digestMatch": true
+    },
+    {
+      "table": "sale_workspace_revisions",
+      "rows": 11,
+      "digestMatch": true
+    },
+    {
+      "table": "sale_workspaces",
+      "rows": 6,
+      "digestMatch": true
+    },
+    {
+      "table": "sales",
+      "rows": 6593,
+      "digestMatch": true
+    },
+    {
+      "table": "salespeople",
+      "rows": 306,
+      "digestMatch": true
+    },
+    {
+      "table": "schema_migrations",
+      "rows": 5,
+      "digestMatch": true
+    },
+    {
+      "table": "sessions",
+      "rows": 389,
+      "digestMatch": true
+    },
+    {
+      "table": "shift_extensions",
+      "rows": 7,
+      "digestMatch": true
+    },
+    {
+      "table": "shifts",
+      "rows": 152,
+      "digestMatch": true
+    },
+    {
+      "table": "stock_balances",
+      "rows": 1000,
+      "digestMatch": true
+    },
+    {
+      "table": "stock_document_lines",
+      "rows": 1041,
+      "digestMatch": true
+    },
+    {
+      "table": "stock_documents",
+      "rows": 1041,
+      "digestMatch": true
+    },
+    {
+      "table": "stock_holds",
+      "rows": 6310,
+      "digestMatch": true
+    },
+    {
+      "table": "stock_ledger",
+      "rows": 8055,
+      "digestMatch": true
+    },
+    {
+      "table": "stock_locations",
+      "rows": 174,
+      "digestMatch": true
+    },
+    {
+      "table": "stock_transfers",
+      "rows": 48,
+      "digestMatch": true
+    },
+    {
+      "table": "users",
+      "rows": 131,
+      "digestMatch": true
+    },
+    {
+      "table": "venues",
+      "rows": 91,
+      "digestMatch": true
+    }
+  ],
+  "migrations": [
+    "001_core.sql",
+    "002_retail_operations.sql",
+    "003_operation_history_indexes.sql",
+    "004_refund_method.sql",
+    "005_event_timezone_consistency.sql"
+  ],
+  "ownerRecovery": "PASS",
+  "backupBytes": 11834946,
+  "backupSha256": "3c8d57be92793996ac79c3fbe8ebaa16592cccaf0bf0ca7542a57602f240bb1a",
+  "productionRecovery": "NOT_RUN",
+  "docker": "NOT_RUN",
+  "backupMode": "Local isolated application stopped for a write-quiescent snapshot; restored to a separate owned database and compared every table by ordered row digest."
+}

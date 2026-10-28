@@ -1,5 +1,5 @@
-/** Deliberately red acceptance probes for the 2026-10-27 review.
- * Run separately from the existing regression suite. No application source is changed.
+/** Regression probes reproducing the 2026-10-27 findings after remediation.
+ * Run separately from the existing regression suite. Historical red evidence is preserved in docs/spec-kit-review.
  * Page adapters are not evidence of WeChat engine/device rendering.
  */
 import {beforeEach,describe,expect,it,vi} from 'vitest';
@@ -38,7 +38,7 @@ async function owner(){
   return auth;
 }
 
-describe('Spec Kit independent acceptance review — unfixed findings remain red',()=>{
+describe('Spec Kit defect regression — production paths',()=>{
   it('SK-B01: first stock count at a product/location with no balance row can be recorded',async()=>{
     await owner();const api=await import('../../apps/miniprogram/src/lib/api');
     const product=await api.command<P>('/products',{sku:'COUNT-'+randomUUID().slice(0,8),name:'Review first count',wholesaleCost:'1.00',minPrice:'2.00'});
@@ -56,7 +56,7 @@ describe('Spec Kit independent acceptance review — unfixed findings remain red
     s.saveSession({user:{id:'review-owner',username:'owner',role:'OWNER',salespersonId:null,mustChangePassword:false},csrf:'test',accessToken:'t'.repeat(43)});
     const shift={id:'10',status:'ACTIVE',planned_start:'2000-01-01 00:00:00',planned_end:'2099-01-01 00:00:00',event_name:'Review',booth_location:'A',first_name:'Staff',last_name:'Test'};
     const product={id:'20',name:'Product',sku:'R',active:1,min_price_cents:'100',suggested_price_cents:'200'};
-    (wx.request as any)=(o:P)=>{const path=new URL(o.url).pathname;const data=path.endsWith('/shifts')?{items:[shift],offset:0,total:1,hasMore:false}:path.endsWith('/products')?{items:[product],offset:0,total:1,hasMore:false}:{sale:{id:'30',state:'DRAFT',version:1,shift_id:'10'},lines:[{product_id:'20',quantity:1,final_unit_price_cents:'200',current_name:'Product'}]};o.success({statusCode:200,data});};
+    (wx.request as any)=(o:P)=>{const path=new URL(o.url).pathname;const data=path.includes('/operations/workspaces/')?{revision:0,payload:null}:path.endsWith('/shifts')?{items:[shift],offset:0,total:1,hasMore:false}:path.endsWith('/products')?{items:[product],offset:0,total:1,hasMore:false}:{sale:{id:'30',state:'DRAFT',version:1,shift_id:'10'},lines:[{product_id:'20',quantity:1,final_unit_price_cents:'200',current_name:'Product'}]};o.success({statusCode:200,data});};
     const first=await page('sale-edit');await first.load('30');
     first.inputLine({currentTarget:{dataset:{index:0,field:'quantity'}},detail:{value:'3'}});
     expect((storage.get('foxcore.draft.review-owner.30') as P).lines[0].quantity).toBe('3');
@@ -68,23 +68,16 @@ describe('Spec Kit independent acceptance review — unfixed findings remain red
   it('SK-B03: a web receipt retried after reload and a lost response does not create a second document',async()=>{
     const auth=await owner(),api=await import('../../apps/miniprogram/src/lib/api');
     const product=await api.command<P>('/products',{sku:'RETRY-'+randomUUID().slice(0,8),name:'Review uncertain web receipt',wholesaleCost:'1.00',minPrice:'2.00'});
-    const source=readFileSync('apps/web/src/main.tsx','utf8');
-    // Execute the shipped hook, not a reimplementation. New VM = lost page memory.
-    const code=source.slice(source.indexOf('function useAction('),source.indexOf('const cad='));
-    const emitted=ts.transpileModule('const pending=new Map();\n'+code+'\nglobalThis.reviewAction=useAction;',{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None}}).outputText;
-    let loseResponse=true;
-    function loadHook(){
-      const sandbox:P={crypto,TextEncoder,Map,useState:()=>['',()=>{}],useRef:()=>({current:false}),useQueryClient:()=>({invalidateQueries:async()=>{}}),api:async(path:string,init:P)=>{
-        const response=await fetch(base+'/api/v1'+path,{...init,headers:{...init.headers,'content-type':'application/json',authorization:'Bearer '+auth.accessToken}});const result=await response.json();
-        if(!response.ok)throw new Error(JSON.stringify(result));
-        if(loseResponse){loseResponse=false;throw new Error('Injected response loss AFTER the server committed');}
-        return result;
-      }};
-      runInNewContext(emitted,sandbox);return sandbox.reviewAction(auth);
-    }
+    const persisted=new Map<string,string>();
+    vi.stubGlobal('localStorage',{getItem:(k:string)=>persisted.get(k)??null,setItem:(k:string,v:string)=>persisted.set(k,v),removeItem:(k:string)=>persisted.delete(k),key:(i:number)=>[...persisted.keys()][i]??null,get length(){return persisted.size;}});
+    vi.stubGlobal('window',new EventTarget());vi.stubGlobal('navigator',{locks:{request:async(_n:string,_o:object,fn:Function)=>fn({})}});
+    const originalFetch=fetch;let loseResponse=true;
+    vi.stubGlobal('fetch',async(path:string,init:P={})=>{const headers=new Headers(init.headers);headers.set('authorization','Bearer '+auth.accessToken);const response=await originalFetch(new URL(path,base),{...init,headers});if(loseResponse&&String(path).endsWith('/stock/receive')){loseResponse=false;await response.json();throw new Error('Injected response loss AFTER the server committed');}return response;});
+    let web=await import('../../apps/web/src/lib/commands');
     const body={productId:product.id,quantity:1,reason:'One physical delivery'};
-    await expect(loadHook().run('/stock/receive','POST',body)).rejects.toThrow('AFTER the server committed');
-    await loadHook().run('/stock/receive','POST',body);
+    await expect(web.webCommand(auth,'/stock/receive','POST',body)).rejects.toThrow('AFTER the server committed');
+    vi.resetModules();web=await import('../../apps/web/src/lib/commands');
+    await web.webCommand(auth,'/stock/receive','POST',body);vi.stubGlobal('fetch',originalFetch);
     const locations=await api.choices<P>('/stock/locations'),main=locations.find(x=>x.code==='MAIN')!;
     const balances=await api.choices<P>('/stock/balances?locationId='+main.id),balance=balances.find(x=>x.product_id===product.id)!;
     expect(String(balance.on_hand),'One physical delivery must be recorded exactly once across a page reload').toBe('1');

@@ -1,0 +1,89 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 15
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #356553
+skinparam LineColor #356553
+skinparam packageStyle rectangle
+skinparam classBackgroundColor #F4F7EF
+skinparam classBorderColor #356553
+skinparam usecaseBackgroundColor #F4F7EF
+skinparam usecaseBorderColor #356553
+skinparam stateBackgroundColor #F4F7EF
+skinparam stateBorderColor #356553
+skinparam noteBackgroundColor #FFF6DC
+skinparam noteBorderColor #C7AB63
+hide empty members
+title 账号、云端草稿和审批 ERD
+left to right direction
+hide methods
+skinparam linetype ortho
+skinparam nodesep 65
+skinparam ranksep 95
+entity "audit_events" as audit_events {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} actor_id : bigint(20) unsigned <<FK>>
+ {field} * created_at : datetime(3)
+}
+entity "business_settings" as business_settings {
+ {field} * id : tinyint(3) unsigned <<PK>>
+ {field} * currency : char(3)
+ {field} * price_basis : enum('EXCLUSIVE','INCLUSIVE')
+ {field} * return_days : smallint(5) unsigned
+ {field} * version : int(10) unsigned
+}
+entity "idempotency_keys" as idempotency_keys {
+ {field} * actor_id : bigint(20) unsigned <<PK,FK>>
+ {field} * operation : varchar(80) <<PK>>
+ {field} * command_key : char(36) <<PK>>
+}
+entity "salespeople" as salespeople {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * version : int(10) unsigned
+}
+entity "sale_workspaces" as sale_workspaces {
+ {field} * owner_id : bigint(20) unsigned <<PK,FK>>
+ {field} * workspace_key : varchar(80) <<PK>>
+ {field} * revision : int(10) unsigned
+}
+entity "sale_workspace_revisions" as sale_workspace_revisions {
+ {field} * owner_id : bigint(20) unsigned <<PK,FK>>
+ {field} * workspace_key : varchar(80) <<PK,FK>>
+ {field} * revision : int(10) unsigned <<PK>>
+}
+entity "sessions" as sessions {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * user_id : bigint(20) unsigned <<FK>>
+ {field} * token_hash : char(64) <<UK>>
+}
+entity "shifts" as shifts {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * salesperson_id : bigint(20) unsigned <<FK>>
+ {field} * booth_id : bigint(20) unsigned <<FK>>
+ {field} * status : enum('PLANNED','ACTIVE','CLOSED','CANCELLED')
+ {field} * version : int(10) unsigned
+}
+entity "shift_extensions" as shift_extensions {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * shift_id : bigint(20) unsigned <<FK>>
+ {field} * state : enum('PENDING','APPROVED','REJECTED')
+ {field} * requested_by : bigint(20) unsigned <<FK>>
+ {field} reviewed_by : bigint(20) unsigned <<FK>>
+}
+entity "users" as users {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * username : varchar(80) <<UK>>
+ {field} salesperson_id : bigint(20) unsigned <<UK,FK>>
+}
+users |o--o{ audit_events
+users ||--o{ idempotency_keys
+users ||--o{ sale_workspaces
+sale_workspaces ||--o{ sale_workspace_revisions
+users ||--o{ sessions
+salespeople ||--o{ shifts
+users |o--o{ shift_extensions
+shifts ||--o{ shift_extensions
+salespeople |o--o| users
+@enduml

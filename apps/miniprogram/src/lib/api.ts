@@ -69,7 +69,7 @@ export async function command<T>(path: string, data: object = {}, method: 'POST'
   if (!pending) { pending = { key: await randomKey(), payload, owner, path, method }; wx.setStorageSync(storageKey, pending); }
   if (session()?.user.id !== owner) throw new RequestError('账号已切换，请使用原账户核对上次操作', 'ACCOUNT_CHANGED', true);
   try { const result = await request<T>(path, method, data, pending.key); wx.removeStorageSync(storageKey); return result; }
-  catch (error) { if (error instanceof RequestError && !error.uncertain && error.status !== 401) wx.removeStorageSync(storageKey); throw error; }
+  catch (error) { if (error instanceof RequestError && !error.uncertain && error.status !== 401 && error.status !== 403) wx.removeStorageSync(storageKey); throw error; }
   } finally { inFlight.delete(storageKey); }
 }
 export async function choices<T>(path: string): Promise<T[]> {

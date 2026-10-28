@@ -1,0 +1,10 @@
+import {useEffect,useState} from 'react';
+import {useQueryClient} from '@tanstack/react-query';
+import {pendingWebCommands,retryWebCommand,resolvePasswordCommand,type PendingCommand,type CommandAuth} from '../lib/commands.js';
+export function CommandRecovery({auth}:{auth:CommandAuth}){
+  const query=useQueryClient();
+  const [items,setItems]=useState<PendingCommand[]>([]),[error,setError]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
+  useEffect(()=>{const update=()=>{try{setItems(pendingWebCommands(auth.user.id));}catch{setError('本机待核对记录暂不可读，请勿重复登记，联系管理员核对。');}};update();window.addEventListener('storage',update);window.addEventListener('foxcore:commands',update);return()=>{window.removeEventListener('storage',update);window.removeEventListener('foxcore:commands',update);};},[auth.user.id]);
+  if(!items.length&&!error&&!message)return null;
+  return <section className="box" aria-label="待核对操作"><h2>待核对操作 · {items.length}</h2><p>以下操作尚未取得确认结果。退出、刷新后仍会保留；请勿再次进行线下收付款。</p>{message&&<div role="status" className="notice">{message}<button className="text-button" onClick={()=>setMessage('')}>我已了解</button></div>}{error&&<div role="alert" className="error">{error}</div>}{items.map(p=><div className="row gap" key={p.key}><div className="grow"><strong>{p.sensitive?'临时口令设置':p.path.startsWith('/stock')?'库存登记':p.path.startsWith('/returns')?'退货办理':p.path.startsWith('/commissions')?'佣金登记':'业务操作'}</strong><div className="small muted">{new Date(p.createdAt).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'})} · 操作编号 {p.key}</div></div><button disabled={busy} onClick={async()=>{if(!window.confirm(p.sensitive?'核对上次口令是否生效；尚未执行的旧请求将安全结束，之后可重新设置。继续？':'使用原内容和原操作编号核对，不重复执行线下收付款。继续？'))return;setBusy(true);setError('');try{if(p.sensitive){const r=await resolvePasswordCommand(auth,p);setMessage(r.previousState==='COMMITTED'?'上次口令操作已完成。请查看账号列表；若未记录临时口令，可重新设置。':'上次未完成的口令请求已安全结束，现在可以重新设置。');}else await retryWebCommand(auth,p);await query.invalidateQueries();}catch(e){setError(e instanceof Error?e.message:'核对失败，请保留记录');}finally{setBusy(false);}}}>{p.sensitive?'核对或结束上次口令请求':'继续核对'}</button></div>)}</section>;
+}

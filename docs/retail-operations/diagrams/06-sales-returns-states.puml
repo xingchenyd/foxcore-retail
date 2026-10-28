@@ -1,0 +1,40 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 15
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #356553
+skinparam LineColor #356553
+skinparam packageStyle rectangle
+skinparam classBackgroundColor #F4F7EF
+skinparam classBorderColor #356553
+skinparam usecaseBackgroundColor #F4F7EF
+skinparam usecaseBorderColor #356553
+skinparam stateBackgroundColor #F4F7EF
+skinparam stateBorderColor #356553
+skinparam noteBackgroundColor #FFF6DC
+skinparam noteBorderColor #C7AB63
+hide empty members
+title 销售、退货和独立换货状态图
+state "销售" as Sale {
+[*] --> DRAFT
+DRAFT --> CHECKOUT : 校验班次 / 价格 / 税 / 佣金；占库
+DRAFT --> CANCELLED : 原因
+CHECKOUT --> POSTED : 确认线下收款；扣库计佣
+CHECKOUT --> CANCELLED : 资金已核对 + 商品已收回
+}
+state "原单退货" as R {
+[*] --> R_DRAFT
+R_DRAFT --> AUTHORIZED : 原单已成交；168小时内；无损；累计限量
+R_DRAFT --> R_CANCELLED : 原因
+AUTHORIZED --> R_POSTED : 确认退款；现金归当前班次；回库和佣金冲回
+AUTHORIZED --> R_CANCELLED : 确认退款未执行或已处理
+}
+state "独立换货" as X {
+[*] --> PREPARED : 原子授权退入 + 准备换出
+PREPARED --> X_POSTED : 原子完成两个关联单据 + 差价事实
+PREPARED --> X_CANCELLED : 核对资金与商品，释放占库
+}
+note bottom of X : 关联子单不能绕过换货单单独编辑、过账、取消；\n原已成交销售和已付结算均保留
+@enduml

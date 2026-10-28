@@ -1,13 +1,15 @@
 {
-  "status": "STAFF_MINIPROGRAM_NATIVE_RUNTIME_PENDING",
-  "baseCommit": "744c36ac67abb28963f32077c219fbb4047d28c4",
-  "branch": "codex/staff-miniprogram-20261026",
-  "date": "2026-10-26",
-  "evidence": "docs/miniprogram/verification.json",
-  "webMergeCommit": "744c36ac67abb28963f32077c219fbb4047d28c4",
+  "status": "RETAIL_OPERATIONS_CODE_DELIVERY_EXTERNAL_GATES_PENDING",
+  "branch": "codex/retail-operations-20261028",
+  "baseCommit": "e7543abf50420f4247c30decffd7cb5c8f0f480e",
+  "mainModified": false,
+  "publicDeployment": false,
+  "miniProgramMergedToMain": false,
+  "mainCommit": "744c36ac67abb28963f32077c219fbb4047d28c4",
   "webBackupBranch": "backup/main-before-web-review-20261026",
   "webBackupCommit": "3393bc3a4989b642f881cc891dc305cfda37ee5a",
-  "miniProgramMergedToMain": false,
-  "publicDeployment": false,
-  "oldPdfDerivatives": "historical snapshots"
+  "evidence": "docs/retail-operations/verification.json",
+  "currentDesign": "docs/retail-operations/index.html",
+  "sourceSpecs": "specs/002-retail-operations",
+  "externalGates": "WeChat, target Docker/cloud, registration and release remain NOT_RUN"
 }

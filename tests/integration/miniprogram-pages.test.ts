@@ -24,9 +24,9 @@ describe('actual Mini Program Page controllers with real shared API',()=>{
     const api=await import('../../apps/miniprogram/src/lib/api');const session=await import('../../apps/miniprogram/src/lib/session');
     const tag=randomUUID().slice(0,8),day=DateTime.now().setZone('America/Toronto');
     const venue=await api.command<P>('/venues',{name:'Page '+tag,street:'1 Test St',city:'Toronto',province:'Ontario',postalCode:'M5V 2T6'}),categories=await api.request<P>('/categories');
-    const event=await api.command<P>('/events',{venueId:venue.id,categoryId:categories.items[0].id,name:'Native Pages '+tag,startDate:day.toISODate(),endDate:day.toISODate(),taxBps:1300,policyConfirmed:true});
+    const event=await api.command<P>('/events',{venueId:venue.id,categoryId:categories.items[0].id,name:'Native Pages '+tag,startDate:day.toISODate(),endDate:day.toISODate(),taxBps:1300,policyConfirmed:true,currency:'CAD',priceBasis:'EXCLUSIVE',businessTimezone:'America/Toronto'});
     const booth=await api.command<P>('/booths',{eventId:event.id,location:'P-'+tag});await api.command('/events/'+event.id+'/open');
-    const product=await api.command<P>('/products',{sku:'PAGE-'+tag,name:'原生页面测试商品 '+tag,wholesaleCost:'4.00',minPrice:'8.00',suggestedPrice:'10.00'}),person=await api.command<P>('/salespeople',{firstName:'Page',lastName:tag,commissionBps:500});
+    const product=await api.command<P>('/products',{sku:'PAGE-'+tag,name:'原生页面测试商品 '+tag,wholesaleCost:'4.00',minPrice:'8.00',suggestedPrice:'10.00',currency:'CAD'}),person=await api.command<P>('/salespeople',{firstName:'Page',lastName:tag,commissionBps:500});
     const staffName='page_'+tag,initial='Initial-'+randomUUID();await api.command('/users',{username:staffName,password:initial,salespersonId:person.id});
     const shift=await api.command<P>('/shifts',{salespersonId:person.id,boothId:booth.id,plannedStart:day.startOf('day').toISO(),plannedEnd:day.endOf('day').toISO()});await api.command('/shifts/'+shift.id+'/start');
     const stock=await page('inventory-action');stock.setData({type:'receive'});await stock.load();stock.setData({productIndex:stock.data.products.findIndex((x:P)=>x.id===product.id),quantity:'12',reason:'Page receipt'});await stock.submit();check(stock);expect(stock.data.result).toContain('已登记');
@@ -45,7 +45,7 @@ describe('actual Mini Program Page controllers with real shared API',()=>{
     // Initial-password UI route is exercised with synthetic credentials, not a human account.
     session.clearSession();login.setData({username:staffName,password:initial,changing:false});await login.submit();check(login);expect(login.data.changing).toBe(true);
     const next='Next-'+randomUUID();login.setData({currentPassword:initial,newPassword:next,confirmPassword:next});await login.submit();check(login);expect(session.session()).toBeNull();login.setData({password:next});await login.submit();check(login);
-    await inventory.load();check(inventory);expect(inventory.data.owner).toBe(false);expect(inventory.data.items.every((x:P)=>x.location_id===locations[to].id)).toBe(true);
+    await inventory.load();check(inventory);expect(inventory.data.owner).toBe(false);expect(inventory.data.items.some((x:P)=>x.location_id!==locations[to].id)).toBe(true);
     await commissions.load();check(commissions);expect(commissions.data.owner).toBe(false);expect(commissions.data.settlements.every((x:P)=>x.salesperson_id===person.id)).toBe(true);
     expect(api.pendingCommands()).toHaveLength(0);
   },120_000);

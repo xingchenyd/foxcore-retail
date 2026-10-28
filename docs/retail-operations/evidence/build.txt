@@ -1,0 +1,26 @@
+
+> foxcore-retail@1.0.0 build
+> npm run build -w @foxcore/web && npm run build -w @foxcore/server && npm run mini:build
+
+
+> @foxcore/web@1.0.0 build
+> vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 95 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.36 kB │ gzip:   0.27 kB
+dist/assets/index-Dvw96_Vh.css   28.11 kB │ gzip:   7.22 kB
+dist/assets/index-ey5yTpUM.js   358.76 kB │ gzip: 112.30 kB
+✓ built in 1.25s
+
+> @foxcore/server@1.0.0 build
+> tsc -p tsconfig.json
+
+
+> foxcore-retail@1.0.0 mini:build
+> node scripts/build-miniprogram.mjs
+
+Mini Program ready: apps\miniprogram\build (14 native pages). Development package; WeChat IDE/device verification is separate.

@@ -1,3 +1,5 @@
+> **2026-10-28增量版本优先**：[当前经营设计](retail-operations/README.md)。小程序14页、中国模式、共享业务权限、增量迁移和当前验收以新目录为准；以下为保留的历史基线。
+
 > 作业文档与图纸仓库：https://github.com/xingchenyd/foxcore-retail —— 文档位于 `docs/`，图纸位于 [docs/diagrams](https://github.com/xingchenyd/foxcore-retail/tree/main/docs/diagrams)（实体类图 class-diagram.png/svg、物理 ERD physical-erd.png、概念 ERD core-barker.png/svg、架构图、业务序列图、用例图、状态图等全套 .puml/.svg/.png）。
 
 # 04 数据库设计与 ERD

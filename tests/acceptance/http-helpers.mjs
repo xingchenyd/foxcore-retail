@@ -32,10 +32,10 @@ export async function fixture(s,{commissionBps=500,taxBps=1300,policyConfirmed=t
   const {DateTime}=await import('luxon');const day=DateTime.now().setZone('America/Toronto');const suffix=tag();
   const venue=await s.ok('POST','/venues',{name:'FX '+suffix,street:'1 Synthetic St',city:'Toronto',province:'Ontario',postalCode:'M5V 2T6'});
   const cat=(await s.ok('GET','/categories')).items[0].id;
-  const event=await s.ok('POST','/events',{venueId:venue.id,categoryId:cat,name:'FX '+suffix,startDate:day.minus({days:1}).toISODate(),endDate:day.toISODate(),taxBps,policyConfirmed});
+  const event=await s.ok('POST','/events',{venueId:venue.id,categoryId:cat,name:'FX '+suffix,startDate:day.minus({days:1}).toISODate(),endDate:day.toISODate(),taxBps,policyConfirmed,currency:'CAD',priceBasis:'EXCLUSIVE',businessTimezone:'America/Toronto'});
   const booth=await s.ok('POST','/booths',{eventId:event.id,location:'B-'+suffix});
   const person=await s.ok('POST','/salespeople',{firstName:'FX',lastName:suffix,commissionBps});
-  const product=await s.ok('POST','/products',{sku:'FX-'+suffix,name:'Product '+suffix,wholesaleCost:'4.00',minPrice:'8.00',suggestedPrice:'10.00'});
+  const product=await s.ok('POST','/products',{sku:'FX-'+suffix,name:'Product '+suffix,wholesaleCost:'4.00',minPrice:'8.00',suggestedPrice:'10.00',currency:'CAD'});
   const [location]=db('SELECT id FROM stock_locations WHERE booth_id=?',[booth.id]);const [main]=db("SELECT id FROM stock_locations WHERE code='MAIN'");
   return {event,booth,person,product,location,main,day,suffix};
 }

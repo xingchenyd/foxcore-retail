@@ -1,0 +1,47 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 15
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #356553
+skinparam LineColor #356553
+skinparam packageStyle rectangle
+skinparam classBackgroundColor #F4F7EF
+skinparam classBorderColor #356553
+skinparam usecaseBackgroundColor #F4F7EF
+skinparam usecaseBorderColor #356553
+skinparam stateBackgroundColor #F4F7EF
+skinparam stateBorderColor #356553
+skinparam noteBackgroundColor #FFF6DC
+skinparam noteBorderColor #C7AB63
+hide empty members
+title 组件与部署图 · 当前交付和后续上线
+left to right direction
+node "员工终端" {
+component "原生微信小程序\n14个页面" as Mini
+component "员工浏览器" as StaffWeb
+}
+node "管理员电脑" {
+component "React Web 管理界面" as OwnerWeb
+}
+node "已实现的同源应用" {
+component "静态 Web 资源" as Web
+component "Fastify API\n会话/CSRF/角色/字段权限" as API
+component "事务用例\n幂等/金额/库存/审计" as Usecases
+database "MariaDB 11.8\n33业务表+1迁移表" as DB
+}
+Mini --> API : Bearer 会话 + CSRF
+StaffWeb --> Web
+OwnerWeb --> Web
+Web --> API : 同源 Cookie + CSRF
+API --> Usecases
+Usecases --> DB : 受限数据库账户
+cloud "以后购买并验收的腾讯云（计划）" {
+component "HTTPS 域名 / 证书 / 备案与小程序域名配置" as HTTPS
+component "应用 + 私网数据库 + 备份存储" as CloudApp
+HTTPS --> CloudApp
+}
+note bottom of CloudApp : 未购买、未部署；目标云机须重测容量/恢复/监控。\n个人主体发布能力与审核以微信后台为准
+note bottom of Mini : 已完成 TypeScript 构建和控制器/本机适配器检查；\n无 AppID，微信引擎编译、iOS/Android 真机、上传均未执行
+@enduml

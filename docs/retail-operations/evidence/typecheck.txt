@@ -1,0 +1,15 @@
+
+> foxcore-retail@1.0.0 typecheck
+> npm run typecheck -w @foxcore/server && npm run typecheck -w @foxcore/web && npm run mini:typecheck
+
+
+> @foxcore/server@1.0.0 typecheck
+> tsc --noEmit -p tsconfig.json
+
+
+> @foxcore/web@1.0.0 typecheck
+> tsc --noEmit -p tsconfig.json
+
+
+> foxcore-retail@1.0.0 mini:typecheck
+> tsc --noEmit -p apps/miniprogram/tsconfig.json

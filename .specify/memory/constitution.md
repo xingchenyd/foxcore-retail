@@ -1,3 +1,5 @@
+> 2026-10-28：用户已授权修复并扩展经营流程。第IV条的“不改业务源码”仅适用于此前assessment阶段；本轮按独立分支实施，继续遵守隔离、可回退和证据边界。
+
 # Foxcore Retail Review Constitution
 
 Version: 1.0.0. Ratified: 2026-10-27. Scope: this repository's reassessment.

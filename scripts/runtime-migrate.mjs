@@ -14,14 +14,14 @@ try {
   const [lock]=await db.query('SELECT GET_LOCK(?,15) AS locked',['foxcore_migrate_'+database]);if(lock[0]?.locked!==1) throw new Error('Migration lock unavailable');
   await db.query('CREATE TABLE IF NOT EXISTS schema_migrations(version VARCHAR(100) PRIMARY KEY,checksum CHAR(64) NOT NULL,applied_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)) ENGINE=InnoDB');
   for(const file of (await readdir('db/migrations')).filter(x=>x.endsWith('.sql')).sort()){
-    const sql=await readFile(join('db/migrations',file),'utf8'),digest=createHash('sha256').update(sql).digest('hex');
+    const sql=await readFile(join('db/migrations',file),'utf8'),digest=createHash('sha256').update(sql.replace(/\r\n/g,'\n')).digest('hex');
     const [old]=await db.query('SELECT checksum FROM schema_migrations WHERE version=?',[file]);
-    if(old.length){if(old[0].checksum!==digest) throw new Error('Migration checksum mismatch: '+file);console.log('verified',file);continue;}
+    if(old.length){if(![digest,createHash('sha256').update(sql.replace(/\r?\n/g,'\r\n')).digest('hex')].includes(old[0].checksum)) throw new Error('Migration checksum mismatch: '+file);console.log('verified',file);continue;}
     await db.query(sql);await db.query('INSERT INTO schema_migrations(version,checksum) VALUES(?,?)',[file,digest]);console.log('applied',file);
   }
   await db.query(`REVOKE ALL PRIVILEGES, GRANT OPTION FROM ${principal}`);
   await db.query(`GRANT SELECT,INSERT ON ${database}.* TO ${principal}`);
-  const updateTables=['venues','events','booths','products','salespeople','shifts','users','sessions','sales','sale_lines','stock_locations','stock_balances','stock_holds','returns','return_lines','commission_settlements','idempotency_keys'];
+  const updateTables=['venues','events','booths','products','salespeople','shifts','users','sessions','sales','sale_lines','stock_locations','stock_balances','stock_holds','returns','return_lines','commission_settlements','idempotency_keys','business_settings','stock_transfers','damage_records','cash_handovers','shift_extensions','sale_workspaces','exchanges'];
   for(const table of updateTables) await db.query(`GRANT UPDATE ON ${database}.${table} TO ${principal}`);
   for(const table of ['sale_lines','commission_claims']) await db.query(`GRANT DELETE ON ${database}.${table} TO ${principal}`);
   await db.query(`GRANT UPDATE ON ${database}.commission_claims TO ${principal}`);

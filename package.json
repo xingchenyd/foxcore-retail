@@ -30,7 +30,11 @@
     "verify:full": "node scripts/verify-full.mjs",
     "mini:typecheck": "tsc --noEmit -p apps/miniprogram/tsconfig.json",
     "mini:build": "node scripts/build-miniprogram.mjs",
-    "mini:preview": "node scripts/mini-preview-server.mjs"
+    "mini:preview": "node scripts/mini-preview-server.mjs",
+    "test:review": "vitest run tests/review",
+    "test:capacity": "vitest run tests/capacity",
+    "owner:recover": "node scripts/recover-owner.mjs",
+    "docs:operations": "node scripts/check-operations.mjs"
   },
   "dependencies": {
     "@fastify/cookie": "11.0.2",

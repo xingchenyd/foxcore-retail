@@ -1,0 +1,100 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 15
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #356553
+skinparam LineColor #356553
+skinparam packageStyle rectangle
+skinparam classBackgroundColor #F4F7EF
+skinparam classBorderColor #356553
+skinparam usecaseBackgroundColor #F4F7EF
+skinparam usecaseBorderColor #356553
+skinparam stateBackgroundColor #F4F7EF
+skinparam stateBorderColor #356553
+skinparam noteBackgroundColor #FFF6DC
+skinparam noteBorderColor #C7AB63
+hide empty members
+title 库存模块 ERD · 数量与单据追溯
+left to right direction
+hide methods
+skinparam linetype ortho
+skinparam nodesep 65
+skinparam ranksep 95
+entity "damage_records" as damage_records {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * product_id : bigint(20) unsigned <<FK>>
+ {field} * quantity : int(10) unsigned
+ {field} * created_by : bigint(20) unsigned <<FK>>
+ {field} * version : int(10) unsigned
+}
+entity "products" as products {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * sku : varchar(64) <<UK>>
+ {field} * version : int(10) unsigned
+ {field} * currency : char(3)
+}
+entity "stock_balances" as stock_balances {
+ {field} * location_id : bigint(20) unsigned <<PK,FK>>
+ {field} * product_id : bigint(20) unsigned <<PK,FK>>
+ {field} * on_hand : bigint(20) unsigned
+ {field} * reserved : bigint(20) unsigned
+ {field} * version : int(10) unsigned
+}
+entity "stock_documents" as stock_documents {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} from_location_id : bigint(20) unsigned <<FK>>
+ {field} to_location_id : bigint(20) unsigned <<FK>>
+ {field} * created_by : bigint(20) unsigned <<FK>>
+}
+entity "stock_document_lines" as stock_document_lines {
+ {field} * document_id : bigint(20) unsigned <<PK,FK>>
+ {field} * line_no : smallint(5) unsigned <<PK>>
+ {field} * product_id : bigint(20) unsigned <<FK>>
+ {field} * quantity : int(11)
+}
+entity "stock_holds" as stock_holds {
+ {field} * sale_id : bigint(20) unsigned <<PK,FK>>
+ {field} * line_no : smallint(5) unsigned <<PK,FK>>
+ {field} * location_id : bigint(20) unsigned <<FK>>
+ {field} * product_id : bigint(20) unsigned <<FK>>
+ {field} * quantity : int(10) unsigned
+ {field} * status : enum('ACTIVE','CONSUMED','RELEASED')
+}
+entity "stock_ledger" as stock_ledger {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * location_id : bigint(20) unsigned <<FK>>
+ {field} * product_id : bigint(20) unsigned <<FK>>
+ {field} * source_kind : enum('DOCUMENT','SALE','RETURN')
+}
+entity "stock_locations" as stock_locations {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * code : varchar(80) <<UK>>
+ {field} booth_id : bigint(20) unsigned <<UK,FK>>
+}
+entity "stock_transfers" as stock_transfers {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * product_id : bigint(20) unsigned <<FK>>
+ {field} * from_location_id : bigint(20) unsigned <<FK>>
+ {field} * to_location_id : bigint(20) unsigned <<FK>>
+ {field} * transit_location_id : bigint(20) unsigned <<FK>>
+ {field} * quantity : int(10) unsigned
+ {field} * state : enum('DISPATCHED','RECEIVED','CANCELLED')
+ {field} * created_by : bigint(20) unsigned <<FK>>
+ {field} received_by : bigint(20) unsigned <<FK>>
+ {field} * version : int(10) unsigned
+}
+products ||--o{ damage_records
+stock_locations ||--o{ stock_balances
+products ||--o{ stock_balances
+stock_locations |o--o{ stock_documents
+stock_documents ||--o{ stock_document_lines
+products ||--o{ stock_document_lines
+stock_locations ||--o{ stock_holds
+products ||--o{ stock_holds
+stock_locations ||--o{ stock_ledger
+products ||--o{ stock_ledger
+stock_locations ||--o{ stock_transfers
+products ||--o{ stock_transfers
+@enduml

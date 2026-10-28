@@ -1,0 +1,32 @@
+{
+  "environment": "Windows local Node24 + native MariaDB, loopback",
+  "staff": 100,
+  "concurrentEmployeeSessions": 30,
+  "products": 500,
+  "events": 10,
+  "postedSales": 3000,
+  "failedRequests": 0,
+  "elapsedSeconds": 18.83,
+  "salesPerSecond": 159.33,
+  "requests": 9900,
+  "requestLatencyMs": {
+    "p50": 57.13,
+    "p95": 70.49,
+    "p99": 82.8
+  },
+  "saleWorkflowLatencyMs": {
+    "p50": 172.08,
+    "p95": 201.19,
+    "p99": 233.01
+  },
+  "totalSetupAndRunSeconds": 22.42,
+  "cloudCapacity": "NOT_RUN",
+  "wechatDevice": "NOT_RUN",
+  "hardware": {
+    "cpu": "AMD Ryzen 7 H 255 w/ Radeon 780M Graphics",
+    "physicalCores": 8,
+    "logicalProcessors": 16
+  },
+  "workloadDefinition": "Counts describe newly created workload fixtures. The dedicated review database also contains older synthetic regression records. No production/customer data used.",
+  "measurement": "Single local run, 30 independent employee sessions; 3000 create/prepare/post flows plus periodic list reads; no target-cloud acceptance inferred."
+}
