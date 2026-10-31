@@ -1,4 +1,5 @@
 /** Compile the real native Mini Program. This does not claim a WeChat IDE compile/upload. */
+import './load-env.mjs';
 import { readFileSync,writeFileSync,mkdirSync,readdirSync,copyFileSync,statSync } from 'node:fs';
 import { resolve,join,relative,dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -7,7 +8,10 @@ import { isIP } from 'node:net';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const source=join(root,'apps/miniprogram/src'),dist=join(root,'apps/miniprogram/dist'),build=join(root,'apps/miniprogram/build');
 const argument=(key,fallback)=>{const i=process.argv.indexOf(key);return i<0?fallback:process.argv[i+1]??'';};
-const api=argument('--api',process.env.FOXCORE_MINI_API_URL??'').replace(/\/$/,'');
+// A local Web origin is not an implicit Mini Program development opt-in.
+const publicApi=process.env.PUBLIC_ORIGIN??'';
+const originFallback=publicApi.startsWith('https://')||process.argv.includes('--development')?publicApi:'';
+const api=argument('--api',process.env.FOXCORE_MINI_API_URL??originFallback).replace(/\/$/,'');
 const appid=argument('--appid',process.env.FOXCORE_MINI_APPID??'touristappid');
 const release=process.argv.includes('--release');
 if(api){const u=new URL(api);if(!['https:','http:'].includes(u.protocol)||u.username||u.password||u.search||u.hash)throw new Error('API must be a plain HTTP(S) base URL');if(u.protocol==='http:'&&(!process.argv.includes('--development')||!['localhost','127.0.0.1','[::1]'].includes(u.hostname)))throw new Error('HTTP is only allowed for explicit loopback development');}

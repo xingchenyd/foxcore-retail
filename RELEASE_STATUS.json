@@ -1,15 +1,19 @@
 {
-  "status": "RETAIL_OPERATIONS_CODE_DELIVERY_EXTERNAL_GATES_PENDING",
-  "branch": "codex/retail-operations-20261028",
-  "baseCommit": "e7543abf50420f4247c30decffd7cb5c8f0f480e",
-  "mainModified": false,
+  "status": "WORKBUDDY_CODE_ADAPTED_EXTERNAL_GATES_PENDING",
+  "branch": "codex/workbuddy-deploy-20261031",
+  "baseCommit": "ef6fd92b6904f18eb8007312be72bca1eb65722e",
+  "mainModified": true,
   "publicDeployment": false,
-  "miniProgramMergedToMain": false,
-  "mainCommit": "744c36ac67abb28963f32077c219fbb4047d28c4",
+  "miniProgramMergedToMain": true,
+  "mainCommit": "ef6fd92b6904f18eb8007312be72bca1eb65722e",
   "webBackupBranch": "backup/main-before-web-review-20261026",
   "webBackupCommit": "3393bc3a4989b642f881cc891dc305cfda37ee5a",
-  "evidence": "docs/retail-operations/verification.json",
+  "evidence": "docs/workbuddy/verification.json",
   "currentDesign": "docs/retail-operations/index.html",
   "sourceSpecs": "specs/002-retail-operations",
-  "externalGates": "WeChat, target Docker/cloud, registration and release remain NOT_RUN"
+  "externalGates": "WorkBuddy public hosting, TiDB, WeChat, target Docker/cloud and production acceptance NOT_RUN",
+  "mainBackupBranch": "backup/main-before-operations-merge-20261031",
+  "mainBackupCommit": "744c36ac67abb28963f32077c219fbb4047d28c4",
+  "workbuddyChangesMergedToMain": false,
+  "operationsEvidence": "docs/retail-operations/verification.json"
 }

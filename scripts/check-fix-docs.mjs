@@ -61,7 +61,12 @@ function main(){
     assert.equal(evidence.wechatIdeCompile,'NOT_RUN');assert.equal(evidence.wechatDeviceTest,'NOT_RUN');
     assert.equal(release.webMergeCommit,'744c36ac67abb28963f32077c219fbb4047d28c4');
     assert.equal(release.webBackupCommit,'3393bc3a4989b642f881cc891dc305cfda37ee5a');
-  }else if(release.status==='RETAIL_OPERATIONS_CODE_DELIVERY_EXTERNAL_GATES_PENDING'){assert.equal(release.mainModified,false);assert.equal(release.publicDeployment,false);const v=JSON.parse(readFileSync(join(root,release.evidence),'utf8'));assert.equal(v.branch,release.branch);assert.equal(v.wechatDevice,'NOT_RUN');assert.equal(v.database.invariantViolations,0);}else assert.equal(release.status,'REPAIR_CANDIDATE_RUNTIME_UNVERIFIED');
+  }else if(release.status==='RETAIL_OPERATIONS_CODE_DELIVERY_EXTERNAL_GATES_PENDING'){assert.equal(release.mainModified,false);assert.equal(release.publicDeployment,false);const v=JSON.parse(readFileSync(join(root,release.evidence),'utf8'));assert.equal(v.branch,release.branch);assert.equal(v.wechatDevice,'NOT_RUN');assert.equal(v.database.invariantViolations,0);}
+  else if(release.status==='WORKBUDDY_CODE_ADAPTED_EXTERNAL_GATES_PENDING'){
+    assert.equal(release.mainModified,true);assert.equal(release.miniProgramMergedToMain,true);assert.equal(release.workbuddyChangesMergedToMain,false);assert.equal(release.publicDeployment,false);
+    const v=JSON.parse(readFileSync(join(root,release.evidence),'utf8'));assert.equal(v.branch,release.branch);assert.equal(v.baseMainCommit,release.mainCommit);assert.equal(v.local.invariants.violations,0);
+    for(const key of ['workbuddyPublicDeployment','tidbCloud','wechatIdeCompile','wechatDevice'])assert.equal(v.external[key],'NOT_RUN');
+  }else assert.equal(release.status,'REPAIR_CANDIDATE_RUNTIME_UNVERIFIED');
   console.log('Documentation checks passed: registry/references, seven SDD mappings, overlay/source routes and repair tracking. Not a proof that every prose statement or runtime contract is correct.');
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url))main();

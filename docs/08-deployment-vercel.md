@@ -1,5 +1,7 @@
 # 08 · 云端部署（Vercel + TiDB Cloud）
 
+> **2026-10-31 更新**：这是保留的 Vercel 路径说明，不能作为当前 TiDB 公网验收证据。当前有 34 张表、5 个迁移，ready 的最新 schema 应为 `005_event_timezone_consistency.sql`。WorkBuddy 适配、免费额度核实及外部验收边界见 [WorkBuddy 部署说明](workbuddy/README.md)。初始密码现在必须私下提供，绝不打印在日志中；生产环境也会读取可选根 `.env`，真实进程变量优先。TiDB 方言、约束执行、权限和业务事务必须在实际实例重新验收。
+
 本文档描述如何把 Foxcore Retail 部署到 Vercel，获得一个所有人都能访问的公开链接。
 **本地 Docker 部署（见 `07-deployment-local.md`）保持不变**：云端方案完全是增量式的，
 所有代码改动均由环境变量门控（`VERCEL`、`DB_SSL`），不设置这些变量时本地行为与原版一致。
@@ -45,7 +47,7 @@
    | `DB_PASSWORD` | TiDB 数据库密码 | 与 `DB_NAME` 同级的明文密码 |
    | `DB_NAME` | `foxcore` | 第 1 步第 5 项创建的库 |
    | `DB_SSL` | `true` | TiDB 强制 TLS，必填 |
-   | `APP_ENV` | `production` | 跳过本地 `.env` 加载 |
+   | `APP_ENV` | `production` | 启用生产门控；可选 `.env` 兜底，真实进程变量优先 |
    | `NODE_ENV` | `production` | |
    | `ALLOW_PRODUCTION_MIGRATION` | `yes` | 允许构建期运行初始化脚本 |
    | `OWNER_PASSWORD` | ≥32 字符随机串 | 首次部署创建 `owner` 用；登录后会被强制修改 |

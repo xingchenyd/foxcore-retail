@@ -1,0 +1,168 @@
+{
+  "taskDate": "2026-10-31",
+  "status": "CODE_ADAPTED_EXTERNAL_GATES_PENDING",
+  "branch": "codex/workbuddy-deploy-20261031",
+  "baseMainCommit": "ef6fd92b6904f18eb8007312be72bca1eb65722e",
+  "mainMerge": {
+    "pullRequest": 4,
+    "previousFinalCommit": "c9f0b41ff072f90f5d4b7b9bf9f9fc1d639fddc0",
+    "backupBranch": "backup/main-before-operations-merge-20261031",
+    "backupCommit": "744c36ac67abb28963f32077c219fbb4047d28c4"
+  },
+  "migrationFilesChanged": false,
+  "local": {
+    "node24": {
+      "version": "24.19.0",
+      "static": "PASS",
+      "unit": 89,
+      "unitFiles": 9,
+      "pure": 94
+    },
+    "node22": {
+      "version": "22.23.4",
+      "cleanNpmCi": "PASS",
+      "static": "PASS",
+      "unit": 89,
+      "unitFiles": 9,
+      "pure": 94,
+      "productionDotEnvAndPlatformPort": "PASS"
+    },
+    "npmAudit": {
+      "total": 0,
+      "patches": {
+        "glob": "14.0.2",
+        "minimatch": "11.0.1"
+      },
+      "date": "2026-10-31"
+    },
+    "invariants": {
+      "count": 31,
+      "violations": 0
+    },
+    "regression": {
+      "passed": 10,
+      "files": 7,
+      "evidence": "Private command output summarized; no credentials in published result"
+    },
+    "nativeCloudLauncher": {
+      "taskDate": "2026-10-31",
+      "engine": "Native Windows MariaDB 11.8.9 loopback; NOT TiDB",
+      "migrationFilesUnchanged": true,
+      "cloudSetup": {
+        "fresh": "PASS",
+        "repeat": "PASS",
+        "ownerHashUnchanged": true,
+        "passwordNotPrinted": true,
+        "crlfChecksumAccepted": true
+      },
+      "healthOnlyBootstrap": {
+        "live": 200,
+        "ready": 503,
+        "business": 503,
+        "reachabilityProbeRejectsBootstrap": true
+      },
+      "reachability": [
+        {
+          "path": "/health/live",
+          "status": 200,
+          "passed": true
+        },
+        {
+          "path": "/health/ready",
+          "status": 200,
+          "passed": true
+        },
+        {
+          "path": "/",
+          "status": 200,
+          "passed": true
+        },
+        {
+          "path": "/assets/index-CqX2CljW.js",
+          "status": 200,
+          "passed": true
+        },
+        {
+          "path": "/assets/index-Dvw96_Vh.css",
+          "status": 200,
+          "passed": true
+        },
+        {
+          "path": "/api/v1/auth/me",
+          "status": 200,
+          "passed": true
+        },
+        {
+          "path": "/api/v1/users",
+          "status": 401,
+          "passed": true
+        }
+      ],
+      "authentication": {
+        "firstLoginForcedChange": true,
+        "secureHttpOnlyCookie": true,
+        "wrongOrigin403": true,
+        "sharedMiniBearerAndWebSession": true
+      },
+      "regression": {
+        "passed": 10,
+        "files": 7,
+        "evidence": "Private command output summarized; no credentials in published result"
+      },
+      "invariants": {
+        "count": 31,
+        "violations": 0
+      },
+      "appendOnlyPermissions": "PASS",
+      "node22Runtime": {
+        "version": "22.23.4",
+        "productionDotEnvFallback": true,
+        "platformPortWins": true,
+        "reachable": true
+      }
+    },
+    "miniBuildConfiguration": {
+      "checks": [
+        {
+          "name": "PUBLIC_ORIGIN fallback",
+          "passed": true
+        },
+        {
+          "name": "explicit environment priority",
+          "passed": true
+        },
+        {
+          "name": "CLI priority",
+          "passed": true
+        },
+        {
+          "name": "local Web origin does not opt into insecure Mini API",
+          "passed": true
+        },
+        {
+          "name": "release refuses missing real AppID",
+          "passed": true
+        }
+      ],
+      "wechatIdeCompile": "NOT_RUN",
+      "device": "NOT_RUN"
+    }
+  },
+  "external": {
+    "workbuddyAccountEntitlements": "NOT_RUN",
+    "workbuddyPublicDeployment": "NOT_RUN",
+    "tidbCloud": "NOT_RUN",
+    "existingDataMigration": "NOT_RUN",
+    "wechatIdeCompile": "NOT_RUN",
+    "wechatDevice": "NOT_RUN",
+    "wechatUploadReviewRelease": "NOT_RUN",
+    "targetDockerRuntime": "NOT_RUN",
+    "productionBackupRestore": "NOT_RUN",
+    "targetCapacity": "NOT_RUN"
+  },
+  "notes": [
+    "Node22/24 and native MariaDB localhost evidence do not establish TiDB or WorkBuddy compatibility.",
+    "Previously measured capacity and backup evidence remain in retail-operations, not rerun or promoted to cloud acceptance.",
+    "No real credentials or original supplied guide are included in this evidence."
+  ]
+}

@@ -8,7 +8,7 @@
     "apps/web"
   ],
   "engines": {
-    "node": ">=24 <25"
+    "node": "^22.12.0 || ^24.0.0"
   },
   "scripts": {
     "dev": "concurrently -k \"npm run dev -w @foxcore/server\" \"npm run dev -w @foxcore/web\"",
@@ -34,7 +34,11 @@
     "test:review": "vitest run tests/review",
     "test:capacity": "vitest run tests/capacity",
     "owner:recover": "node scripts/recover-owner.mjs",
-    "docs:operations": "node scripts/check-operations.mjs"
+    "docs:operations": "node scripts/check-operations.mjs",
+    "build:cloud": "npm run build -w @foxcore/web && npm run build -w @foxcore/server",
+    "start:cloud": "node scripts/start-cloud.mjs",
+    "setup:cloud": "node scripts/vercel-setup.mjs",
+    "check:cloud": "node scripts/check-cloud.mjs"
   },
   "dependencies": {
     "@fastify/cookie": "11.0.2",
@@ -53,5 +57,11 @@
     "tsx": "4.20.6",
     "typescript": "5.9.3",
     "vitest": "4.1.12"
+  },
+  "overrides": {
+    "@fastify/static": {
+      "glob": "14.0.2"
+    },
+    "minimatch": "11.0.1"
   }
 }
