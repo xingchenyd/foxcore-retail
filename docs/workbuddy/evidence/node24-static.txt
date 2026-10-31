@@ -1,0 +1,171 @@
+
+> foxcore-retail@1.0.0 verify:static
+> npm run docs:check && npm run typecheck && npm run test:unit && npm run test:pure && npm run build
+
+
+> foxcore-retail@1.0.0 docs:check
+> node scripts/check-fix-docs.mjs
+
+Documentation checks passed: registry/references, seven SDD mappings, overlay/source routes and repair tracking. Not a proof that every prose statement or runtime contract is correct.
+
+> foxcore-retail@1.0.0 typecheck
+> npm run typecheck -w @foxcore/server && npm run typecheck -w @foxcore/web && npm run mini:typecheck
+
+
+> @foxcore/server@1.0.0 typecheck
+> tsc --noEmit -p tsconfig.json
+
+
+> @foxcore/web@1.0.0 typecheck
+> tsc --noEmit -p tsconfig.json
+
+
+> foxcore-retail@1.0.0 mini:typecheck
+> tsc --noEmit -p apps/miniprogram/tsconfig.json
+
+
+> foxcore-retail@1.0.0 test:unit
+> vitest run tests/unit
+
+
+ RUN  v4.1.12 C:/Users/lenovo/Documents/Codex/2026-10-24/https-github-com-xingchenyd-foxcore-retail/work/foxcore-retail
+
+
+ Test Files  9 passed (9)
+      Tests  89 passed (89)
+   Start at  16:46:38
+   Duration  1.26s (transform 2.31s, setup 0ms, import 2.96s, tests 747ms, environment 2ms)
+
+
+> foxcore-retail@1.0.0 test:pure
+> node scripts/run-pure-tests.mjs
+
+Pure production-logic tests: Node v24.19.0, TypeScript 5.9.3; not a DB/E2E run.
+✔ FX-F01-02/03 JSON with plain object (8.8685ms)
+✔ FX-F01-02/03 JSON with Headers instance (0.9752ms)
+✔ FX-F01-02/03 JSON with tuple array (1.5206ms)
+✔ FX-F01-01 no custom headers and abort signal (0.2861ms)
+✔ FX-F01-04 mixed case cannot override JSON contract (0.5756ms)
+✔ JSON-only helper rejects FormData/Blob rather than mislabelling uploads (2.1579ms)
+✔ bodyless GET preserves caller headers and has no invented JSON body (0.3235ms)
+✔ API rejects foreign or protocol-relative paths (0.4463ms)
+✔ HTTP error preserves status/code, never returns success (1.6394ms)
+✔ network rejection remains rejected (0.387ms)
+✔ FX-F07-03 loader requests real additional API pages (2.0786ms)
+✔ loader refuses silent resource-cap truncation (0.6298ms)
+✔ loader abort signal is forwarded to every page (0.4639ms)
+✔ loader rejects non-progressing or inconsistent pagination (0.7323ms)
+✔ F08 checker accepts repeated valid references, rejects unknown IDs (3.1878ms)
+✔ F08 checker rejects conflicting registry IDs (0.3194ms)
+✔ F08 checker rejects nonexistent implementation/test files (0.2124ms)
+✔ F08 checker detects nonexistent documented route (0.5413ms)
+✔ FX-F04-01/04 event filter intersects salesperson scope in SQL bindings (2.5389ms)
+✔ owner report preserves standard-cost margin and global scope (0.2331ms)
+✔ FX-F04-06 reject invalid report selector {"group":"typo"} (0.5475ms)
+✔ FX-F04-06 reject invalid report selector {"group":["product"]} (0.1211ms)
+✔ FX-F04-06 reject invalid report selector {"eventId":""} (0.1814ms)
+✔ FX-F04-06 reject invalid report selector {"eventId":"1 OR 1=1"} (0.1749ms)
+✔ FX-F04-06 reject invalid report selector {"eventId":"-2"} (0.1261ms)
+✔ salesperson cannot accidentally get global report with missing identity (0.2279ms)
+✔ FX-F04-02/03 report facts retain POSTED sales and POSTED returns only (0.2782ms)
+✔ FX-F07-06 CSV quotes commas, double quotes and line breaks (0.831ms)
+✔ CSV protects formula text "=HYPERLINK(\"x\")" (0.3246ms)
+✔ CSV protects formula text "+CMD" (0.1376ms)
+✔ CSV protects formula text "@SUM(A1:A2)" (0.0874ms)
+✔ CSV protects formula text "-CMD" (0.9605ms)
+✔ CSV protects formula text " \t=1+1" (0.2551ms)
+✔ CSV protects formula text "\ttext" (0.1958ms)
+✔ CSV protects formula text "\n=1" (0.1369ms)
+✔ FX-F07-02 CSV has every group beyond 100, not just the first page (0.8006ms)
+✔ CSV rejects excess resource limit rather than partial success (0.929ms)
+✔ CSV numeric columns cannot carry arbitrary spreadsheet formulas (0.2105ms)
+✔ pagination defaults, last and empty pages (2.6971ms)
+✔ FX-F07-05 reject limit="0" (0.8785ms)
+✔ FX-F07-05 reject limit="101" (0.1932ms)
+✔ FX-F07-05 reject limit="1e2" (0.1159ms)
+✔ FX-F07-05 reject limit=" 20" (0.1549ms)
+✔ FX-F07-05 reject limit=true (0.1009ms)
+✔ FX-F07-05 reject limit=["20","30"] (0.1329ms)
+✔ FX-F07-05 reject offset="-1" (0.1444ms)
+✔ FX-F07-05 reject offset="1.2" (0.1664ms)
+✔ FX-F07-05 reject offset="" (0.2173ms)
+✔ FX-F07-05 reject offset="10000001" (0.1398ms)
+✔ FX-F02-06 reject version "1" (0.2467ms)
+✔ FX-F02-06 reject version 0 (0.1108ms)
+✔ FX-F02-06 reject version -1 (0.0861ms)
+✔ FX-F02-06 reject version null (0.0642ms)
+✔ FX-F02-06 reject version true (0.0806ms)
+✔ FX-F02-06 reject version 1.2 (0.0597ms)
+✔ FX-F02-06 reject version 4294967295 (0.052ms)
+✔ versions are bounded positive JSON integers (0.1428ms)
+✔ FX-F03-06 reject rate null (0.171ms)
+✔ FX-F03-06 reject rate "500" (0.068ms)
+✔ FX-F03-06 reject rate true (0.0586ms)
+✔ FX-F03-06 reject rate -1 (0.0543ms)
+✔ FX-F03-06 reject rate 10001 (0.0485ms)
+✔ FX-F03-06 reject rate 0.5 (0.05ms)
+✔ FX-F03-02/07 zero and full basis-point rates are valid (0.0795ms)
+✔ IDs remain strings, even above JavaScript safe-integer range (0.155ms)
+✔ invalid identifier "" (0.1573ms)
+✔ invalid identifier 0 (0.1107ms)
+✔ invalid identifier "0" (0.0704ms)
+✔ invalid identifier "-1" (0.0563ms)
+✔ invalid identifier "1 OR 1=1" (0.0491ms)
+✔ invalid identifier ["1"] (0.0684ms)
+✔ FX-F03-01 incomplete event policy can be completed (0.2233ms)
+✔ event patch preserves fields not submitted and accepts explicit null/false/zero (0.1671ms)
+✔ FX-F03-03 reject policy change in OPEN (0.209ms)
+✔ FX-F03-03 reject policy change in CLOSED (0.0773ms)
+✔ FX-F03-03 reject policy change in CANCELLED (0.0605ms)
+✔ stale version, no-op field set and non-boolean confirmation are rejected (0.2255ms)
+✔ FX-F02-01 planned cancellation does not depend on current time (0.2548ms)
+✔ FX-F02-02 new cancel cannot change ACTIVE (0.1773ms)
+✔ FX-F02-02 new cancel cannot change CLOSED (0.0679ms)
+✔ FX-F02-02 new cancel cannot change CANCELLED (0.1324ms)
+✔ FX-F02-06 stale, started or sale-associated planned rows cannot be cancelled (0.2731ms)
+✔ FX-F05-03/04 main and same-event open booth are legal (0.1611ms)
+✔ FX-F05-01 reject CLOSED target event (0.1792ms)
+✔ FX-F05-01 reject CANCELLED target event (0.0685ms)
+✔ FX-F05-01 reject DRAFT target event (0.0602ms)
+✔ FX-F05-01 reject null target event (0.0468ms)
+✔ FX-F05-02 cross-event even OPEN is forbidden (0.1308ms)
+✔ inactive/malformed booth {"active":0} (0.1341ms)
+✔ inactive/malformed booth {"booth_active":0} (0.0826ms)
+✔ inactive/malformed booth {"booth_id":null} (0.0757ms)
+✔ inactive/malformed booth {"event_id":null} (0.0687ms)
+✔ non-MAIN warehouse and inactive MAIN rejected (0.1454ms)
+✔ event locks use distinct numeric order, not lexicographic order (0.2021ms)
+ℹ tests 94
+ℹ suites 0
+ℹ pass 94
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 703.7982
+
+> foxcore-retail@1.0.0 build
+> npm run build -w @foxcore/web && npm run build -w @foxcore/server && npm run mini:build
+
+
+> @foxcore/web@1.0.0 build
+> vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 95 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.36 kB │ gzip:   0.27 kB
+dist/assets/index-Dvw96_Vh.css   28.11 kB │ gzip:   7.22 kB
+dist/assets/index-CqX2CljW.js   359.14 kB │ gzip: 112.43 kB
+✓ built in 1.89s
+
+> @foxcore/server@1.0.0 build
+> tsc -p tsconfig.json
+
+
+> foxcore-retail@1.0.0 mini:build
+> node scripts/build-miniprogram.mjs
+
+Mini Program ready: apps\miniprogram\build (14 native pages). Development package; WeChat IDE/device verification is separate.

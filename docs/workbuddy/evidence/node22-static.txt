@@ -1,0 +1,643 @@
+
+> foxcore-retail@1.0.0 verify:static
+> npm run docs:check && npm run typecheck && npm run test:unit && npm run test:pure && npm run build
+
+
+> foxcore-retail@1.0.0 docs:check
+> node scripts/check-fix-docs.mjs
+
+Documentation checks passed: registry/references, seven SDD mappings, overlay/source routes and repair tracking. Not a proof that every prose statement or runtime contract is correct.
+
+> foxcore-retail@1.0.0 typecheck
+> npm run typecheck -w @foxcore/server && npm run typecheck -w @foxcore/web && npm run mini:typecheck
+
+
+> @foxcore/server@1.0.0 typecheck
+> tsc --noEmit -p tsconfig.json
+
+
+> @foxcore/web@1.0.0 typecheck
+> tsc --noEmit -p tsconfig.json
+
+
+> foxcore-retail@1.0.0 mini:typecheck
+> tsc --noEmit -p apps/miniprogram/tsconfig.json
+
+
+> foxcore-retail@1.0.0 test:unit
+> vitest run tests/unit
+
+
+ RUN  v4.1.12 C:/Users/lenovo/Documents/Codex/2026-10-24/https-github-com-xingchenyd-foxcore-retail/work/workbuddy-node22-final
+
+
+ Test Files  9 passed (9)
+      Tests  89 passed (89)
+   Start at  16:43:49
+   Duration  2.00s (transform 2.00s, setup 0ms, import 2.84s, tests 1.03s, environment 3ms)
+
+
+> foxcore-retail@1.0.0 test:pure
+> node scripts/run-pure-tests.mjs
+
+Pure production-logic tests: Node v22.23.4, TypeScript 5.9.3; not a DB/E2E run.
+TAP version 13
+# Subtest: FX-F01-02/03 JSON with plain object
+ok 1 - FX-F01-02/03 JSON with plain object
+  ---
+  duration_ms: 14.9105
+  type: 'test'
+  ...
+# Subtest: FX-F01-02/03 JSON with Headers instance
+ok 2 - FX-F01-02/03 JSON with Headers instance
+  ---
+  duration_ms: 2.252
+  type: 'test'
+  ...
+# Subtest: FX-F01-02/03 JSON with tuple array
+ok 3 - FX-F01-02/03 JSON with tuple array
+  ---
+  duration_ms: 2.2926
+  type: 'test'
+  ...
+# Subtest: FX-F01-01 no custom headers and abort signal
+ok 4 - FX-F01-01 no custom headers and abort signal
+  ---
+  duration_ms: 0.6282
+  type: 'test'
+  ...
+# Subtest: FX-F01-04 mixed case cannot override JSON contract
+ok 5 - FX-F01-04 mixed case cannot override JSON contract
+  ---
+  duration_ms: 1.5536
+  type: 'test'
+  ...
+# Subtest: JSON-only helper rejects FormData/Blob rather than mislabelling uploads
+ok 6 - JSON-only helper rejects FormData/Blob rather than mislabelling uploads
+  ---
+  duration_ms: 2.2161
+  type: 'test'
+  ...
+# Subtest: bodyless GET preserves caller headers and has no invented JSON body
+ok 7 - bodyless GET preserves caller headers and has no invented JSON body
+  ---
+  duration_ms: 3.1502
+  type: 'test'
+  ...
+# Subtest: API rejects foreign or protocol-relative paths
+ok 8 - API rejects foreign or protocol-relative paths
+  ---
+  duration_ms: 0.9688
+  type: 'test'
+  ...
+# Subtest: HTTP error preserves status/code, never returns success
+ok 9 - HTTP error preserves status/code, never returns success
+  ---
+  duration_ms: 1.5716
+  type: 'test'
+  ...
+# Subtest: network rejection remains rejected
+ok 10 - network rejection remains rejected
+  ---
+  duration_ms: 0.9401
+  type: 'test'
+  ...
+# Subtest: FX-F07-03 loader requests real additional API pages
+ok 11 - FX-F07-03 loader requests real additional API pages
+  ---
+  duration_ms: 5.2883
+  type: 'test'
+  ...
+# Subtest: loader refuses silent resource-cap truncation
+ok 12 - loader refuses silent resource-cap truncation
+  ---
+  duration_ms: 2.0276
+  type: 'test'
+  ...
+# Subtest: loader abort signal is forwarded to every page
+ok 13 - loader abort signal is forwarded to every page
+  ---
+  duration_ms: 1.8885
+  type: 'test'
+  ...
+# Subtest: loader rejects non-progressing or inconsistent pagination
+ok 14 - loader rejects non-progressing or inconsistent pagination
+  ---
+  duration_ms: 3.1761
+  type: 'test'
+  ...
+# Subtest: F08 checker accepts repeated valid references, rejects unknown IDs
+ok 15 - F08 checker accepts repeated valid references, rejects unknown IDs
+  ---
+  duration_ms: 4.5952
+  type: 'test'
+  ...
+# Subtest: F08 checker rejects conflicting registry IDs
+ok 16 - F08 checker rejects conflicting registry IDs
+  ---
+  duration_ms: 0.5614
+  type: 'test'
+  ...
+# Subtest: F08 checker rejects nonexistent implementation/test files
+ok 17 - F08 checker rejects nonexistent implementation/test files
+  ---
+  duration_ms: 0.3866
+  type: 'test'
+  ...
+# Subtest: F08 checker detects nonexistent documented route
+ok 18 - F08 checker detects nonexistent documented route
+  ---
+  duration_ms: 0.7142
+  type: 'test'
+  ...
+# Subtest: FX-F04-01/04 event filter intersects salesperson scope in SQL bindings
+ok 19 - FX-F04-01/04 event filter intersects salesperson scope in SQL bindings
+  ---
+  duration_ms: 3.8208
+  type: 'test'
+  ...
+# Subtest: owner report preserves standard-cost margin and global scope
+ok 20 - owner report preserves standard-cost margin and global scope
+  ---
+  duration_ms: 0.2749
+  type: 'test'
+  ...
+# Subtest: FX-F04-06 reject invalid report selector {"group":"typo"}
+ok 21 - FX-F04-06 reject invalid report selector {"group":"typo"}
+  ---
+  duration_ms: 0.6208
+  type: 'test'
+  ...
+# Subtest: FX-F04-06 reject invalid report selector {"group":["product"]}
+ok 22 - FX-F04-06 reject invalid report selector {"group":["product"]}
+  ---
+  duration_ms: 0.1446
+  type: 'test'
+  ...
+# Subtest: FX-F04-06 reject invalid report selector {"eventId":""}
+ok 23 - FX-F04-06 reject invalid report selector {"eventId":""}
+  ---
+  duration_ms: 0.2953
+  type: 'test'
+  ...
+# Subtest: FX-F04-06 reject invalid report selector {"eventId":"1 OR 1=1"}
+ok 24 - FX-F04-06 reject invalid report selector {"eventId":"1 OR 1=1"}
+  ---
+  duration_ms: 0.1131
+  type: 'test'
+  ...
+# Subtest: FX-F04-06 reject invalid report selector {"eventId":"-2"}
+ok 25 - FX-F04-06 reject invalid report selector {"eventId":"-2"}
+  ---
+  duration_ms: 0.2325
+  type: 'test'
+  ...
+# Subtest: salesperson cannot accidentally get global report with missing identity
+ok 26 - salesperson cannot accidentally get global report with missing identity
+  ---
+  duration_ms: 0.2086
+  type: 'test'
+  ...
+# Subtest: FX-F04-02/03 report facts retain POSTED sales and POSTED returns only
+ok 27 - FX-F04-02/03 report facts retain POSTED sales and POSTED returns only
+  ---
+  duration_ms: 0.611
+  type: 'test'
+  ...
+# Subtest: FX-F07-06 CSV quotes commas, double quotes and line breaks
+ok 28 - FX-F07-06 CSV quotes commas, double quotes and line breaks
+  ---
+  duration_ms: 1.3182
+  type: 'test'
+  ...
+# Subtest: CSV protects formula text "=HYPERLINK(\\"x\\")"
+ok 29 - CSV protects formula text "=HYPERLINK(\\"x\\")"
+  ---
+  duration_ms: 0.7862
+  type: 'test'
+  ...
+# Subtest: CSV protects formula text "+CMD"
+ok 30 - CSV protects formula text "+CMD"
+  ---
+  duration_ms: 0.3786
+  type: 'test'
+  ...
+# Subtest: CSV protects formula text "@SUM(A1:A2)"
+ok 31 - CSV protects formula text "@SUM(A1:A2)"
+  ---
+  duration_ms: 0.2172
+  type: 'test'
+  ...
+# Subtest: CSV protects formula text "-CMD"
+ok 32 - CSV protects formula text "-CMD"
+  ---
+  duration_ms: 1.5247
+  type: 'test'
+  ...
+# Subtest: CSV protects formula text " \\t=1+1"
+ok 33 - CSV protects formula text " \\t=1+1"
+  ---
+  duration_ms: 0.1794
+  type: 'test'
+  ...
+# Subtest: CSV protects formula text "\\ttext"
+ok 34 - CSV protects formula text "\\ttext"
+  ---
+  duration_ms: 0.1587
+  type: 'test'
+  ...
+# Subtest: CSV protects formula text "\\n=1"
+ok 35 - CSV protects formula text "\\n=1"
+  ---
+  duration_ms: 0.1697
+  type: 'test'
+  ...
+# Subtest: FX-F07-02 CSV has every group beyond 100, not just the first page
+ok 36 - FX-F07-02 CSV has every group beyond 100, not just the first page
+  ---
+  duration_ms: 1.6273
+  type: 'test'
+  ...
+# Subtest: CSV rejects excess resource limit rather than partial success
+ok 37 - CSV rejects excess resource limit rather than partial success
+  ---
+  duration_ms: 1.0758
+  type: 'test'
+  ...
+# Subtest: CSV numeric columns cannot carry arbitrary spreadsheet formulas
+ok 38 - CSV numeric columns cannot carry arbitrary spreadsheet formulas
+  ---
+  duration_ms: 0.43
+  type: 'test'
+  ...
+# Subtest: pagination defaults, last and empty pages
+ok 39 - pagination defaults, last and empty pages
+  ---
+  duration_ms: 5.1943
+  type: 'test'
+  ...
+# Subtest: FX-F07-05 reject limit="0"
+ok 40 - FX-F07-05 reject limit="0"
+  ---
+  duration_ms: 1.6165
+  type: 'test'
+  ...
+# Subtest: FX-F07-05 reject limit="101"
+ok 41 - FX-F07-05 reject limit="101"
+  ---
+  duration_ms: 0.3808
+  type: 'test'
+  ...
+# Subtest: FX-F07-05 reject limit="1e2"
+ok 42 - FX-F07-05 reject limit="1e2"
+  ---
+  duration_ms: 0.3368
+  type: 'test'
+  ...
+# Subtest: FX-F07-05 reject limit=" 20"
+ok 43 - FX-F07-05 reject limit=" 20"
+  ---
+  duration_ms: 0.5653
+  type: 'test'
+  ...
+# Subtest: FX-F07-05 reject limit=true
+ok 44 - FX-F07-05 reject limit=true
+  ---
+  duration_ms: 0.2073
+  type: 'test'
+  ...
+# Subtest: FX-F07-05 reject limit=["20","30"]
+ok 45 - FX-F07-05 reject limit=["20","30"]
+  ---
+  duration_ms: 0.2312
+  type: 'test'
+  ...
+# Subtest: FX-F07-05 reject offset="-1"
+ok 46 - FX-F07-05 reject offset="-1"
+  ---
+  duration_ms: 0.1227
+  type: 'test'
+  ...
+# Subtest: FX-F07-05 reject offset="1.2"
+ok 47 - FX-F07-05 reject offset="1.2"
+  ---
+  duration_ms: 0.389
+  type: 'test'
+  ...
+# Subtest: FX-F07-05 reject offset=""
+ok 48 - FX-F07-05 reject offset=""
+  ---
+  duration_ms: 0.6254
+  type: 'test'
+  ...
+# Subtest: FX-F07-05 reject offset="10000001"
+ok 49 - FX-F07-05 reject offset="10000001"
+  ---
+  duration_ms: 0.2457
+  type: 'test'
+  ...
+# Subtest: FX-F02-06 reject version "1"
+ok 50 - FX-F02-06 reject version "1"
+  ---
+  duration_ms: 0.2485
+  type: 'test'
+  ...
+# Subtest: FX-F02-06 reject version 0
+ok 51 - FX-F02-06 reject version 0
+  ---
+  duration_ms: 0.0919
+  type: 'test'
+  ...
+# Subtest: FX-F02-06 reject version -1
+ok 52 - FX-F02-06 reject version -1
+  ---
+  duration_ms: 0.0691
+  type: 'test'
+  ...
+# Subtest: FX-F02-06 reject version null
+ok 53 - FX-F02-06 reject version null
+  ---
+  duration_ms: 0.063
+  type: 'test'
+  ...
+# Subtest: FX-F02-06 reject version true
+ok 54 - FX-F02-06 reject version true
+  ---
+  duration_ms: 0.0795
+  type: 'test'
+  ...
+# Subtest: FX-F02-06 reject version 1.2
+ok 55 - FX-F02-06 reject version 1.2
+  ---
+  duration_ms: 0.0643
+  type: 'test'
+  ...
+# Subtest: FX-F02-06 reject version 4294967295
+ok 56 - FX-F02-06 reject version 4294967295
+  ---
+  duration_ms: 0.0645
+  type: 'test'
+  ...
+# Subtest: versions are bounded positive JSON integers
+ok 57 - versions are bounded positive JSON integers
+  ---
+  duration_ms: 0.1392
+  type: 'test'
+  ...
+# Subtest: FX-F03-06 reject rate null
+ok 58 - FX-F03-06 reject rate null
+  ---
+  duration_ms: 0.1547
+  type: 'test'
+  ...
+# Subtest: FX-F03-06 reject rate "500"
+ok 59 - FX-F03-06 reject rate "500"
+  ---
+  duration_ms: 0.0751
+  type: 'test'
+  ...
+# Subtest: FX-F03-06 reject rate true
+ok 60 - FX-F03-06 reject rate true
+  ---
+  duration_ms: 0.066
+  type: 'test'
+  ...
+# Subtest: FX-F03-06 reject rate -1
+ok 61 - FX-F03-06 reject rate -1
+  ---
+  duration_ms: 0.0619
+  type: 'test'
+  ...
+# Subtest: FX-F03-06 reject rate 10001
+ok 62 - FX-F03-06 reject rate 10001
+  ---
+  duration_ms: 0.0601
+  type: 'test'
+  ...
+# Subtest: FX-F03-06 reject rate 0.5
+ok 63 - FX-F03-06 reject rate 0.5
+  ---
+  duration_ms: 0.1029
+  type: 'test'
+  ...
+# Subtest: FX-F03-02/07 zero and full basis-point rates are valid
+ok 64 - FX-F03-02/07 zero and full basis-point rates are valid
+  ---
+  duration_ms: 0.236
+  type: 'test'
+  ...
+# Subtest: IDs remain strings, even above JavaScript safe-integer range
+ok 65 - IDs remain strings, even above JavaScript safe-integer range
+  ---
+  duration_ms: 0.2722
+  type: 'test'
+  ...
+# Subtest: invalid identifier ""
+ok 66 - invalid identifier ""
+  ---
+  duration_ms: 0.2292
+  type: 'test'
+  ...
+# Subtest: invalid identifier 0
+ok 67 - invalid identifier 0
+  ---
+  duration_ms: 0.0856
+  type: 'test'
+  ...
+# Subtest: invalid identifier "0"
+ok 68 - invalid identifier "0"
+  ---
+  duration_ms: 0.0738
+  type: 'test'
+  ...
+# Subtest: invalid identifier "-1"
+ok 69 - invalid identifier "-1"
+  ---
+  duration_ms: 0.0648
+  type: 'test'
+  ...
+# Subtest: invalid identifier "1 OR 1=1"
+ok 70 - invalid identifier "1 OR 1=1"
+  ---
+  duration_ms: 0.0661
+  type: 'test'
+  ...
+# Subtest: invalid identifier ["1"]
+ok 71 - invalid identifier ["1"]
+  ---
+  duration_ms: 0.0569
+  type: 'test'
+  ...
+# Subtest: FX-F03-01 incomplete event policy can be completed
+ok 72 - FX-F03-01 incomplete event policy can be completed
+  ---
+  duration_ms: 0.2766
+  type: 'test'
+  ...
+# Subtest: event patch preserves fields not submitted and accepts explicit null/false/zero
+ok 73 - event patch preserves fields not submitted and accepts explicit null/false/zero
+  ---
+  duration_ms: 0.2913
+  type: 'test'
+  ...
+# Subtest: FX-F03-03 reject policy change in OPEN
+ok 74 - FX-F03-03 reject policy change in OPEN
+  ---
+  duration_ms: 1.2042
+  type: 'test'
+  ...
+# Subtest: FX-F03-03 reject policy change in CLOSED
+ok 75 - FX-F03-03 reject policy change in CLOSED
+  ---
+  duration_ms: 0.2238
+  type: 'test'
+  ...
+# Subtest: FX-F03-03 reject policy change in CANCELLED
+ok 76 - FX-F03-03 reject policy change in CANCELLED
+  ---
+  duration_ms: 0.1609
+  type: 'test'
+  ...
+# Subtest: stale version, no-op field set and non-boolean confirmation are rejected
+ok 77 - stale version, no-op field set and non-boolean confirmation are rejected
+  ---
+  duration_ms: 0.4367
+  type: 'test'
+  ...
+# Subtest: FX-F02-01 planned cancellation does not depend on current time
+ok 78 - FX-F02-01 planned cancellation does not depend on current time
+  ---
+  duration_ms: 0.4934
+  type: 'test'
+  ...
+# Subtest: FX-F02-02 new cancel cannot change ACTIVE
+ok 79 - FX-F02-02 new cancel cannot change ACTIVE
+  ---
+  duration_ms: 0.335
+  type: 'test'
+  ...
+# Subtest: FX-F02-02 new cancel cannot change CLOSED
+ok 80 - FX-F02-02 new cancel cannot change CLOSED
+  ---
+  duration_ms: 0.1821
+  type: 'test'
+  ...
+# Subtest: FX-F02-02 new cancel cannot change CANCELLED
+ok 81 - FX-F02-02 new cancel cannot change CANCELLED
+  ---
+  duration_ms: 0.1578
+  type: 'test'
+  ...
+# Subtest: FX-F02-06 stale, started or sale-associated planned rows cannot be cancelled
+ok 82 - FX-F02-06 stale, started or sale-associated planned rows cannot be cancelled
+  ---
+  duration_ms: 0.4001
+  type: 'test'
+  ...
+# Subtest: FX-F05-03/04 main and same-event open booth are legal
+ok 83 - FX-F05-03/04 main and same-event open booth are legal
+  ---
+  duration_ms: 0.454
+  type: 'test'
+  ...
+# Subtest: FX-F05-01 reject CLOSED target event
+ok 84 - FX-F05-01 reject CLOSED target event
+  ---
+  duration_ms: 0.2866
+  type: 'test'
+  ...
+# Subtest: FX-F05-01 reject CANCELLED target event
+ok 85 - FX-F05-01 reject CANCELLED target event
+  ---
+  duration_ms: 0.143
+  type: 'test'
+  ...
+# Subtest: FX-F05-01 reject DRAFT target event
+ok 86 - FX-F05-01 reject DRAFT target event
+  ---
+  duration_ms: 0.1231
+  type: 'test'
+  ...
+# Subtest: FX-F05-01 reject null target event
+ok 87 - FX-F05-01 reject null target event
+  ---
+  duration_ms: 0.158
+  type: 'test'
+  ...
+# Subtest: FX-F05-02 cross-event even OPEN is forbidden
+ok 88 - FX-F05-02 cross-event even OPEN is forbidden
+  ---
+  duration_ms: 0.5795
+  type: 'test'
+  ...
+# Subtest: inactive/malformed booth {"active":0}
+ok 89 - inactive/malformed booth {"active":0}
+  ---
+  duration_ms: 0.3407
+  type: 'test'
+  ...
+# Subtest: inactive/malformed booth {"booth_active":0}
+ok 90 - inactive/malformed booth {"booth_active":0}
+  ---
+  duration_ms: 0.2187
+  type: 'test'
+  ...
+# Subtest: inactive/malformed booth {"booth_id":null}
+ok 91 - inactive/malformed booth {"booth_id":null}
+  ---
+  duration_ms: 0.1926
+  type: 'test'
+  ...
+# Subtest: inactive/malformed booth {"event_id":null}
+ok 92 - inactive/malformed booth {"event_id":null}
+  ---
+  duration_ms: 0.1823
+  type: 'test'
+  ...
+# Subtest: non-MAIN warehouse and inactive MAIN rejected
+ok 93 - non-MAIN warehouse and inactive MAIN rejected
+  ---
+  duration_ms: 0.3868
+  type: 'test'
+  ...
+# Subtest: event locks use distinct numeric order, not lexicographic order
+ok 94 - event locks use distinct numeric order, not lexicographic order
+  ---
+  duration_ms: 0.8158
+  type: 'test'
+  ...
+1..94
+# tests 94
+# suites 0
+# pass 94
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1068.5776
+
+> foxcore-retail@1.0.0 build
+> npm run build -w @foxcore/web && npm run build -w @foxcore/server && npm run mini:build
+
+
+> @foxcore/web@1.0.0 build
+> vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 95 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.36 kB │ gzip:   0.27 kB
+dist/assets/index-Dvw96_Vh.css   28.11 kB │ gzip:   7.22 kB
+dist/assets/index-CqX2CljW.js   359.14 kB │ gzip: 112.43 kB
+✓ built in 2.53s
+
+> @foxcore/server@1.0.0 build
+> tsc -p tsconfig.json
+
+
+> foxcore-retail@1.0.0 mini:build
+> node scripts/build-miniprogram.mjs
+
+Mini Program ready: apps\miniprogram\build (14 native pages). Development package; WeChat IDE/device verification is separate.

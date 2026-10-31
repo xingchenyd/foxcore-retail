@@ -5,6 +5,8 @@
 node_modules
 .env
 .env.*.local
+.env.workbuddy
+.env.workbuddy.*
 artifacts
 work
 private_sources
