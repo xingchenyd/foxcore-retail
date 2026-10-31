@@ -12,3 +12,6 @@ private_sources/
 # Private browser traces and transient test output
 test-results/
 playwright-report/
+apps/miniprogram/build/
+project.private.config.json
+.specify/**/__pycache__/

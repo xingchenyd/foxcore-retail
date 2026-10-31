@@ -1,0 +1,53 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 15
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #356553
+skinparam LineColor #356553
+skinparam packageStyle rectangle
+skinparam classBackgroundColor #F4F7EF
+skinparam classBorderColor #356553
+skinparam usecaseBackgroundColor #F4F7EF
+skinparam usecaseBorderColor #356553
+skinparam stateBackgroundColor #F4F7EF
+skinparam stateBorderColor #356553
+skinparam noteBackgroundColor #FFF6DC
+skinparam noteBorderColor #C7AB63
+hide empty members
+title 系统用例图 · 共享业务与管理边界
+left to right direction
+actor 员工 as Staff
+actor 管理员 as Owner
+Owner --|> Staff
+rectangle "Foxcore 统一业务系统" {
+usecase "登录 / 改密 / 恢复待核对操作" as Auth
+usecase "开班 / 现金交班 / 关班" as Shift
+usecase "销售 / 取消 / 原单退货 / 独立换货" as Sale
+usecase "收货 / 盘点 / 在途调拨 / 签收" as Stock
+usecase "损坏隔离 / 维修 / 报废" as Damage
+usecase "跨设备草稿 / 冲突核对" as Draft
+usecase "查询全员业务记录" as Shared
+usecase "查询本人佣金" as Mine
+usecase "申请班次延期" as Extend
+usecase "审批延期 / 核对现金交班" as Review
+usecase "基础资料 / 税务确认 / 账号管理" as Master
+usecase "活动结束 / 佣金准备与支付" as Settle
+usecase "全员佣金 / 成本 / 操作审计" as Audit
+}
+Staff --> Auth
+Staff --> Shift
+Staff --> Sale
+Staff --> Stock
+Staff --> Damage
+Staff --> Draft
+Staff --> Shared
+Staff --> Mine
+Staff --> Extend
+Owner --> Review
+Owner --> Master
+Owner --> Settle
+Owner --> Audit
+note bottom of Sale : 原单、168 小时、无损；\n线下收退款事实核对后登记
+@enduml

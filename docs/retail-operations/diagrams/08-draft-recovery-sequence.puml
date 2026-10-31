@@ -1,0 +1,43 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 15
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #356553
+skinparam LineColor #356553
+skinparam packageStyle rectangle
+skinparam classBackgroundColor #F4F7EF
+skinparam classBorderColor #356553
+skinparam usecaseBackgroundColor #F4F7EF
+skinparam usecaseBorderColor #356553
+skinparam stateBackgroundColor #F4F7EF
+skinparam stateBorderColor #356553
+skinparam noteBackgroundColor #FFF6DC
+skinparam noteBorderColor #C7AB63
+hide empty members
+title 跨设备草稿与丢响应恢复时序图
+actor 员工
+participant "设备 A" as A
+participant "设备 B" as B
+participant "统一 API" as S
+database "工作区 / 版本历史 / 单据" as D
+A -> S : 载入本人工作区（revision r）
+S --> A : 草稿副本
+B -> S : 载入同一工作区（revision r）
+S --> B : 同一副本
+A -> S : 保存云端，expected r + 操作 UUID
+S -> D : 用户行锁；匹配 r；新 revision r+1；追加历史
+S --> A : 保存成功
+B -> S : 保存旧副本，expected r
+S --> B : 409；保留输入，要求载入核对
+A -> S : 保存销售，携带 workspaceRevision r+1
+S -> D : 同一事务创建/编辑销售，工作区变为 null，revision r+2
+S --> A : 成功（假设响应丢失）
+A -> A : 本机保留原 UUID 和原请求内容
+A -> S : 刷新后显式重试原请求
+S --> A : 返回原单据，库存和现金事实不重复
+B -> S : 用 r+1 再开一单
+S --> B : 409；云端草稿已使用，查原单
+note over D : 历史版本不自动删除；密码不进入网页待核对请求明文存储
+@enduml

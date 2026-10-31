@@ -1,0 +1,13 @@
+requirement,title,implementation,test
+OR-01,共享记录与字段权限,sales.ts returns.ts inventory.ts auth.ts,operations.test.ts、miniprogram.test.ts、workflow.test.ts
+OR-02,中国金额与历史兼容,business.ts catalog.ts report-query.ts csv.ts,china-business.test.ts、operations.test.ts、report.test.mjs
+OR-03,原单退货,returns.ts business.ts,china-business.test.ts、operations.test.ts
+OR-04,独立换货,exchanges.ts sales.ts returns.ts,operations.test.ts
+OR-05,活动结佣及负结转,commissions.ts,operations.test.ts
+OR-06,现金交班,operations.ts catalog.ts,operations.test.ts、operations-pages.test.ts
+OR-07,在途调拨,operations.ts inventory.ts,operations.test.ts、operations-pages.test.ts
+OR-08,损坏品,operations.ts inventory.ts,operations.test.ts、check-operations-invariants.sql
+OR-09,延期与可达待办,operations.ts catalog.ts home/index.ts,operations.test.ts、operations-pages.test.ts
+OR-10,资料与账号恢复,operations.ts recover-owner.mjs,operations.test.ts、scripts/recover-owner.mjs
+OR-11,跨设备草稿,workspaces.ts operations.ts draft-workspace.tsx sale-edit/index.ts,operations.test.ts、operations-pages.test.ts
+OR-12,异常恢复与首盘,commands.ts inventory.ts sale-edit/index.ts,web-commands.test.ts、spec-kit-review.test.ts、operations-concurrency.test.ts

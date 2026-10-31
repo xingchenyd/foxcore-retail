@@ -13,7 +13,7 @@ const plan=process.argv.includes('--plan'),writes=new Map();
 const read=path=>readFileSync(join(root,path),'utf8');
 // The old overlay is a one-time baseline repair. Never roll a later reviewed
 // version back to its historical NOT_RUN banners or release record.
-if(existsSync(join(root,'RELEASE_STATUS.json'))&&JSON.parse(read('RELEASE_STATUS.json')).status==='BRANCH_REVIEW_NATIVE_VALIDATED_DOCKER_PENDING'){
+if(existsSync(join(root,'RELEASE_STATUS.json'))&&['BRANCH_REVIEW_NATIVE_VALIDATED_DOCKER_PENDING','STAFF_MINIPROGRAM_NATIVE_RUNTIME_PENDING','RETAIL_OPERATIONS_CODE_DELIVERY_EXTERNAL_GATES_PENDING'].includes(JSON.parse(read('RELEASE_STATUS.json')).status)){
   execFileSync(process.execPath,[join(root,'scripts/check-fix-docs.mjs')],{cwd:root,stdio:'inherit'});
   if(!plan)writeManifest();
   console.log(plan?'Current review validated; no writes planned.':'Current review preserved; SHA256SUMS regenerated.');
@@ -54,12 +54,17 @@ writes.set('docs/traceability.csv',trace+'\n');
 writes.set('RELEASE_STATUS.json',JSON.stringify({status:'REPAIR_CANDIDATE_RUNTIME_UNVERIFIED',baseCommit:'f5d79e193605ea71a45ff44fc1b6e4e1a2d67768',productionChanges:'F01-F08',verifiedHere:['pure production-logic tests','syntax and documentation-checker fixture checks','patch integrity'],notRunHere:['Node 24 full typecheck/build','MariaDB HTTP/concurrency/invariants','browser E2E','Docker installation/restart/backup/restore','cloud deployment'],evidence:'docs/fixes/verification.md',pdfDerivatives:'not regenerated'},null,2)+'\n');
 if(plan){console.log(`Documentation plan OK: ${writes.size} source files; no writes`);process.exit(0);}
 for(const [path,text] of writes)writeFileSync(join(root,path),text);
-// Manifest is generated over the actual complete working copy after code + docs are applied.
+// Match Git archive bytes: LF for normal text; preserve historical committed CRLF.
 // It does not embed file contents; secrets, working logs and the manifest itself are excluded.
 function writeManifest(){
 const paths=execFileSync('git',['ls-files','--cached','--others','--exclude-standard','-z'],{cwd:root,encoding:'utf8'}).split('\0').filter(Boolean);
 const safe=paths.filter(p=>p!=='SHA256SUMS'&&!/(^|\/)(node_modules|\.git|dist|test-results|playwright-report)(\/|$)/.test(p)&&!/(^|\/)\.env$|password|secret|\.pem$|\.key$|\.sql\.gz$|\.dump$/i.test(p)&&!p.startsWith('docs/fixes/evidence/verify-')&&existsSync(join(root,p)));
-writeFileSync(join(root,'SHA256SUMS'),safe.sort().map(p=>createHash('sha256').update(readFileSync(join(root,p))).digest('hex')+'  '+p).join('\n')+'\n');
+const legacyCRLF=new Set(execFileSync('git',['ls-files','--eol','-z'],{cwd:root,encoding:'utf8'}).split('\0').filter(row=>/^i\/(crlf|mixed)\s/.test(row)).map(row=>row.slice(row.indexOf('\t')+1)));
+writeFileSync(join(root,'SHA256SUMS'),safe.sort().map(p=>{
+  const bytes=readFileSync(join(root,p));
+  const canonical=legacyCRLF.has(p)||/\.(pdf|png|jpe?g|zip)$/i.test(p)||bytes.subarray(0,8000).includes(0)?bytes:Buffer.from(bytes.toString('latin1').replace(/\r\n/g,'\n'),'latin1');
+  return createHash('sha256').update(canonical).digest('hex')+'  '+p;
+}).join('\n')+'\n');
 }
 writeManifest();
 console.log(`Synchronized ${writes.size} source documents; derived PDFs/images remain historical. SHA256SUMS regenerated.`);

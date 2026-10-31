@@ -1,0 +1,1 @@
+.operation-line{margin-top:24rpx;padding:24rpx;background:#f1f5ed;border:1rpx solid #d9e3d4;border-radius:20rpx}.operation-value{max-width:66%;text-align:right;overflow-wrap:anywhere}

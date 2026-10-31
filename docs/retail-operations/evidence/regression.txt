@@ -1,0 +1,8 @@
+
+ RUN  v4.1.12 C:/Users/lenovo/Documents/Codex/2026-10-24/https-github-com-xingchenyd-foxcore-retail/work/foxcore-retail
+
+
+ Test Files  7 passed (7)
+      Tests  10 passed (10)
+   Start at  16:34:30
+   Duration  4.39s (transform 1.28s, setup 0ms, import 2.10s, tests 15.71s, environment 1ms)

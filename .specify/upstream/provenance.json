@@ -1,0 +1,64 @@
+{
+  "source": "https://github.com/github/spec-kit",
+  "commit": "ee94598c3c87ae231027b22fb2be2b5a13e8820f",
+  "sourceVersion": "1.2.4.dev0",
+  "method": "fixed source templates, agent workflow and unmodified Python prerequisite checker; CLI installation failed TLS",
+  "files": [
+    {
+      "path": ".specify/templates/spec-template.md",
+      "sha256": "3945437fc35cd30a5b2bf7beea680337c3516826d3efa5a6b92c4a7eca1ba28e"
+    },
+    {
+      "path": ".specify/templates/plan-template.md",
+      "sha256": "dfba43da2b2a207ff8c177a0fba03af074fd45e261696b4b64172041fad2e992"
+    },
+    {
+      "path": ".specify/templates/tasks-template.md",
+      "sha256": "1e448e9153462e8c5b5a55231a54c756d870a82950d4dd9425a2bf5b7008a0d9"
+    },
+    {
+      "path": ".specify/templates/checklist-template.md",
+      "sha256": "c65b7f10aa9a965ea9c7f4e879d4ab0240665473731c5e9e638c4acb3ca9afc4"
+    },
+    {
+      "path": ".specify/templates/constitution-template.md",
+      "sha256": "ce7549540fa45543cca797a150201d868e64495fdff39dc38246fb17bd4024b3"
+    },
+    {
+      "path": ".specify/scripts/python/common.py",
+      "sha256": "3715c954539619dcfbe1d4ea825b12c74c658763722544625939bc65391904a7"
+    },
+    {
+      "path": ".specify/scripts/python/check_prerequisites.py",
+      "sha256": "367e0e7cf8d384167aa60d2a99ba8d40ef9ca1e49b8a35f3ec44c9c759416600"
+    },
+    {
+      "path": ".specify/upstream/commands/analyze.md",
+      "sha256": "ffe0640ebe778795737937f2d4ec6f0149d7d55b72692e25369a668f985d1dfe"
+    },
+    {
+      "path": ".specify/upstream/commands/specify.md",
+      "sha256": "7d5a88e6afa504f1d16503df6bf8664f30e3df812b83f9a456a2eaccaeb638ee"
+    },
+    {
+      "path": ".specify/upstream/commands/plan.md",
+      "sha256": "206a0386d20b3eed4c087a4d9de247a3e7b2b59348bf3c801fc74f63ca2726a5"
+    },
+    {
+      "path": ".specify/upstream/commands/tasks.md",
+      "sha256": "2f9176c6e7c23d2a83d2bd018ffa1e67aee977389a57f2a3fe35fe987b425944"
+    },
+    {
+      "path": ".specify/upstream/commands/constitution.md",
+      "sha256": "a915ba6ae5fdbd499c143204eab3888b95a0ff0656e2c16b40282375acb5902c"
+    },
+    {
+      "path": ".specify/upstream/commands/converge.md",
+      "sha256": "4fb017b2869ad02d58aafe272a90077187ce4231f08effee6f340b0f3a07fc16"
+    },
+    {
+      "path": ".specify/upstream/commands/speckit.bug.assess.md",
+      "sha256": "1cc7c1a8536dcd5a561384c2923b2820bc74b165210f208ad29d0b75c3ba8727"
+    }
+  ]
+}

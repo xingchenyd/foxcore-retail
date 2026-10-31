@@ -1,17 +1,15 @@
 {
-  "status": "BRANCH_REVIEW_NATIVE_VALIDATED_DOCKER_PENDING",
-  "baseCommit": "3393bc3a4989b642f881cc891dc305cfda37ee5a",
-  "branch": "codex/retail-review-ui-docs-20261024",
-  "date": "2026-10-24",
-  "changes": [
-    "UI and interaction overhaul",
-    "calendar validation, consistent sales pagination, initial-password logout",
-    "34 editable UML/ERD diagrams and course handbook",
-    "compatible dependency security patches"
-  ],
-  "evidence": "docs/course-review/verification.json",
+  "status": "RETAIL_OPERATIONS_CODE_DELIVERY_EXTERNAL_GATES_PENDING",
+  "branch": "codex/retail-operations-20261028",
+  "baseCommit": "e7543abf50420f4247c30decffd7cb5c8f0f480e",
   "mainModified": false,
   "publicDeployment": false,
-  "oldPdfDerivatives": "historical, not regenerated",
-  "newPdfDerivatives": "docs/course-review/deliverables"
+  "miniProgramMergedToMain": false,
+  "mainCommit": "744c36ac67abb28963f32077c219fbb4047d28c4",
+  "webBackupBranch": "backup/main-before-web-review-20261026",
+  "webBackupCommit": "3393bc3a4989b642f881cc891dc305cfda37ee5a",
+  "evidence": "docs/retail-operations/verification.json",
+  "currentDesign": "docs/retail-operations/index.html",
+  "sourceSpecs": "specs/002-retail-operations",
+  "externalGates": "WeChat, target Docker/cloud, registration and release remain NOT_RUN"
 }

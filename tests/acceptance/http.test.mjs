@@ -73,7 +73,7 @@ test('F04 invalid filters, staff intersection and cost redaction',async()=>{
   const s=await owner(),f=await activate(s,await fixture(s)),other=await activate(s,await fixture(s));await sell(s,f,1);const otherSale=await sell(s,other,1);const a=await staff(s,f);
   const own=await a.ok('GET',`/reports/sales?group=product&eventId=${f.event.id}`);assert.equal(own.total,1);assert.equal(own.items[0].estimated_margin_cents,undefined);
   const none=await a.ok('GET',`/reports/sales?group=product&eventId=${other.event.id}`);assert.equal(none.total,0);assert.equal(none.hasMore,false);
-  assert.equal((await a.call('GET',`/sales/${otherSale.id}`)).status,404);assert.equal((await a.call('GET','/reports/sales.csv')).status,403);
+  const shared=await a.call('GET',`/sales/${otherSale.id}`);assert.equal(shared.status,200);assert.equal(shared.data.lines[0].line_commission_cents,undefined);assert.equal(shared.data.lines[0].cost_snapshot_cents,undefined);assert.equal((await a.call('GET','/reports/sales.csv')).status,403);
   for(const q of ['group=typo','eventId=','eventId=1%20OR%201=1','limit=0','offset=-1'])assert.equal((await s.call('GET','/reports/sales?'+q)).status,400);
 });
 test('F05 cross-event targets rejected at create, authorize and post; legacy cancel still possible',async()=>{

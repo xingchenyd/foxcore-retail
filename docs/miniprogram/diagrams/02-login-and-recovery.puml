@@ -1,0 +1,40 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam backgroundColor #F7F8F2
+skinparam shadowing false
+skinparam sequenceArrowColor #52734D
+title 员工会话与弱网操作恢复 · 当前实现
+actor "工作人员" as user
+participant "原生 Page" as page
+participant "请求层" as client
+database "本机存储" as local
+participant "Fastify API" as api
+database "现有 MariaDB" as db
+user -> page : 输入已有员工账号和密码
+page -> api : POST /auth/mini/login
+api -> db : 校验账号、口令、锁定；创建哈希会话
+api --> page : user + accessToken + csrf
+page -> local : 保存会话（不保存口令）
+note over page,api : 首次账户必须改密并重登；权限仍由服务器决定。
+user -> page : 确认业务操作
+page -> client : 原请求内容
+client -> local : 先保存用户、UUID、路径与原内容
+client -> api : POST + Bearer + CSRF + 同一UUID
+api -> db : 原子业务事务 + 幂等响应 + 审计
+db --> api : 提交
+api --x client : 响应丢失 / 网络中断
+client --> page : 结果待核对，保留原操作
+user -> page : 我的 → 待核对操作 → 继续核对
+page -> client : 恢复原操作
+client -> local : 读取同一用户的原内容与UUID
+client -> api : 原请求重试（绝不重做线下收付款）
+api -> db : 按操作者 + 操作 + UUID 查幂等记录
+db --> api : 已提交的原响应
+api --> client : 原业务结果
+client -> local : 清除已核对的本机待办
+client --> page : 显示原单据与最新状态
+note over client,api
+如会话已过期，保留待核对操作；原账户重登后继续。
+同键异体拒绝，读写权限与状态约束不放宽。
+end note
+@enduml

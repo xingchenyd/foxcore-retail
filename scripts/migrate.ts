@@ -16,10 +16,10 @@ try {
   await db.query('CREATE TABLE IF NOT EXISTS schema_migrations (version VARCHAR(100) PRIMARY KEY, checksum CHAR(64) NOT NULL, applied_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)) ENGINE=InnoDB');
   for (const file of (await readdir('db/migrations')).filter(x => x.endsWith('.sql')).sort()) {
     const sql = await readFile(join('db/migrations', file), 'utf8');
-    const checksum = createHash('sha256').update(sql).digest('hex');
+    const checksum = createHash('sha256').update(sql.replace(/\r\n/g,'\n')).digest('hex');
     const [rows] = await db.query<mysql.RowDataPacket[]>('SELECT checksum FROM schema_migrations WHERE version=?', [file]);
     if (rows.length) {
-      if (rows[0].checksum !== checksum) throw new Error(`Migration checksum changed: ${file}`);
+      if (![checksum,createHash('sha256').update(sql.replace(/\r?\n/g,'\r\n')).digest('hex')].includes(rows[0].checksum)) throw new Error(`Migration checksum changed: ${file}`);
       console.log(`verified ${file}`);
       continue;
     }

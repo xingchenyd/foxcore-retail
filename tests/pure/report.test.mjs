@@ -33,9 +33,9 @@ function parseCsv(csv) {
   }
   assert.equal(quoted,false); if(cell.length||row.length){row.push(cell);rows.push(row);} return rows;
 }
-const row={id:'9007199254740993',name:'normal',quantity:'-1',net_cents:'-1000',tax_cents:'-130',commission_cents:'-50',estimated_margin_cents:'-600'};
+const row={currency:'CAD',id:'9007199254740993',name:'normal',quantity:'-1',net_cents:'-1000',tax_cents:'-130',commission_cents:'-50',estimated_margin_cents:'-600'};
 test('FX-F07-06 CSV quotes commas, double quotes and line breaks',()=>{
-  const data=parseCsv(salesCsv([{...row,name:'a,"b"\r\nc'}])); assert.equal(data[1][1],'a,"b"\r\nc'); assert.equal(data[1][0],row.id); assert.equal(data[1][2],'-1');
+  const data=parseCsv(salesCsv([{...row,name:'a,"b"\r\nc'}])); assert.equal(data[1][1],'a,"b"\r\nc'); assert.equal(data[1][0],row.id); assert.equal(data[1][2],'CAD');assert.equal(data[1][3],'-1');
 });
 for(const name of ['=HYPERLINK("x")','+CMD','@SUM(A1:A2)','-CMD',' \t=1+1','\ttext','\n=1'])
   test(`CSV protects formula text ${JSON.stringify(name)}`,()=>assert.equal(parseCsv(salesCsv([{...row,name}]))[1][1],"'"+name));

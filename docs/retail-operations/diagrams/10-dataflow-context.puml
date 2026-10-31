@@ -1,0 +1,45 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 15
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #356553
+skinparam LineColor #356553
+skinparam packageStyle rectangle
+skinparam classBackgroundColor #F4F7EF
+skinparam classBorderColor #356553
+skinparam usecaseBackgroundColor #F4F7EF
+skinparam usecaseBorderColor #356553
+skinparam stateBackgroundColor #F4F7EF
+skinparam stateBorderColor #356553
+skinparam noteBackgroundColor #FFF6DC
+skinparam noteBorderColor #C7AB63
+hide empty members
+title 业务数据流图 · 外部事实与账内事实
+left to right direction
+actor "员工 / 管理员" as User
+rectangle "P1\n身份与班次" as P1
+rectangle "P2\n销售与退换货" as P2
+rectangle "P3\n库存与损坏品" as P3
+rectangle "P4\n现金交班与佣金" as P4
+database "D1\n账号/班次/资料/税率" as D1
+database "D2\n原单/快照/换货关联/云端草稿" as D2
+database "D3\n余额/占用/不可改写库存流水" as D3
+database "D4\n交班/佣金流水/结算/审计" as D4
+rectangle "线下现金 / 独立支付终端\n系统不直接扣款" as Offline
+User --> P1 : 登录、到岗、延期
+P1 --> D1
+User --> P2 : 原单、商品、数量、无损核对
+Offline --> User : 付款/退款凭证和实物交接事实
+User --> P2 : 经确认的收付款事实
+P2 --> D2
+P2 --> P3 : 占用 / 扣库 / 回库
+P3 --> D3
+User --> P3 : 收货 / 盘点 / 调拨 / 签收 / 损坏处置
+P2 --> P4 : 现金净额 / 正负佣金
+User --> P4 : 实交金额 / 复核 / 支付凭证
+P4 --> D4
+P3 --> D4 : 经办审计
+P1 --> D4 : 账号与班次审计
+@enduml

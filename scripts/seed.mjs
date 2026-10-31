@@ -24,12 +24,12 @@ const venue=await call('POST','/venues',{name:'Synthetic Foxcore Dataset v1',str
 const category=(await call('GET','/categories')).items;
 const events=[],booths=[],locations=[];
 for(let i=0;i<7;i++){
-  const event=await call('POST','/events',{name:`Synthetic ${category[i].type} ${i+1}`,venueId:venue.id,categoryId:category[i].id,startDate:day,endDate:day,description:'Synthetic teaching fixture',taxBps:1300,policyConfirmed:true});events.push(event.id);
+  const event=await call('POST','/events',{name:`Synthetic ${category[i].type} ${i+1}`,venueId:venue.id,categoryId:category[i].id,startDate:day,endDate:day,description:'Synthetic teaching fixture',taxBps:1300,policyConfirmed:true,currency:'CAD',priceBasis:'EXCLUSIVE',businessTimezone:'America/Toronto'});events.push(event.id);
   for(let j=0;j<2;j++) booths.push((await call('POST','/booths',{eventId:event.id,location:`${String.fromCharCode(65+i)}${j+1}`})).id);
   await call('POST',`/events/${event.id}/open`,{});
 }
 const products=[];
-for(let i=0;i<30;i++) products.push((await call('POST','/products',{sku:`SYN-${String(i+1).padStart(3,'0')}`,name:`Synthetic product ${i+1}`,wholesaleCost:`${(i%5)+2}.00`,minPrice:`${(i%5)+5}.00`,suggestedPrice:`${(i%5)+9}.00`})).id);
+for(let i=0;i<30;i++) products.push((await call('POST','/products',{sku:`SYN-${String(i+1).padStart(3,'0')}`,name:`Synthetic product ${i+1}`,wholesaleCost:`${(i%5)+2}.00`,minPrice:`${(i%5)+5}.00`,suggestedPrice:`${(i%5)+9}.00`,currency:'CAD'})).id);
 const people=[],shifts=[];
 for(let i=0;i<17;i++){
   const person=await call('POST','/salespeople',{firstName:'Synthetic',lastName:`Seller ${i+1}`,description:'Teaching fixture',commissionBps:500});people.push(person.id);

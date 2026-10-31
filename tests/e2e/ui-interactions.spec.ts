@@ -21,9 +21,9 @@ test('loaded-record search, exact sales preview and account exit work on desktop
   await page.locator('nav a[href="/sales"]').click();
   const draft=page.locator('section.box').filter({has:page.getByRole('heading',{name:'新建销售草稿',exact:true})});
   await draft.getByLabel('数量',{exact:true}).fill('3');
-  await draft.getByLabel('协商单价 CAD').fill('0.10');
-  await expect(draft.locator('.draft-total strong')).toHaveText('$0.30');
-  await draft.getByLabel('协商单价 CAD').fill('0.001');
+  await draft.getByLabel('成交单价 CNY').fill('0.10');
+  await expect(draft.locator('.draft-total strong')).toHaveText('CNY 0.30');
+  await draft.getByLabel('成交单价 CNY').fill('0.001');
   await expect(draft.locator('.draft-total strong')).toHaveText('—');
   await expect(page.locator('.sale-steps [aria-current="step"]')).toContainText('选择班次与商品');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);

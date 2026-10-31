@@ -1,0 +1,442 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 15
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #356553
+skinparam LineColor #356553
+skinparam packageStyle rectangle
+skinparam classBackgroundColor #F4F7EF
+skinparam classBorderColor #356553
+skinparam usecaseBackgroundColor #F4F7EF
+skinparam usecaseBorderColor #356553
+skinparam stateBackgroundColor #F4F7EF
+skinparam stateBorderColor #356553
+skinparam noteBackgroundColor #FFF6DC
+skinparam noteBorderColor #C7AB63
+hide empty members
+title 完整物理 ERD · 34 张实际表
+left to right direction
+hide methods
+skinparam linetype ortho
+skinparam nodesep 65
+skinparam ranksep 95
+entity "audit_events" as audit_events {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} actor_id : bigint(20) unsigned <<FK>>
+ {field} * action : varchar(100)
+ {field} * subject_type : varchar(60)
+ {field} subject_id : bigint(20) unsigned
+ {field} detail_json : longtext
+ {field} * created_at : datetime(3)
+}
+entity "booths" as booths {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * event_id : bigint(20) unsigned <<FK>>
+ {field} * location : varchar(80)
+ {field} * active : tinyint(1)
+}
+entity "business_settings" as business_settings {
+ {field} * id : tinyint(3) unsigned <<PK>>
+ {field} * currency : char(3)
+ {field} * business_timezone : varchar(64)
+ {field} * price_basis : enum('EXCLUSIVE','INCLUSIVE')
+ {field} * return_days : smallint(5) unsigned
+ {field} * version : int(10) unsigned
+}
+entity "cash_handovers" as cash_handovers {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * shift_id : bigint(20) unsigned <<UK,FK>>
+ {field} * expected_cents : bigint(20)
+ {field} * actual_cents : bigint(20) unsigned
+ {field} * difference_cents : bigint(20)
+ {field} * reason : varchar(500)
+ {field} * state : enum('SUBMITTED','VERIFIED','RETURNED')
+ {field} * submitted_by : bigint(20) unsigned <<FK>>
+ {field} reviewed_by : bigint(20) unsigned <<FK>>
+ {field} review_note : varchar(500)
+ {field} * created_at : datetime(3)
+ {field} reviewed_at : datetime(3)
+ {field} * version : int(10) unsigned
+}
+entity "commission_claims" as commission_claims {
+ {field} * entry_id : bigint(20) unsigned <<PK,FK>>
+ {field} * settlement_id : bigint(20) unsigned <<FK>>
+}
+entity "commission_entries" as commission_entries {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * salesperson_id : bigint(20) unsigned <<FK>>
+ {field} * amount_cents : bigint(20)
+ {field} * source_kind : enum('SALE','RETURN')
+ {field} * source_id : bigint(20) unsigned
+ {field} * source_line_no : smallint(5) unsigned
+ {field} * created_at : datetime(3)
+ {field} * currency : char(3)
+}
+entity "commission_settlements" as commission_settlements {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * salesperson_id : bigint(20) unsigned <<FK>>
+ {field} * state : enum('PREPARED','PAID','CANCELLED')
+ {field} * cutoff_at : datetime(3)
+ {field} * total_cents : bigint(20)
+ {field} payment_reference : varchar(120)
+ {field} * created_by : bigint(20) unsigned <<FK>>
+ {field} * created_at : datetime(3)
+ {field} paid_at : datetime(3)
+ {field} * currency : char(3)
+}
+entity "commission_settlement_lines" as commission_settlement_lines {
+ {field} * settlement_id : bigint(20) unsigned <<PK,FK>>
+ {field} * entry_id : bigint(20) unsigned <<PK,FK>>
+ {field} * amount_cents : bigint(20)
+}
+entity "damage_records" as damage_records {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * product_id : bigint(20) unsigned <<FK>>
+ {field} * quantity : int(10) unsigned
+ {field} * repaired_quantity : int(10) unsigned
+ {field} * disposed_quantity : int(10) unsigned
+ {field} * reason : varchar(500)
+ {field} * created_by : bigint(20) unsigned <<FK>>
+ {field} * created_at : datetime(3)
+ {field} * version : int(10) unsigned
+}
+entity "events" as events {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * venue_id : bigint(20) unsigned <<FK>>
+ {field} * category_id : bigint(20) unsigned <<FK>>
+ {field} * name : varchar(120)
+ {field} * start_date : date
+ {field} * end_date : date
+ {field} description : varchar(500)
+ {field} * status : enum('DRAFT','OPEN','CLOSED','CANCELLED')
+ {field} * timezone : varchar(64)
+ {field} tax_bps : smallint(5) unsigned
+ {field} * policy_confirmed : tinyint(1)
+ {field} * version : int(10) unsigned
+ {field} * currency : char(3)
+ {field} * business_timezone : varchar(64)
+ {field} * price_basis : enum('EXCLUSIVE','INCLUSIVE')
+ {field} return_days : smallint(5) unsigned
+}
+entity "event_categories" as event_categories {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * code : varchar(40) <<UK>>
+ {field} * type : varchar(80) <<UK>>
+}
+entity "exchanges" as exchanges {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * original_sale_id : bigint(20) unsigned <<FK>>
+ {field} return_id : bigint(20) unsigned <<UK,FK>>
+ {field} new_sale_id : bigint(20) unsigned <<UK,FK>>
+ {field} * state : enum('PREPARED','POSTED','CANCELLED')
+ {field} * currency : char(3)
+ {field} * difference_cents : bigint(20)
+ {field} payment_method : enum('CASH','TERMINAL')
+ {field} payment_reference : varchar(120)
+ {field} cash_received_cents : bigint(20) unsigned
+ {field} * created_by : bigint(20) unsigned <<FK>>
+ {field} * created_at : datetime(3)
+ {field} posted_at : datetime(3)
+}
+entity "idempotency_keys" as idempotency_keys {
+ {field} * actor_id : bigint(20) unsigned <<PK,FK>>
+ {field} * operation : varchar(80) <<PK>>
+ {field} * command_key : char(36) <<PK>>
+ {field} * request_hash : char(64)
+ {field} * response_json : longtext
+ {field} * created_at : datetime(3)
+}
+entity "products" as products {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * sku : varchar(64) <<UK>>
+ {field} * name : varchar(160)
+ {field} * wholesale_cost_cents : bigint(20) unsigned
+ {field} * min_price_cents : bigint(20) unsigned
+ {field} suggested_price_cents : bigint(20) unsigned
+ {field} * active : tinyint(1)
+ {field} * version : int(10) unsigned
+ {field} * currency : char(3)
+}
+entity "returns" as returns {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * sale_id : bigint(20) unsigned <<FK>>
+ {field} * state : enum('DRAFT','AUTHORIZED','POSTED','CANCELLED')
+ {field} * reason : varchar(500)
+ {field} refund_reference : varchar(120)
+ {field} destination_location_id : bigint(20) unsigned <<FK>>
+ {field} * created_by : bigint(20) unsigned <<FK>>
+ {field} authorized_at : datetime(3)
+ {field} posted_at : datetime(3)
+ {field} * net_cents : bigint(20) unsigned
+ {field} * tax_cents : bigint(20) unsigned
+ {field} * total_cents : bigint(20) unsigned
+ {field} * created_at : datetime(3)
+ {field} cash_shift_id : bigint(20) unsigned <<FK>>
+ {field} exchange_id : bigint(20) unsigned <<FK>>
+ {field} refund_method : enum('CASH','TERMINAL','EXCHANGE')
+}
+entity "return_lines" as return_lines {
+ {field} * return_id : bigint(20) unsigned <<PK,FK>>
+ {field} * line_no : smallint(5) unsigned <<PK>>
+ {field} * sale_line_no : smallint(5) unsigned
+ {field} * quantity : int(10) unsigned
+ {field} * disposition : enum('RESTOCK','DAMAGED')
+ {field} * net_cents : bigint(20) unsigned
+ {field} * tax_cents : bigint(20) unsigned
+ {field} * commission_cents : bigint(20) unsigned
+}
+entity "sales" as sales {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} sale_no : varchar(40) <<UK>>
+ {field} * shift_id : bigint(20) unsigned <<FK>>
+ {field} * event_id : bigint(20) unsigned <<FK>>
+ {field} * state : enum('DRAFT','CHECKOUT','POSTED','CANCELLED')
+ {field} * created_at : datetime(3)
+ {field} prepared_at : datetime(3)
+ {field} posted_at : datetime(3)
+ {field} * created_by : bigint(20) unsigned <<FK>>
+ {field} posted_by : bigint(20) unsigned <<FK>>
+ {field} payment_method : enum('CASH','TERMINAL','EXCHANGE')
+ {field} payment_reference : varchar(120)
+ {field} cash_received_cents : bigint(20) unsigned
+ {field} * net_cents : bigint(20) unsigned
+ {field} * tax_cents : bigint(20) unsigned
+ {field} * total_cents : bigint(20) unsigned
+ {field} * version : int(10) unsigned
+ {field} * currency : char(3)
+ {field} * price_basis : enum('EXCLUSIVE','INCLUSIVE')
+ {field} return_days : smallint(5) unsigned
+ {field} exchange_id : bigint(20) unsigned <<FK>>
+}
+entity "salespeople" as salespeople {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * first_name : varchar(80)
+ {field} * last_name : varchar(80)
+ {field} street : varchar(120)
+ {field} city : varchar(80)
+ {field} province : varchar(80)
+ {field} postal_code : varchar(16)
+ {field} phone : varchar(32)
+ {field} description : varchar(500)
+ {field} * active : tinyint(1)
+ {field} commission_bps : smallint(5) unsigned
+ {field} * version : int(10) unsigned
+}
+entity "sale_lines" as sale_lines {
+ {field} * sale_id : bigint(20) unsigned <<PK,FK>>
+ {field} * line_no : smallint(5) unsigned <<PK>>
+ {field} * product_id : bigint(20) unsigned <<FK>>
+ {field} * quantity : int(10) unsigned
+ {field} * final_unit_price_cents : bigint(20) unsigned
+ {field} * line_net_cents : bigint(20) unsigned
+ {field} * line_tax_cents : bigint(20) unsigned
+ {field} * line_commission_cents : bigint(20) unsigned
+ {field} cost_snapshot_cents : bigint(20) unsigned
+ {field} min_snapshot_cents : bigint(20) unsigned
+ {field} tax_bps_snapshot : smallint(5) unsigned
+ {field} commission_bps_snapshot : smallint(5) unsigned
+ {field} name_snapshot : varchar(160)
+ {field} sku_snapshot : varchar(64)
+}
+entity "sale_workspaces" as sale_workspaces {
+ {field} * owner_id : bigint(20) unsigned <<PK,FK>>
+ {field} * workspace_key : varchar(80) <<PK>>
+ {field} * payload_json : longtext
+ {field} * revision : int(10) unsigned
+ {field} * updated_at : datetime(3)
+}
+entity "sale_workspace_revisions" as sale_workspace_revisions {
+ {field} * owner_id : bigint(20) unsigned <<PK,FK>>
+ {field} * workspace_key : varchar(80) <<PK,FK>>
+ {field} * revision : int(10) unsigned <<PK>>
+ {field} * payload_json : longtext
+ {field} * created_at : datetime(3)
+}
+entity "schema_migrations" as schema_migrations {
+ {field} * version : varchar(100) <<PK>>
+ {field} * checksum : char(64)
+ {field} * applied_at : datetime(3)
+}
+entity "sessions" as sessions {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * user_id : bigint(20) unsigned <<FK>>
+ {field} * token_hash : char(64) <<UK>>
+ {field} * csrf_hash : char(64)
+ {field} * created_at : datetime(3)
+ {field} * last_seen_at : datetime(3)
+ {field} * expires_at : datetime(3)
+ {field} revoked_at : datetime(3)
+}
+entity "shifts" as shifts {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * salesperson_id : bigint(20) unsigned <<FK>>
+ {field} * booth_id : bigint(20) unsigned <<FK>>
+ {field} * event_id : bigint(20) unsigned <<FK>>
+ {field} * business_date : date
+ {field} * planned_start : datetime(3)
+ {field} * planned_end : datetime(3)
+ {field} actual_start : datetime(3)
+ {field} actual_end : datetime(3)
+ {field} * status : enum('PLANNED','ACTIVE','CLOSED','CANCELLED')
+ {field} * version : int(10) unsigned
+ {field} * opening_cash_cents : bigint(20) unsigned
+}
+entity "shift_extensions" as shift_extensions {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * shift_id : bigint(20) unsigned <<FK>>
+ {field} * proposed_end : datetime(3)
+ {field} * reason : varchar(500)
+ {field} * state : enum('PENDING','APPROVED','REJECTED')
+ {field} * requested_by : bigint(20) unsigned <<FK>>
+ {field} reviewed_by : bigint(20) unsigned <<FK>>
+ {field} review_note : varchar(500)
+ {field} * base_version : int(10) unsigned
+ {field} * created_at : datetime(3)
+ {field} reviewed_at : datetime(3)
+}
+entity "stock_balances" as stock_balances {
+ {field} * location_id : bigint(20) unsigned <<PK,FK>>
+ {field} * product_id : bigint(20) unsigned <<PK,FK>>
+ {field} * on_hand : bigint(20) unsigned
+ {field} * reserved : bigint(20) unsigned
+ {field} * version : int(10) unsigned
+}
+entity "stock_documents" as stock_documents {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * kind : enum('RECEIVE','TRANSFER','ADJUST','RETURN','DISPATCH','ACCEPT','RECALL','DAMAGE','REPAIR','DIS
+ {field} from_location_id : bigint(20) unsigned <<FK>>
+ {field} to_location_id : bigint(20) unsigned <<FK>>
+ {field} * reason : varchar(500)
+ {field} * created_by : bigint(20) unsigned <<FK>>
+ {field} * created_at : datetime(3)
+}
+entity "stock_document_lines" as stock_document_lines {
+ {field} * document_id : bigint(20) unsigned <<PK,FK>>
+ {field} * line_no : smallint(5) unsigned <<PK>>
+ {field} * product_id : bigint(20) unsigned <<FK>>
+ {field} * quantity : int(11)
+}
+entity "stock_holds" as stock_holds {
+ {field} * sale_id : bigint(20) unsigned <<PK,FK>>
+ {field} * line_no : smallint(5) unsigned <<PK,FK>>
+ {field} * location_id : bigint(20) unsigned <<FK>>
+ {field} * product_id : bigint(20) unsigned <<FK>>
+ {field} * quantity : int(10) unsigned
+ {field} * status : enum('ACTIVE','CONSUMED','RELEASED')
+}
+entity "stock_ledger" as stock_ledger {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * location_id : bigint(20) unsigned <<FK>>
+ {field} * product_id : bigint(20) unsigned <<FK>>
+ {field} * delta : bigint(20)
+ {field} * source_kind : enum('DOCUMENT','SALE','RETURN')
+ {field} * source_id : bigint(20) unsigned
+ {field} * source_line_no : smallint(5) unsigned
+ {field} * created_at : datetime(3)
+}
+entity "stock_locations" as stock_locations {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * code : varchar(80) <<UK>>
+ {field} * name : varchar(120)
+ {field} * kind : enum('WAREHOUSE','BOOTH','TRANSIT','DAMAGED')
+ {field} booth_id : bigint(20) unsigned <<UK,FK>>
+ {field} * active : tinyint(1)
+}
+entity "stock_transfers" as stock_transfers {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * product_id : bigint(20) unsigned <<FK>>
+ {field} * from_location_id : bigint(20) unsigned <<FK>>
+ {field} * to_location_id : bigint(20) unsigned <<FK>>
+ {field} * transit_location_id : bigint(20) unsigned <<FK>>
+ {field} * quantity : int(10) unsigned
+ {field} * state : enum('DISPATCHED','RECEIVED','CANCELLED')
+ {field} received_quantity : int(10) unsigned
+ {field} damaged_quantity : int(10) unsigned
+ {field} missing_quantity : int(10) unsigned
+ {field} * reason : varchar(500)
+ {field} receiving_note : varchar(500)
+ {field} * created_by : bigint(20) unsigned <<FK>>
+ {field} received_by : bigint(20) unsigned <<FK>>
+ {field} * created_at : datetime(3)
+ {field} received_at : datetime(3)
+ {field} * version : int(10) unsigned
+}
+entity "users" as users {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * username : varchar(80) <<UK>>
+ {field} * password_hash : varchar(255)
+ {field} * role : enum('OWNER','SALESPERSON')
+ {field} salesperson_id : bigint(20) unsigned <<UK,FK>>
+ {field} * active : tinyint(1)
+ {field} * must_change_password : tinyint(1)
+ {field} * failed_logins : int(10) unsigned
+ {field} locked_until : datetime(3)
+ {field} * created_at : datetime(3)
+}
+entity "venues" as venues {
+ {field} * id : bigint(20) unsigned <<PK>>
+ {field} * name : varchar(120)
+ {field} * street : varchar(120)
+ {field} * city : varchar(80)
+ {field} * province : varchar(80)
+ {field} * postal_code : varchar(16)
+ {field} description : varchar(500)
+ {field} * active : tinyint(1)
+ {field} * version : int(10) unsigned
+}
+users |o--o{ audit_events
+events ||--o{ booths
+users |o--o{ cash_handovers
+shifts ||--o| cash_handovers
+commission_entries ||--o| commission_claims
+commission_settlements ||--o{ commission_claims
+salespeople ||--o{ commission_entries
+salespeople ||--o{ commission_settlements
+users ||--o{ commission_settlements
+commission_entries ||--o{ commission_settlement_lines
+commission_settlements ||--o{ commission_settlement_lines
+users ||--o{ damage_records
+products ||--o{ damage_records
+event_categories ||--o{ events
+venues ||--o{ events
+users ||--o{ exchanges
+sales |o--o{ exchanges
+returns |o--o| exchanges
+users ||--o{ idempotency_keys
+shifts |o--o{ returns
+exchanges |o--o{ returns
+stock_locations |o--o{ returns
+sales ||--o{ returns
+users ||--o{ returns
+returns ||--o{ return_lines
+users |o--o{ sales
+exchanges |o--o{ sales
+shifts ||--o{ sales
+products ||--o{ sale_lines
+sales ||--o{ sale_lines
+users ||--o{ sale_workspaces
+sale_workspaces ||--o{ sale_workspace_revisions
+users ||--o{ sessions
+booths ||--o{ shifts
+salespeople ||--o{ shifts
+users |o--o{ shift_extensions
+shifts ||--o{ shift_extensions
+stock_locations ||--o{ stock_balances
+products ||--o{ stock_balances
+stock_locations |o--o{ stock_documents
+users ||--o{ stock_documents
+stock_documents ||--o{ stock_document_lines
+products ||--o{ stock_document_lines
+sale_lines ||--o| stock_holds
+stock_locations ||--o{ stock_holds
+products ||--o{ stock_holds
+stock_locations ||--o{ stock_ledger
+products ||--o{ stock_ledger
+booths |o--o| stock_locations
+users |o--o{ stock_transfers
+stock_locations ||--o{ stock_transfers
+products ||--o{ stock_transfers
+salespeople |o--o| users
+@enduml

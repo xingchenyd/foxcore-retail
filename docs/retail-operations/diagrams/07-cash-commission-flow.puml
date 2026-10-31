@@ -1,0 +1,47 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 15
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #356553
+skinparam LineColor #356553
+skinparam packageStyle rectangle
+skinparam classBackgroundColor #F4F7EF
+skinparam classBorderColor #356553
+skinparam usecaseBackgroundColor #F4F7EF
+skinparam usecaseBorderColor #356553
+skinparam stateBackgroundColor #F4F7EF
+skinparam stateBorderColor #356553
+skinparam noteBackgroundColor #FFF6DC
+skinparam noteBorderColor #C7AB63
+hide empty members
+title 交班与活动结转活动图
+start
+:处理班次草稿和待收款单；核对退款与换货;
+:应交 = 备用金 + 现金销售 - 本班现金退款 + 换货现金净差价;
+:员工填写实交、原因，提交交班;
+:冻结本班后续现金操作;
+if (管理员核对通过?) then (通过)
+:交班 VERIFIED;
+else (退回)
+:交班 RETURNED；重新清点、提交;
+stop
+endif
+:关班；退回剩余展位库存并完成在途签收;
+if (存在未完班次/单据/库存/调拨/未核交班?) then (是)
+:活动不能关闭，按原因处理;
+stop
+else (否)
+:活动 CLOSED;
+endif
+:按员工和币种归集未结佣金（含以前的负流水）;
+if (合计为正?) then (是)
+:OWNER 准备结算，占用流水;
+:线下支付，登记付款凭证，PAID;
+else (零或负)
+:负数保留，抵扣后续活动佣金;
+endif
+:付款后发生退货时新增负佣金，不改旧结算;
+stop
+@enduml

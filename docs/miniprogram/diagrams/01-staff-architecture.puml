@@ -1,0 +1,40 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName Microsoft YaHei
+skinparam backgroundColor #F7F8F2
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam ArrowColor #52734D
+skinparam componentBackgroundColor #FFFFFF
+skinparam componentBorderColor #95AA82
+title Foxcore 工作人员小程序 · 共用业务后端
+actor "OWNER\n管理员" as owner
+actor "SALESPERSON\n销售顾问" as staff
+package "微信原生客户端（13 页）" {
+  component "登录 / 首次改密 / 会话恢复" as login
+  component "工作台 / 班次\n销售 / 库存 / 佣金\n管理员退货与结算" as pages
+  component "wx.request 请求层\nBearer + CSRF\nUUID 持久化 / 原请求重试" as transport
+  database "本机存储\n会话、草稿、待核对操作\n按员工账户区分" as cache
+}
+component "现有 React 管理网页\nCookie + CSRF" as web
+package "现有 Fastify 后端" {
+  component "共用身份、权限与会话撤销" as auth
+  component "原有业务事务\n库存 / 销售 / 退货 / 佣金\n精确金额、版本、幂等与审计" as business
+}
+database "同一 MariaDB\n25 业务表 + 迁移表\n本轮不修改迁移" as db
+owner --> pages
+staff --> pages
+owner --> web
+login --> transport
+pages --> transport
+transport --> cache
+transport --> auth : HTTPS API
+web --> auth
+auth --> business
+business --> db
+note bottom of business
+线下现金 / 独立终端负责实际资金。
+小程序登记事实，不调用微信支付。
+发布前需配置真实 AppID、HTTPS 与合法域名。
+end note
+@enduml

@@ -1,0 +1,75 @@
+{
+  "status": "CODE_DELIVERY_READY_EXTERNAL_GATES_PENDING",
+  "taskDate": "2026-10-28",
+  "branch": "codex/retail-operations-20261028",
+  "baseCommit": "e7543abf50420f4247c30decffd7cb5c8f0f480e",
+  "mainModified": false,
+  "mainCommit": "744c36ac67abb28963f32077c219fbb4047d28c4",
+  "node": "24.19.0",
+  "databaseEngine": "MariaDB 11.8.9 native Windows loopback",
+  "typecheck": "PASS",
+  "productionBuild": "PASS",
+  "nativePages": 14,
+  "wechatIdeCompile": "NOT_RUN",
+  "wechatDevice": "NOT_RUN",
+  "cloudDeployment": "NOT_RUN",
+  "dockerRuntime": "NOT_RUN",
+  "publicDeployment": false,
+  "unit": {
+    "passed": 84,
+    "files": 8,
+    "evidence": "evidence/unit.txt"
+  },
+  "pure": {
+    "passed": 94,
+    "evidence": "evidence/pure.txt"
+  },
+  "regression": {
+    "passed": 10,
+    "files": 7,
+    "evidence": "evidence/regression.txt",
+    "note": "Four original defect/control probes plus six broad real HTTP/controller workflow groups; not a count of every individual assertion."
+  },
+  "database": {
+    "tables": 34,
+    "businessTables": 33,
+    "invariants": 31,
+    "invariantViolations": 0,
+    "migrationFrom001": "PASS",
+    "repeatMigrations": "PASS",
+    "appendOnlyPermissions": "PASS",
+    "ownerControlledRecovery": "PASS",
+    "writeQuiescentBackupRestore": "PASS",
+    "allTableDigestComparison": "PASS",
+    "evidence": "evidence/database.json"
+  },
+  "capacity": {
+    "result": "PASS_LOCAL_SYNTHETIC_WORKLOAD",
+    "evidence": "evidence/capacity.json",
+    "cloud": "NOT_RUN"
+  },
+  "browser": {
+    "result": "PASS_MANUAL_CUA_LOCAL",
+    "checks": [
+      "Web dispatch 5 units; receive 4 good + 1 damaged; same document appears in shared staff view",
+      "Web count after receipt: on_hand 3, reserved 0, version 3",
+      "Employee 414px WXML adapter: shared damage record visible, no owner-only management modules, no console errors, no horizontal overflow",
+      "Desktop Web and mobile adapter screenshots retained; no claim of WeChat-engine/device rendering"
+    ],
+    "evidence": "ui/"
+  },
+  "specKit": {
+    "pinnedCommit": "ee94598c3c87ae231027b22fb2be2b5a13e8820f",
+    "sourceVersion": "1.2.4.dev0",
+    "cliInstall": "NOT_COMPLETED_TLS_ERROR",
+    "templateWorkflow": "USED_FIXED_SOURCE",
+    "pythonPrerequisites": "PASS",
+    "knownDefects": "SK-B03, SK-B01, SK-B02 regression probes pass; historical red evidence preserved"
+  },
+  "deferred": [
+    "WeChat registration/AppID and developer-tool scan login",
+    "WeChat engine compile and iOS/Android device flows",
+    "Target Docker runtime, production backups and cloud capacity/monitoring",
+    "Domain/ICP/mini-program categories/privacy/review/release"
+  ]
+}

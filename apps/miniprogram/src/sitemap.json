@@ -1,0 +1,1 @@
+{ "desc": "工作人员系统无需搜索收录", "rules": [{ "action": "disallow", "page": "*" }] }

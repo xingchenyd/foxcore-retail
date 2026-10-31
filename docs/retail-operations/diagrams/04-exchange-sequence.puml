@@ -1,0 +1,46 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 15
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #356553
+skinparam LineColor #356553
+skinparam packageStyle rectangle
+skinparam classBackgroundColor #F4F7EF
+skinparam classBorderColor #356553
+skinparam usecaseBackgroundColor #F4F7EF
+skinparam usecaseBorderColor #356553
+skinparam stateBackgroundColor #F4F7EF
+skinparam stateBorderColor #356553
+skinparam noteBackgroundColor #FFF6DC
+skinparam noteBorderColor #C7AB63
+hide empty members
+title 独立换货时序图 · 原子退入与换出
+actor 办理员工 as U
+participant "Web / 小程序" as C
+participant "exchanges.ts" as X
+participant "returns.ts / sales.ts" as S
+database MariaDB as D
+U -> C : 选择原单、无损退入、新商品和当前班次
+C -> X : POST /exchanges + 原操作 UUID
+X -> D : BEGIN；认领幂等键；按序锁活动
+X -> D : 核对原单 / 168小时 / 办理人 / 币种
+X -> D : 建独立换货 + 关联退入单 + 换出草稿
+X -> S : authorizeReturnInTx + prepareSaleInTx
+S -> D : 累计可退校验 / 冻结原佣金冲回 / 新价税佣金 / 占库
+alt 任何一步失败
+X -> D : ROLLBACK（不存在半张换货）
+else 全部成功
+X -> D : COMMIT
+X --> C : 差额 = 新应收 - 原退款
+end
+U -> U : 线下补收 / 退差价；清点商品
+C -> X : POST /exchanges/id/post + 确认事实 + UUID
+X -> D : BEGIN；同键只执行一次
+X -> S : postReturnInTx + postSaleInTx
+S -> D : 原商品回库 / 新商品扣库 / 原销售员负佣金 / 办理人正佣金
+X -> D : 保存差价方式与凭证、审计；COMMIT
+X --> C : 独立换货凭证与找零
+note over C,D : 浏览器丢响应时保留原 UUID 和内容；\n重载后核对原请求，不再次执行线下收付款
+@enduml

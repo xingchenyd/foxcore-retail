@@ -1,0 +1,2536 @@
+{
+  "source": "MariaDB information_schema after migrations 001-005; structure only, no business rows",
+  "businessTables": 33,
+  "migrationTables": 1,
+  "columns": [
+    {
+      "tableName": "audit_events",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "audit_events",
+      "name": "actor_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "audit_events",
+      "name": "action",
+      "type": "varchar(100)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "audit_events",
+      "name": "subject_type",
+      "type": "varchar(60)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "audit_events",
+      "name": "subject_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "audit_events",
+      "name": "detail_json",
+      "type": "longtext",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "audit_events",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "booths",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "booths",
+      "name": "event_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "booths",
+      "name": "location",
+      "type": "varchar(80)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "booths",
+      "name": "active",
+      "type": "tinyint(1)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "business_settings",
+      "name": "id",
+      "type": "tinyint(3) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "business_settings",
+      "name": "currency",
+      "type": "char(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "business_settings",
+      "name": "business_timezone",
+      "type": "varchar(64)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "business_settings",
+      "name": "price_basis",
+      "type": "enum('EXCLUSIVE','INCLUSIVE')",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "business_settings",
+      "name": "return_days",
+      "type": "smallint(5) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "business_settings",
+      "name": "version",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "shift_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "UNI"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "expected_cents",
+      "type": "bigint(20)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "actual_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "difference_cents",
+      "type": "bigint(20)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "reason",
+      "type": "varchar(500)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "state",
+      "type": "enum('SUBMITTED','VERIFIED','RETURNED')",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "submitted_by",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "reviewed_by",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "review_note",
+      "type": "varchar(500)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "reviewed_at",
+      "type": "datetime(3)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "version",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_claims",
+      "name": "entry_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "commission_claims",
+      "name": "settlement_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "salesperson_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "amount_cents",
+      "type": "bigint(20)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "source_kind",
+      "type": "enum('SALE','RETURN')",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "source_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "source_line_no",
+      "type": "smallint(5) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "currency",
+      "type": "char(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "salesperson_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "state",
+      "type": "enum('PREPARED','PAID','CANCELLED')",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "cutoff_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "total_cents",
+      "type": "bigint(20)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "payment_reference",
+      "type": "varchar(120)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "created_by",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "paid_at",
+      "type": "datetime(3)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "currency",
+      "type": "char(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlement_lines",
+      "name": "settlement_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "commission_settlement_lines",
+      "name": "entry_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "commission_settlement_lines",
+      "name": "amount_cents",
+      "type": "bigint(20)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "damage_records",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "damage_records",
+      "name": "product_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "damage_records",
+      "name": "quantity",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "damage_records",
+      "name": "repaired_quantity",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "damage_records",
+      "name": "disposed_quantity",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "damage_records",
+      "name": "reason",
+      "type": "varchar(500)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "damage_records",
+      "name": "created_by",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "damage_records",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "damage_records",
+      "name": "version",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "events",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "events",
+      "name": "venue_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "events",
+      "name": "category_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "events",
+      "name": "name",
+      "type": "varchar(120)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "events",
+      "name": "start_date",
+      "type": "date",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "events",
+      "name": "end_date",
+      "type": "date",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "events",
+      "name": "description",
+      "type": "varchar(500)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "events",
+      "name": "status",
+      "type": "enum('DRAFT','OPEN','CLOSED','CANCELLED')",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "events",
+      "name": "timezone",
+      "type": "varchar(64)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "events",
+      "name": "tax_bps",
+      "type": "smallint(5) unsigned",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "events",
+      "name": "policy_confirmed",
+      "type": "tinyint(1)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "events",
+      "name": "version",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "events",
+      "name": "currency",
+      "type": "char(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "events",
+      "name": "business_timezone",
+      "type": "varchar(64)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "events",
+      "name": "price_basis",
+      "type": "enum('EXCLUSIVE','INCLUSIVE')",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "events",
+      "name": "return_days",
+      "type": "smallint(5) unsigned",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "event_categories",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "event_categories",
+      "name": "code",
+      "type": "varchar(40)",
+      "nullable": "NO",
+      "keyKind": "UNI"
+    },
+    {
+      "tableName": "event_categories",
+      "name": "type",
+      "type": "varchar(80)",
+      "nullable": "NO",
+      "keyKind": "UNI"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "original_sale_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "return_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": "UNI"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "new_sale_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": "UNI"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "state",
+      "type": "enum('PREPARED','POSTED','CANCELLED')",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "currency",
+      "type": "char(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "exchanges",
+      "name": "difference_cents",
+      "type": "bigint(20)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "exchanges",
+      "name": "payment_method",
+      "type": "enum('CASH','TERMINAL')",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "exchanges",
+      "name": "payment_reference",
+      "type": "varchar(120)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "exchanges",
+      "name": "cash_received_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "exchanges",
+      "name": "created_by",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "exchanges",
+      "name": "posted_at",
+      "type": "datetime(3)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "idempotency_keys",
+      "name": "actor_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "idempotency_keys",
+      "name": "operation",
+      "type": "varchar(80)",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "idempotency_keys",
+      "name": "command_key",
+      "type": "char(36)",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "idempotency_keys",
+      "name": "request_hash",
+      "type": "char(64)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "idempotency_keys",
+      "name": "response_json",
+      "type": "longtext",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "idempotency_keys",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "products",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "products",
+      "name": "sku",
+      "type": "varchar(64)",
+      "nullable": "NO",
+      "keyKind": "UNI"
+    },
+    {
+      "tableName": "products",
+      "name": "name",
+      "type": "varchar(160)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "products",
+      "name": "wholesale_cost_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "products",
+      "name": "min_price_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "products",
+      "name": "suggested_price_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "products",
+      "name": "active",
+      "type": "tinyint(1)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "products",
+      "name": "version",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "products",
+      "name": "currency",
+      "type": "char(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "returns",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "returns",
+      "name": "sale_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "returns",
+      "name": "state",
+      "type": "enum('DRAFT','AUTHORIZED','POSTED','CANCELLED')",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "returns",
+      "name": "reason",
+      "type": "varchar(500)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "returns",
+      "name": "refund_reference",
+      "type": "varchar(120)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "returns",
+      "name": "destination_location_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "returns",
+      "name": "created_by",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "returns",
+      "name": "authorized_at",
+      "type": "datetime(3)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "returns",
+      "name": "posted_at",
+      "type": "datetime(3)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "returns",
+      "name": "net_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "returns",
+      "name": "tax_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "returns",
+      "name": "total_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "returns",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "returns",
+      "name": "cash_shift_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "returns",
+      "name": "exchange_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "returns",
+      "name": "refund_method",
+      "type": "enum('CASH','TERMINAL','EXCHANGE')",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "return_lines",
+      "name": "return_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "line_no",
+      "type": "smallint(5) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "sale_line_no",
+      "type": "smallint(5) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "return_lines",
+      "name": "quantity",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "return_lines",
+      "name": "disposition",
+      "type": "enum('RESTOCK','DAMAGED')",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "return_lines",
+      "name": "net_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "return_lines",
+      "name": "tax_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "return_lines",
+      "name": "commission_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "sales",
+      "name": "sale_no",
+      "type": "varchar(40)",
+      "nullable": "YES",
+      "keyKind": "UNI"
+    },
+    {
+      "tableName": "sales",
+      "name": "shift_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "sales",
+      "name": "event_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "sales",
+      "name": "state",
+      "type": "enum('DRAFT','CHECKOUT','POSTED','CANCELLED')",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "sales",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "prepared_at",
+      "type": "datetime(3)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "posted_at",
+      "type": "datetime(3)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "created_by",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "sales",
+      "name": "posted_by",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "sales",
+      "name": "payment_method",
+      "type": "enum('CASH','TERMINAL','EXCHANGE')",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "payment_reference",
+      "type": "varchar(120)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "cash_received_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "net_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "tax_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "total_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "version",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "currency",
+      "type": "char(3)",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "sales",
+      "name": "price_basis",
+      "type": "enum('EXCLUSIVE','INCLUSIVE')",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "return_days",
+      "type": "smallint(5) unsigned",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "exchange_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "salespeople",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "salespeople",
+      "name": "first_name",
+      "type": "varchar(80)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "last_name",
+      "type": "varchar(80)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "street",
+      "type": "varchar(120)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "city",
+      "type": "varchar(80)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "province",
+      "type": "varchar(80)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "postal_code",
+      "type": "varchar(16)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "phone",
+      "type": "varchar(32)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "description",
+      "type": "varchar(500)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "active",
+      "type": "tinyint(1)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "commission_bps",
+      "type": "smallint(5) unsigned",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "version",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sale_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "line_no",
+      "type": "smallint(5) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "product_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "quantity",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "final_unit_price_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "line_net_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "line_tax_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "line_commission_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "cost_snapshot_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "min_snapshot_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "tax_bps_snapshot",
+      "type": "smallint(5) unsigned",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "commission_bps_snapshot",
+      "type": "smallint(5) unsigned",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "name_snapshot",
+      "type": "varchar(160)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sku_snapshot",
+      "type": "varchar(64)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_workspaces",
+      "name": "owner_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "sale_workspaces",
+      "name": "workspace_key",
+      "type": "varchar(80)",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "sale_workspaces",
+      "name": "payload_json",
+      "type": "longtext",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_workspaces",
+      "name": "revision",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_workspaces",
+      "name": "updated_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_workspace_revisions",
+      "name": "owner_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "sale_workspace_revisions",
+      "name": "workspace_key",
+      "type": "varchar(80)",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "sale_workspace_revisions",
+      "name": "revision",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "sale_workspace_revisions",
+      "name": "payload_json",
+      "type": "longtext",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_workspace_revisions",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "schema_migrations",
+      "name": "version",
+      "type": "varchar(100)",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "schema_migrations",
+      "name": "checksum",
+      "type": "char(64)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "schema_migrations",
+      "name": "applied_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sessions",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "sessions",
+      "name": "user_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "sessions",
+      "name": "token_hash",
+      "type": "char(64)",
+      "nullable": "NO",
+      "keyKind": "UNI"
+    },
+    {
+      "tableName": "sessions",
+      "name": "csrf_hash",
+      "type": "char(64)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sessions",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sessions",
+      "name": "last_seen_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sessions",
+      "name": "expires_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sessions",
+      "name": "revoked_at",
+      "type": "datetime(3)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shifts",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "shifts",
+      "name": "salesperson_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "shifts",
+      "name": "booth_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "shifts",
+      "name": "event_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shifts",
+      "name": "business_date",
+      "type": "date",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shifts",
+      "name": "planned_start",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shifts",
+      "name": "planned_end",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shifts",
+      "name": "actual_start",
+      "type": "datetime(3)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shifts",
+      "name": "actual_end",
+      "type": "datetime(3)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shifts",
+      "name": "status",
+      "type": "enum('PLANNED','ACTIVE','CLOSED','CANCELLED')",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "shifts",
+      "name": "version",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shifts",
+      "name": "opening_cash_cents",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "shift_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "proposed_end",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "reason",
+      "type": "varchar(500)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "state",
+      "type": "enum('PENDING','APPROVED','REJECTED')",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "requested_by",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "reviewed_by",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "review_note",
+      "type": "varchar(500)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "base_version",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "reviewed_at",
+      "type": "datetime(3)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_balances",
+      "name": "location_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "stock_balances",
+      "name": "product_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "stock_balances",
+      "name": "on_hand",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_balances",
+      "name": "reserved",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_balances",
+      "name": "version",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "kind",
+      "type": "enum('RECEIVE','TRANSFER','ADJUST','RETURN','DISPATCH','ACCEPT','RECALL','DAMAGE','REPAIR','DISPOSE')",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "from_location_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "to_location_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "reason",
+      "type": "varchar(500)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "created_by",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_document_lines",
+      "name": "document_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "stock_document_lines",
+      "name": "line_no",
+      "type": "smallint(5) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "stock_document_lines",
+      "name": "product_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_document_lines",
+      "name": "quantity",
+      "type": "int(11)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "sale_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "line_no",
+      "type": "smallint(5) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "location_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "product_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "quantity",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "status",
+      "type": "enum('ACTIVE','CONSUMED','RELEASED')",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "location_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "product_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "delta",
+      "type": "bigint(20)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "source_kind",
+      "type": "enum('DOCUMENT','SALE','RETURN')",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "source_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "source_line_no",
+      "type": "smallint(5) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "code",
+      "type": "varchar(80)",
+      "nullable": "NO",
+      "keyKind": "UNI"
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "name",
+      "type": "varchar(120)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "kind",
+      "type": "enum('WAREHOUSE','BOOTH','TRANSIT','DAMAGED')",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "booth_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": "UNI"
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "active",
+      "type": "tinyint(1)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "product_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "from_location_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "to_location_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "transit_location_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "quantity",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "state",
+      "type": "enum('DISPATCHED','RECEIVED','CANCELLED')",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "received_quantity",
+      "type": "int(10) unsigned",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "damaged_quantity",
+      "type": "int(10) unsigned",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "missing_quantity",
+      "type": "int(10) unsigned",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "reason",
+      "type": "varchar(500)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "receiving_note",
+      "type": "varchar(500)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "created_by",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "received_by",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": "MUL"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "received_at",
+      "type": "datetime(3)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "version",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "users",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "users",
+      "name": "username",
+      "type": "varchar(80)",
+      "nullable": "NO",
+      "keyKind": "UNI"
+    },
+    {
+      "tableName": "users",
+      "name": "password_hash",
+      "type": "varchar(255)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "users",
+      "name": "role",
+      "type": "enum('OWNER','SALESPERSON')",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "users",
+      "name": "salesperson_id",
+      "type": "bigint(20) unsigned",
+      "nullable": "YES",
+      "keyKind": "UNI"
+    },
+    {
+      "tableName": "users",
+      "name": "active",
+      "type": "tinyint(1)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "users",
+      "name": "must_change_password",
+      "type": "tinyint(1)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "users",
+      "name": "failed_logins",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "users",
+      "name": "locked_until",
+      "type": "datetime(3)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "users",
+      "name": "created_at",
+      "type": "datetime(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "venues",
+      "name": "id",
+      "type": "bigint(20) unsigned",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "venues",
+      "name": "name",
+      "type": "varchar(120)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "venues",
+      "name": "street",
+      "type": "varchar(120)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "venues",
+      "name": "city",
+      "type": "varchar(80)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "venues",
+      "name": "province",
+      "type": "varchar(80)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "venues",
+      "name": "postal_code",
+      "type": "varchar(16)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "venues",
+      "name": "description",
+      "type": "varchar(500)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "venues",
+      "name": "active",
+      "type": "tinyint(1)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "venues",
+      "name": "version",
+      "type": "int(10) unsigned",
+      "nullable": "NO",
+      "keyKind": ""
+    }
+  ],
+  "fks": [
+    {
+      "source": "audit_events",
+      "sourceColumn": "actor_id",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_audit_actor"
+    },
+    {
+      "source": "booths",
+      "sourceColumn": "event_id",
+      "target": "events",
+      "targetColumn": "id",
+      "name": "fk_booths_event"
+    },
+    {
+      "source": "cash_handovers",
+      "sourceColumn": "reviewed_by",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_cash_reviewer"
+    },
+    {
+      "source": "cash_handovers",
+      "sourceColumn": "shift_id",
+      "target": "shifts",
+      "targetColumn": "id",
+      "name": "fk_cash_shift"
+    },
+    {
+      "source": "cash_handovers",
+      "sourceColumn": "submitted_by",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_cash_submitter"
+    },
+    {
+      "source": "commission_claims",
+      "sourceColumn": "entry_id",
+      "target": "commission_entries",
+      "targetColumn": "id",
+      "name": "fk_claim_entry"
+    },
+    {
+      "source": "commission_claims",
+      "sourceColumn": "settlement_id",
+      "target": "commission_settlements",
+      "targetColumn": "id",
+      "name": "fk_claim_settlement"
+    },
+    {
+      "source": "commission_entries",
+      "sourceColumn": "salesperson_id",
+      "target": "salespeople",
+      "targetColumn": "id",
+      "name": "fk_commission_salesperson"
+    },
+    {
+      "source": "commission_settlements",
+      "sourceColumn": "salesperson_id",
+      "target": "salespeople",
+      "targetColumn": "id",
+      "name": "fk_settlement_salesperson"
+    },
+    {
+      "source": "commission_settlements",
+      "sourceColumn": "created_by",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_settlement_user"
+    },
+    {
+      "source": "commission_settlement_lines",
+      "sourceColumn": "entry_id",
+      "target": "commission_entries",
+      "targetColumn": "id",
+      "name": "fk_settlementline_entry"
+    },
+    {
+      "source": "commission_settlement_lines",
+      "sourceColumn": "settlement_id",
+      "target": "commission_settlements",
+      "targetColumn": "id",
+      "name": "fk_settlementline_settlement"
+    },
+    {
+      "source": "damage_records",
+      "sourceColumn": "created_by",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_damage_creator"
+    },
+    {
+      "source": "damage_records",
+      "sourceColumn": "product_id",
+      "target": "products",
+      "targetColumn": "id",
+      "name": "fk_damage_product"
+    },
+    {
+      "source": "events",
+      "sourceColumn": "category_id",
+      "target": "event_categories",
+      "targetColumn": "id",
+      "name": "fk_events_category"
+    },
+    {
+      "source": "events",
+      "sourceColumn": "venue_id",
+      "target": "venues",
+      "targetColumn": "id",
+      "name": "fk_events_venue"
+    },
+    {
+      "source": "exchanges",
+      "sourceColumn": "created_by",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_exchange_creator"
+    },
+    {
+      "source": "exchanges",
+      "sourceColumn": "new_sale_id",
+      "target": "sales",
+      "targetColumn": "id",
+      "name": "fk_exchange_new"
+    },
+    {
+      "source": "exchanges",
+      "sourceColumn": "original_sale_id",
+      "target": "sales",
+      "targetColumn": "id",
+      "name": "fk_exchange_original"
+    },
+    {
+      "source": "exchanges",
+      "sourceColumn": "return_id",
+      "target": "returns",
+      "targetColumn": "id",
+      "name": "fk_exchange_return"
+    },
+    {
+      "source": "idempotency_keys",
+      "sourceColumn": "actor_id",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_idempotency_actor"
+    },
+    {
+      "source": "returns",
+      "sourceColumn": "cash_shift_id",
+      "target": "shifts",
+      "targetColumn": "id",
+      "name": "fk_return_cash_shift"
+    },
+    {
+      "source": "returns",
+      "sourceColumn": "exchange_id",
+      "target": "exchanges",
+      "targetColumn": "id",
+      "name": "fk_return_exchange"
+    },
+    {
+      "source": "returns",
+      "sourceColumn": "destination_location_id",
+      "target": "stock_locations",
+      "targetColumn": "id",
+      "name": "fk_return_location"
+    },
+    {
+      "source": "returns",
+      "sourceColumn": "sale_id",
+      "target": "sales",
+      "targetColumn": "id",
+      "name": "fk_return_sale"
+    },
+    {
+      "source": "returns",
+      "sourceColumn": "created_by",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_return_user"
+    },
+    {
+      "source": "return_lines",
+      "sourceColumn": "return_id",
+      "target": "returns",
+      "targetColumn": "id",
+      "name": "fk_returnline_return"
+    },
+    {
+      "source": "sales",
+      "sourceColumn": "created_by",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_sale_creator"
+    },
+    {
+      "source": "sales",
+      "sourceColumn": "exchange_id",
+      "target": "exchanges",
+      "targetColumn": "id",
+      "name": "fk_sale_exchange"
+    },
+    {
+      "source": "sales",
+      "sourceColumn": "posted_by",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_sale_poster"
+    },
+    {
+      "source": "sales",
+      "sourceColumn": "shift_id",
+      "target": "shifts",
+      "targetColumn": "id",
+      "name": "fk_sale_shift_event"
+    },
+    {
+      "source": "sales",
+      "sourceColumn": "event_id",
+      "target": "shifts",
+      "targetColumn": "event_id",
+      "name": "fk_sale_shift_event"
+    },
+    {
+      "source": "sale_lines",
+      "sourceColumn": "product_id",
+      "target": "products",
+      "targetColumn": "id",
+      "name": "fk_line_product"
+    },
+    {
+      "source": "sale_lines",
+      "sourceColumn": "sale_id",
+      "target": "sales",
+      "targetColumn": "id",
+      "name": "fk_line_sale"
+    },
+    {
+      "source": "sale_workspaces",
+      "sourceColumn": "owner_id",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_workspace_owner"
+    },
+    {
+      "source": "sale_workspace_revisions",
+      "sourceColumn": "owner_id",
+      "target": "sale_workspaces",
+      "targetColumn": "owner_id",
+      "name": "fk_workspace_revision"
+    },
+    {
+      "source": "sale_workspace_revisions",
+      "sourceColumn": "workspace_key",
+      "target": "sale_workspaces",
+      "targetColumn": "workspace_key",
+      "name": "fk_workspace_revision"
+    },
+    {
+      "source": "sessions",
+      "sourceColumn": "user_id",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_session_user"
+    },
+    {
+      "source": "shifts",
+      "sourceColumn": "booth_id",
+      "target": "booths",
+      "targetColumn": "id",
+      "name": "fk_shift_booth_event"
+    },
+    {
+      "source": "shifts",
+      "sourceColumn": "event_id",
+      "target": "booths",
+      "targetColumn": "event_id",
+      "name": "fk_shift_booth_event"
+    },
+    {
+      "source": "shifts",
+      "sourceColumn": "salesperson_id",
+      "target": "salespeople",
+      "targetColumn": "id",
+      "name": "fk_shift_salesperson"
+    },
+    {
+      "source": "shift_extensions",
+      "sourceColumn": "requested_by",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_extension_requester"
+    },
+    {
+      "source": "shift_extensions",
+      "sourceColumn": "reviewed_by",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_extension_reviewer"
+    },
+    {
+      "source": "shift_extensions",
+      "sourceColumn": "shift_id",
+      "target": "shifts",
+      "targetColumn": "id",
+      "name": "fk_extension_shift"
+    },
+    {
+      "source": "stock_balances",
+      "sourceColumn": "location_id",
+      "target": "stock_locations",
+      "targetColumn": "id",
+      "name": "fk_balance_location"
+    },
+    {
+      "source": "stock_balances",
+      "sourceColumn": "product_id",
+      "target": "products",
+      "targetColumn": "id",
+      "name": "fk_balance_product"
+    },
+    {
+      "source": "stock_documents",
+      "sourceColumn": "from_location_id",
+      "target": "stock_locations",
+      "targetColumn": "id",
+      "name": "fk_doc_from"
+    },
+    {
+      "source": "stock_documents",
+      "sourceColumn": "to_location_id",
+      "target": "stock_locations",
+      "targetColumn": "id",
+      "name": "fk_doc_to"
+    },
+    {
+      "source": "stock_documents",
+      "sourceColumn": "created_by",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_doc_user"
+    },
+    {
+      "source": "stock_document_lines",
+      "sourceColumn": "document_id",
+      "target": "stock_documents",
+      "targetColumn": "id",
+      "name": "fk_docline_doc"
+    },
+    {
+      "source": "stock_document_lines",
+      "sourceColumn": "product_id",
+      "target": "products",
+      "targetColumn": "id",
+      "name": "fk_docline_product"
+    },
+    {
+      "source": "stock_holds",
+      "sourceColumn": "sale_id",
+      "target": "sale_lines",
+      "targetColumn": "sale_id",
+      "name": "fk_hold_line"
+    },
+    {
+      "source": "stock_holds",
+      "sourceColumn": "line_no",
+      "target": "sale_lines",
+      "targetColumn": "line_no",
+      "name": "fk_hold_line"
+    },
+    {
+      "source": "stock_holds",
+      "sourceColumn": "location_id",
+      "target": "stock_locations",
+      "targetColumn": "id",
+      "name": "fk_hold_location"
+    },
+    {
+      "source": "stock_holds",
+      "sourceColumn": "product_id",
+      "target": "products",
+      "targetColumn": "id",
+      "name": "fk_hold_product"
+    },
+    {
+      "source": "stock_ledger",
+      "sourceColumn": "location_id",
+      "target": "stock_locations",
+      "targetColumn": "id",
+      "name": "fk_ledger_location"
+    },
+    {
+      "source": "stock_ledger",
+      "sourceColumn": "product_id",
+      "target": "products",
+      "targetColumn": "id",
+      "name": "fk_ledger_product"
+    },
+    {
+      "source": "stock_locations",
+      "sourceColumn": "booth_id",
+      "target": "booths",
+      "targetColumn": "id",
+      "name": "fk_location_booth"
+    },
+    {
+      "source": "stock_transfers",
+      "sourceColumn": "created_by",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_transfer_creator"
+    },
+    {
+      "source": "stock_transfers",
+      "sourceColumn": "from_location_id",
+      "target": "stock_locations",
+      "targetColumn": "id",
+      "name": "fk_transfer_from"
+    },
+    {
+      "source": "stock_transfers",
+      "sourceColumn": "product_id",
+      "target": "products",
+      "targetColumn": "id",
+      "name": "fk_transfer_product"
+    },
+    {
+      "source": "stock_transfers",
+      "sourceColumn": "received_by",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_transfer_receiver"
+    },
+    {
+      "source": "stock_transfers",
+      "sourceColumn": "to_location_id",
+      "target": "stock_locations",
+      "targetColumn": "id",
+      "name": "fk_transfer_to"
+    },
+    {
+      "source": "stock_transfers",
+      "sourceColumn": "transit_location_id",
+      "target": "stock_locations",
+      "targetColumn": "id",
+      "name": "fk_transfer_transit"
+    },
+    {
+      "source": "users",
+      "sourceColumn": "salesperson_id",
+      "target": "salespeople",
+      "targetColumn": "id",
+      "name": "fk_user_salesperson"
+    }
+  ]
+}

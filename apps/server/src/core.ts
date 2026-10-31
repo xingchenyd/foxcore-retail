@@ -36,7 +36,7 @@ export function bps(value: unknown): number {
 }
 export function money(value: unknown): bigint {
   try { return parseMoney(value); }
-  catch { throw bad('金额必须为非负 CAD 十进制字符串，最多两位小数'); }
+  catch { throw bad('金额必须为非负十进制金额字符串，最多两位小数'); }
 }
 export function body(value: unknown, allowed: string[]): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw bad('请求体必须为对象');

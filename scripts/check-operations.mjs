@@ -1,0 +1,10 @@
+import {readFileSync,readdirSync,existsSync} from 'node:fs';import assert from 'node:assert/strict';
+const json=p=>JSON.parse(readFileSync(p,'utf8')),dir='docs/retail-operations',schema=json(dir+'/schema.json'),diagrams=json(dir+'/diagram-index.json');
+assert.equal(new Set(schema.columns.map(c=>c.tableName)).size,34);assert.equal(diagrams.length,13);
+for(const d of diagrams)for(const kind of ['source','svg','png']){assert.ok(existsSync(dir+'/'+d[kind]),'Missing diagram '+d[kind]);if(kind==='svg')assert.ok(!readFileSync(dir+'/'+d[kind],'utf8').includes('Syntax Error'));}
+const extension=json(dir+'/openapi-extension.json'),contract=json('docs/openapi.json'),source=readdirSync('apps/server/src').filter(x=>x.endsWith('.ts')).map(x=>readFileSync('apps/server/src/'+x,'utf8')).join('\n');
+for(const [path,methods]of Object.entries(extension.paths))for(const [method,op]of Object.entries(methods)){assert.deepEqual(contract.paths[path][method],op);const literal=path.replace(/\{(\w+)\}/g,':$1');assert.ok(source.includes("app."+method+"('"+literal+"'")||source.includes('app.'+method+'("'+literal+'"'),'Missing route '+method+' '+literal);}
+const pages=json('apps/miniprogram/src/app.json').pages;assert.equal(pages.length,14);assert.ok(pages.includes('pages/operations/index'));
+for(const p of ['spec.md','plan.md','tasks.md','decisions.md','data-model.md','analysis.md'])assert.ok(existsSync('specs/002-retail-operations/'+p));
+const state=json('RELEASE_STATUS.json');if(state.status==='RETAIL_OPERATIONS_CODE_DELIVERY_EXTERNAL_GATES_PENDING'){const v=json(dir+'/verification.json');assert.equal(state.branch,v.branch);assert.equal(state.mainModified,false);for(const k of ['wechatIdeCompile','wechatDevice','cloudDeployment','dockerRuntime'])assert.equal(v[k],'NOT_RUN');assert.equal(v.database.invariantViolations,0);}
+console.log('Current operations docs: 34-table model, 13 rendered diagrams, source/API paths, 14 pages and declared external gates checked. Runtime results remain separate evidence.');

@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Foxcore Retail API",
-    "version": "1.0.0",
-    "description": "同源 JSON API。金额输入为 CAD 十进制字符串，存储/输出为整数分字符串。写命令需要 CSRF；除登录、登出、改密外均需要 UUID 幂等键。请求字段表为静态源码提取，详细业务规则见 SRS/SDD。\nF01–F08 repair overlay applied. Runtime inputs are explicitly validated in handlers; this document is not automatic AJV registration. Full execution is not yet verified."
+    "version": "2026-10-28",
+    "description": "同源 JSON API。金额输入为 CAD 十进制字符串，存储/输出为整数分字符串。写命令需要 CSRF；除登录、登出、改密外均需要 UUID 幂等键。请求字段表为静态源码提取，详细业务规则见 SRS/SDD。\nF01–F08 repair overlay applied. Runtime inputs are explicitly validated in handlers; this document is not automatic AJV registration. Full execution is not yet verified.\n2026-10-26 staff mini-program extension: 3 compatible routes; bearer session uses existing sessions table. WeChat IDE/device verification pending."
   },
   "servers": [
     {
@@ -17,6 +17,16 @@
         "type": "apiKey",
         "in": "cookie",
         "name": "foxcore_session"
+      },
+      "staffBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "随机43字符会话，服务端只存哈希；不可与Cookie同时发送。写请求继续带X-CSRF-Token。"
+      },
+      "miniBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Opaque business-account session token, not WeChat AppSecret"
       }
     },
     "schemas": {
@@ -355,6 +365,24 @@
                   },
                   "policyConfirmed": {
                     "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "currency": {
+                    "enum": [
+                      "CNY",
+                      "CAD"
+                    ]
+                  },
+                  "priceBasis": {
+                    "enum": [
+                      "INCLUSIVE",
+                      "EXCLUSIVE"
+                    ]
+                  },
+                  "businessTimezone": {
+                    "enum": [
+                      "Asia/Shanghai",
+                      "America/Toronto"
+                    ]
                   }
                 }
               }
@@ -740,6 +768,12 @@
                   },
                   "suggestedPrice": {
                     "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "currency": {
+                    "enum": [
+                      "CNY",
+                      "CAD"
+                    ]
                   }
                 }
               }
@@ -1027,6 +1061,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "actionable",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "const": "true"
+            }
           }
         ],
         "responses": {
@@ -1206,7 +1248,12 @@
               "schema": {
                 "type": "object",
                 "additionalProperties": false,
-                "properties": {}
+                "properties": {
+                  "openingCash": {
+                    "type": "string",
+                    "pattern": "^(0|[1-9][0-9]{0,10})(\\.[0-9]{1,2})?$"
+                  }
+                }
               }
             }
           }
@@ -1462,6 +1509,13 @@
                 "properties": {
                   "salespersonId": {
                     "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "currency": {
+                    "enum": [
+                      "CNY",
+                      "CAD"
+                    ],
+                    "description": "Required only if multiple unclaimed currencies exist; never sum different currencies."
                   }
                 }
               }
@@ -2373,7 +2427,8 @@
           {
             "session": []
           }
-        ]
+        ],
+        "x-business-access": "Shared staff business; server validates state/version and hides other staff commission/cost."
       }
     },
     "/api/v1/stock/balances": {
@@ -2404,8 +2459,19 @@
           {
             "name": "locationId",
             "in": "query",
+            "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          {
+            "name": "productId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
             }
           }
         ],
@@ -2434,7 +2500,8 @@
           {
             "session": []
           }
-        ]
+        ],
+        "x-business-access": "Shared staff business; server validates state/version and hides other staff commission/cost."
       }
     },
     "/api/v1/stock/ledger": {
@@ -2488,7 +2555,8 @@
           {
             "session": []
           }
-        ]
+        ],
+        "x-business-access": "Shared staff business; server validates state/version and hides other staff commission/cost."
       }
     },
     "/api/v1/stock/receive": {
@@ -2566,7 +2634,9 @@
               }
             }
           }
-        }
+        },
+        "description": "",
+        "x-business-access": "Shared staff business; server validates state/version and hides other staff commission/cost."
       }
     },
     "/api/v1/stock/transfer": {
@@ -2653,7 +2723,9 @@
               }
             }
           }
-        }
+        },
+        "description": "",
+        "x-business-access": "Shared staff business; server validates state/version and hides other staff commission/cost."
       }
     },
     "/api/v1/stock/adjust": {
@@ -2737,7 +2809,9 @@
               }
             }
           }
-        }
+        },
+        "description": "",
+        "x-business-access": "Shared staff business; server validates state/version and hides other staff commission/cost."
       }
     },
     "/api/v1/stock/documents/{id}": {
@@ -2786,7 +2860,9 @@
               "pattern": "^[1-9][0-9]*$"
             }
           }
-        ]
+        ],
+        "description": "",
+        "x-business-access": "Shared staff business; server validates state/version and hides other staff commission/cost."
       }
     },
     "/api/v1/returns": {
@@ -2840,7 +2916,8 @@
           {
             "session": []
           }
-        ]
+        ],
+        "x-business-access": "Shared staff business; server validates state/version and hides other staff commission/cost."
       },
       "post": {
         "operationId": "post_api_v1_returns",
@@ -2919,7 +2996,9 @@
               }
             }
           }
-        }
+        },
+        "description": "",
+        "x-business-access": "Shared staff business; server validates state/version and hides other staff commission/cost."
       }
     },
     "/api/v1/returns/{id}": {
@@ -2968,7 +3047,9 @@
               "pattern": "^[1-9][0-9]*$"
             }
           }
-        ]
+        ],
+        "description": "",
+        "x-business-access": "Shared staff business; server validates state/version and hides other staff commission/cost."
       }
     },
     "/api/v1/returns/{id}/authorize": {
@@ -3045,7 +3126,9 @@
               }
             }
           }
-        }
+        },
+        "description": "",
+        "x-business-access": "Shared staff business; server validates state/version and hides other staff commission/cost."
       }
     },
     "/api/v1/returns/{id}/post": {
@@ -3113,6 +3196,7 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -3120,13 +3204,30 @@
                 "additionalProperties": false,
                 "properties": {
                   "refundReference": {
-                    "description": "字段语义/条件见 SRS 和服务端校验"
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "cashShiftId": {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]{0,18}$"
+                  },
+                  "refundMethod": {
+                    "enum": [
+                      "CASH",
+                      "TERMINAL"
+                    ]
                   }
-                }
+                },
+                "required": [
+                  "refundReference"
+                ]
               }
             }
           }
-        }
+        },
+        "description": "",
+        "x-business-access": "Shared staff business; server validates state/version and hides other staff commission/cost."
       }
     },
     "/api/v1/returns/{id}/cancel": {
@@ -3210,7 +3311,9 @@
               }
             }
           }
-        }
+        },
+        "description": "",
+        "x-business-access": "Shared staff business; server validates state/version and hides other staff commission/cost."
       }
     },
     "/api/v1/sales": {
@@ -3247,6 +3350,21 @@
         "security": [
           {
             "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "DRAFT",
+                "CHECKOUT",
+                "POSTED",
+                "CANCELLED"
+              ]
+            }
           }
         ]
       },
@@ -3305,6 +3423,7 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -3312,12 +3431,47 @@
                 "additionalProperties": false,
                 "properties": {
                   "shiftId": {
-                    "description": "字段语义/条件见 SRS 和服务端校验"
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]{0,18}$"
                   },
                   "lines": {
-                    "description": "字段语义/条件见 SRS 和服务端校验"
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "productId",
+                        "quantity",
+                        "finalUnitPrice"
+                      ],
+                      "properties": {
+                        "productId": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]{0,18}$"
+                        },
+                        "quantity": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9999
+                        },
+                        "finalUnitPrice": {
+                          "type": "string",
+                          "pattern": "^(0|[1-9][0-9]{0,10})(\\.[0-9]{1,2})?$"
+                        }
+                      }
+                    }
+                  },
+                  "workspaceRevision": {
+                    "type": "integer",
+                    "minimum": 1
                   }
-                }
+                },
+                "required": [
+                  "shiftId",
+                  "lines"
+                ]
               }
             }
           }
@@ -3436,6 +3590,7 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -3443,12 +3598,47 @@
                 "additionalProperties": false,
                 "properties": {
                   "version": {
-                    "description": "字段语义/条件见 SRS 和服务端校验"
+                    "type": "integer",
+                    "minimum": 1
                   },
                   "lines": {
-                    "description": "字段语义/条件见 SRS 和服务端校验"
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "productId",
+                        "quantity",
+                        "finalUnitPrice"
+                      ],
+                      "properties": {
+                        "productId": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]{0,18}$"
+                        },
+                        "quantity": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9999
+                        },
+                        "finalUnitPrice": {
+                          "type": "string",
+                          "pattern": "^(0|[1-9][0-9]{0,10})(\\.[0-9]{1,2})?$"
+                        }
+                      }
+                    }
+                  },
+                  "workspaceRevision": {
+                    "type": "integer",
+                    "minimum": 1
                   }
-                }
+                },
+                "required": [
+                  "version",
+                  "lines"
+                ]
               }
             }
           }
@@ -4068,6 +4258,2159 @@
             "session": []
           }
         ]
+      }
+    },
+    "/api/v1/auth/mini/login": {
+      "post": {
+        "operationId": "miniStaffLogin",
+        "summary": "工作人员小程序登录（随机会话 bearer，无 Cookie）",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "username": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  },
+                  "password": {
+                    "description": "字段语义/条件见 SRS 和服务端校验"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "与网页登录共用员工口令、锁定与审计。返回 accessToken、csrf、user、expiresIn=43200、idleTimeout=1800；AppSecret 不需要；不使用微信 code2Session。",
+        "security": []
+      }
+    },
+    "/api/v1/sales/{id}/edit": {
+      "post": {
+        "operationId": "miniEditSale",
+        "summary": "原生小程序 POST 编辑销售草稿",
+        "tags": [
+          "sales"
+        ],
+        "responses": {
+          "200": {
+            "description": "成功；详细响应字段见 SRS 与实现",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "输入无效"
+          },
+          "401": {
+            "description": "未登录"
+          },
+          "403": {
+            "description": "权限或 CSRF 拒绝"
+          },
+          "409": {
+            "description": "状态、版本或约束冲突"
+          }
+        },
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "staffBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "lines": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "productId",
+                        "quantity",
+                        "finalUnitPrice"
+                      ],
+                      "properties": {
+                        "productId": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]{0,18}$"
+                        },
+                        "quantity": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9999
+                        },
+                        "finalUnitPrice": {
+                          "type": "string",
+                          "pattern": "^(0|[1-9][0-9]{0,10})(\\.[0-9]{1,2})?$"
+                        }
+                      }
+                    }
+                  },
+                  "workspaceRevision": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "version",
+                  "lines"
+                ]
+              }
+            }
+          }
+        },
+        "description": "与原 PATCH 入口共用同一个 editSale 事务函数；版本、权限、CSRF、幂等规则一致。"
+      }
+    },
+    "/api/v1/commissions/settlements/{id}": {
+      "get": {
+        "operationId": "getCommissionSettlement",
+        "summary": "结算与来源明细（OWNER 或本人）",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "staffBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "settlement 与 lines；金额为整数分字符串，来源含销售正项与退货负项"
+          },
+          "401": {
+            "description": "无效或过期会话"
+          },
+          "404": {
+            "description": "不存在或不属于本人"
+          }
+        }
+      }
+    },
+    "/api/v1/operations/transfers": {
+      "post": {
+        "summary": "发出商品",
+        "operationId": "post__operations_transfers",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "productId": {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]{0,18}$"
+                  },
+                  "fromLocationId": {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]{0,18}$"
+                  },
+                  "toLocationId": {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]{0,18}$"
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000000
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "productId",
+                  "fromLocationId",
+                  "toLocationId",
+                  "quantity",
+                  "reason"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/operations/transfers/{id}/receive": {
+      "post": {
+        "summary": "清点签收",
+        "operationId": "post__operations_transfers_id_receive",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "receivedQuantity": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "damagedQuantity": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "missingQuantity": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "reason",
+                  "version"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/operations/transfers/{id}/cancel": {
+      "post": {
+        "summary": "撤回已发货调拨",
+        "operationId": "post__operations_transfers_id_cancel",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "goodsRecovered": {
+                    "type": "boolean"
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "reason",
+                  "goodsRecovered",
+                  "version"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/operations/damage": {
+      "post": {
+        "summary": "登记损坏",
+        "operationId": "post__operations_damage",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "productId": {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]{0,18}$"
+                  },
+                  "locationId": {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]{0,18}$"
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000000
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "productId",
+                  "locationId",
+                  "quantity",
+                  "reason"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/operations/damage/{id}/process": {
+      "post": {
+        "summary": "维修 / 报废",
+        "operationId": "post__operations_damage_id_process",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "action": {
+                    "enum": [
+                      "REPAIR",
+                      "DISPOSE"
+                    ]
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000000
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "quantity",
+                  "reason",
+                  "version"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/operations/handovers": {
+      "post": {
+        "summary": "重新提交交班",
+        "operationId": "post__operations_handovers",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "shiftId": {
+                        "type": "string",
+                        "pattern": "^[1-9][0-9]{0,18}$"
+                      },
+                      "actualCash": {
+                        "type": "string",
+                        "pattern": "^(0|[1-9][0-9]{0,10})(\\.[0-9]{1,2})?$"
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      }
+                    },
+                    "required": [
+                      "shiftId",
+                      "actualCash",
+                      "reason"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "actualCash": {
+                        "type": "string",
+                        "pattern": "^(0|[1-9][0-9]{0,10})(\\.[0-9]{1,2})?$"
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "version": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "shiftId": {
+                        "type": "string",
+                        "pattern": "^[1-9][0-9]{0,18}$"
+                      }
+                    },
+                    "required": [
+                      "actualCash",
+                      "reason",
+                      "version",
+                      "shiftId"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/operations/handovers/{id}/review": {
+      "post": {
+        "summary": "管理员核对",
+        "operationId": "post__operations_handovers_id_review",
+        "description": "OWNER only. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "decision": {
+                    "enum": [
+                      "VERIFIED",
+                      "RETURNED"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "reason",
+                  "version"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/operations/extensions": {
+      "post": {
+        "summary": "申请延长班次",
+        "operationId": "post__operations_extensions",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "shiftId": {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]{0,18}$"
+                  },
+                  "proposedEnd": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "shiftId",
+                  "proposedEnd",
+                  "reason"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/operations/extensions/{id}/review": {
+      "post": {
+        "summary": "审批延期",
+        "operationId": "post__operations_extensions_id_review",
+        "description": "OWNER only. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "decision": {
+                    "enum": [
+                      "APPROVED",
+                      "REJECTED"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "reason"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exchanges": {
+      "post": {
+        "summary": "准备独立换货单",
+        "operationId": "post__exchanges",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "originalSaleId": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "shiftId": {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]{0,18}$"
+                  },
+                  "destinationLocationId": {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]{0,18}$"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "returnLines": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "saleLineNo",
+                        "quantity",
+                        "disposition"
+                      ],
+                      "properties": {
+                        "saleLineNo": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        "quantity": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9999
+                        },
+                        "disposition": {
+                          "const": "RESTOCK"
+                        }
+                      }
+                    }
+                  },
+                  "newLines": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "productId",
+                        "quantity",
+                        "finalUnitPrice"
+                      ],
+                      "properties": {
+                        "productId": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]{0,18}$"
+                        },
+                        "quantity": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9999
+                        },
+                        "finalUnitPrice": {
+                          "type": "string",
+                          "pattern": "^(0|[1-9][0-9]{0,10})(\\.[0-9]{1,2})?$"
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "originalSaleId",
+                  "shiftId",
+                  "destinationLocationId",
+                  "reason",
+                  "returnLines",
+                  "newLines"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "全员独立换货记录",
+        "operationId": "get__exchanges",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. Shared records; commission/cost fields remain restricted.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        }
+      }
+    },
+    "/api/v1/exchanges/{id}/post": {
+      "post": {
+        "summary": "核对商品与差价后过账",
+        "operationId": "post__exchanges_id_post",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "paymentMethod": {
+                    "enum": [
+                      "CASH",
+                      "TERMINAL"
+                    ]
+                  },
+                  "paymentReference": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "cashReceived": {
+                    "type": "string",
+                    "pattern": "^(0|[1-9][0-9]{0,10})(\\.[0-9]{1,2})?$"
+                  },
+                  "paymentConfirmed": {
+                    "type": "boolean"
+                  },
+                  "goodsConfirmed": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "paymentReference",
+                  "paymentConfirmed",
+                  "goodsConfirmed"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exchanges/{id}/cancel": {
+      "post": {
+        "summary": "核对后取消换货",
+        "operationId": "post__exchanges_id_cancel",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "paymentReconciled": {
+                    "type": "boolean"
+                  },
+                  "goodsRecovered": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "reason",
+                  "paymentReconciled",
+                  "goodsRecovered"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/operations/users/{id}/reset": {
+      "post": {
+        "summary": "设置一次性临时口令",
+        "operationId": "post__operations_users_id_reset",
+        "description": "OWNER only. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "minLength": 16,
+                    "maxLength": 200,
+                    "writeOnly": true
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "password",
+                  "reason"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/operations/{kind}": {
+      "get": {
+        "summary": "共享业务分页记录",
+        "operationId": "get__operations_kind_",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. Shared records; commission/cost fields remain restricted.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "transfers",
+                "damage",
+                "handovers",
+                "extensions",
+                "shifts",
+                "people"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        }
+      }
+    },
+    "/api/v1/operations/settings": {
+      "get": {
+        "summary": "中国业务默认配置",
+        "operationId": "get__operations_settings",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. Shared records; commission/cost fields remain restricted.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        }
+      }
+    },
+    "/api/v1/operations/cash/{shiftId}": {
+      "get": {
+        "summary": "班次当前应交现金",
+        "operationId": "get__operations_cash_shiftId_",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. Shared records; commission/cost fields remain restricted.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "shiftId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        }
+      }
+    },
+    "/api/v1/stock/documents": {
+      "get": {
+        "summary": "共享收货盘点库存处理记录",
+        "operationId": "get__stock_documents",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. Shared records; commission/cost fields remain restricted.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "x-business-access": "Shared staff business; server validates state/version and hides other staff commission/cost."
+      }
+    },
+    "/api/v1/exchanges/{id}": {
+      "get": {
+        "summary": "换货明细，排除佣金和成本",
+        "operationId": "get__exchanges_id_",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. Shared records; commission/cost fields remain restricted.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        }
+      }
+    },
+    "/api/v1/operations/master/{kind}/{id}": {
+      "post": {
+        "summary": "基础资料版本化更正",
+        "operationId": "post__operations_master_kind_id_",
+        "description": "OWNER only. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "venues",
+                "events",
+                "people"
+              ]
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "changes": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "description": "kind=venues/events/people; whitelist fields defined in operations.ts; optional fields can be null"
+                  }
+                },
+                "required": [
+                  "version",
+                  "reason",
+                  "changes"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/operations/workspaces/{key}": {
+      "get": {
+        "summary": "读取本人跨设备草稿",
+        "operationId": "get__operations_workspaces_key_",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. Shared records; commission/cost fields remain restricted.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(new|sale-[1-9][0-9]*)$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        }
+      },
+      "post": {
+        "summary": "版本化保存本人草稿并追加历史",
+        "operationId": "post__operations_workspaces_key_",
+        "description": "Authenticated staff; server enforces own-shift and field visibility where relevant. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(new|sale-[1-9][0-9]*)$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "payload": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "shiftId": {
+                        "type": "string"
+                      },
+                      "saleId": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "lines": {
+                        "type": "array",
+                        "maxItems": 100,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "productId": {
+                              "type": "string",
+                              "pattern": "^[1-9][0-9]{0,18}$"
+                            },
+                            "name": {
+                              "type": "string",
+                              "maxLength": 200
+                            },
+                            "sku": {
+                              "type": "string",
+                              "maxLength": 200
+                            },
+                            "quantity": {
+                              "type": "string",
+                              "maxLength": 200
+                            },
+                            "finalUnitPrice": {
+                              "type": "string",
+                              "maxLength": 200
+                            },
+                            "minPrice": {
+                              "type": "string",
+                              "maxLength": 200
+                            },
+                            "subtotal": {
+                              "type": "string",
+                              "maxLength": 200
+                            }
+                          },
+                          "required": [
+                            "productId"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "shiftId",
+                      "saleId",
+                      "version",
+                      "lines"
+                    ]
+                  }
+                },
+                "required": [
+                  "revision",
+                  "payload"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/operations/password-commands/{key}/resolve": {
+      "post": {
+        "summary": "核对或安全结束本人未知结果的口令操作",
+        "operationId": "post__operations_password_commands_key_resolve",
+        "description": "OWNER only. UUID is persisted before send. Same canonical request replays; different payload conflicts. Offline cash/refund facts must be checked by the operator.",
+        "security": [
+          {
+            "session": []
+          },
+          {
+            "miniBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; record and state depend on operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Session expired"
+          },
+          "403": {
+            "description": "Role, CSRF or forced-password-change denial"
+          },
+          "404": {
+            "description": "Record unavailable to this actor"
+          },
+          "409": {
+            "description": "Version, state, stock, time window or idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "create",
+                      "reset"
+                    ]
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              }
+            }
+          }
+        }
       }
     }
   }

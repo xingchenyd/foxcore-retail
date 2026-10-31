@@ -5,6 +5,7 @@ import type { FastifyRequest, FastifyReply } from 'fastify';
 import type { RowDataPacket } from 'mysql2/promise';
 import { pool, exec, first, tx } from './db.js';
 import { ApiError, audit, bad, body, forbidden, hash, nonempty } from './core.js';
+import { sessionToken } from './session-token.js';
 
 interface UserRow extends RowDataPacket {
   id: string; username: string; role: 'OWNER' | 'SALESPERSON'; salesperson_id: string | null;
@@ -20,7 +21,7 @@ const cookieName = 'foxcore_session';
 const csrfFromToken = (token: string) => hash(`csrf:${token}`);
 
 export async function actor(req: FastifyRequest): Promise<Actor> {
-  const token = req.cookies[cookieName];
+  const token = sessionToken(req.headers.authorization, req.cookies[cookieName]);
   if (!token) throw new ApiError(401, 'UNAUTHENTICATED', '请先登录');
   const db = await pool.getConnection();
   try {
@@ -42,6 +43,12 @@ export function writable(req: FastifyRequest, a: Actor): void {
   if (a.mustChangePassword && !['/api/v1/auth/password','/api/v1/auth/logout'].includes(req.url)) throw new ApiError(403, 'PASSWORD_CHANGE_REQUIRED', '请先修改初始密码');
 }
 export async function login(req: FastifyRequest, reply: FastifyReply): Promise<unknown> {
+  return loginWithTransport(req, reply, false);
+}
+export async function miniLogin(req: FastifyRequest, reply: FastifyReply): Promise<unknown> {
+  return loginWithTransport(req, reply, true);
+}
+async function loginWithTransport(req: FastifyRequest, reply: FastifyReply, bearer: boolean): Promise<unknown> {
   const data = body(req.body, ['username', 'password']);
   const username = nonempty(data.username, 80);
   const password = nonempty(data.password, 200);
@@ -62,8 +69,9 @@ export async function login(req: FastifyRequest, reply: FastifyReply): Promise<u
     const csrf = csrfFromToken(token);
     await exec(db, 'INSERT INTO sessions(user_id,token_hash,csrf_hash,expires_at) VALUES(?,?,?,DATE_ADD(UTC_TIMESTAMP(3),INTERVAL 12 HOUR))', [user.id, hash(token), hash(csrf)]);
     await audit(db, user.id, 'LOGIN', 'USER', user.id);
-    reply.setCookie(cookieName, token, { path: '/', httpOnly: true, secure: cookieSecure, sameSite: 'lax', maxAge: 12 * 60 * 60 });
-    return { user: { id: user.id, username: user.username, role: user.role, salespersonId: user.salesperson_id, mustChangePassword: Boolean(user.must_change_password) }, csrf };
+    if (!bearer) reply.setCookie(cookieName, token, { path: '/', httpOnly: true, secure: cookieSecure, sameSite: 'lax', maxAge: 12 * 60 * 60 });
+    return { user: { id: user.id, username: user.username, role: user.role, salespersonId: user.salesperson_id, mustChangePassword: Boolean(user.must_change_password) }, csrf,
+      ...(bearer ? { accessToken: token, expiresIn: 43200, idleTimeout: 1800 } : {}) };
   }).then(result => {
     if ('invalid' in result) throw new ApiError(401, 'INVALID_CREDENTIALS', '用户名或密码不正确');
     return result;
@@ -71,7 +79,7 @@ export async function login(req: FastifyRequest, reply: FastifyReply): Promise<u
 }
 export async function logout(req: FastifyRequest, reply: FastifyReply): Promise<unknown> {
   const a = await actor(req); writable(req, a);
-  const token = req.cookies[cookieName];
+  const token = sessionToken(req.headers.authorization, req.cookies[cookieName]);
   if (!token) throw new ApiError(401, 'UNAUTHENTICATED', '请先登录');
   await tx(async db => { await exec(db, 'UPDATE sessions SET revoked_at=UTC_TIMESTAMP(3) WHERE token_hash=?', [hash(token)]); await audit(db, a.id, 'LOGOUT', 'USER', a.id); });
   reply.clearCookie(cookieName, { path: '/' });

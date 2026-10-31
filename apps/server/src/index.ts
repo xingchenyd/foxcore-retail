@@ -8,7 +8,7 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import type { RowDataPacket } from 'mysql2/promise';
 import { pool, exec, first, rows, tx } from './db.js';
-import { actor, changePassword, login, logout, owner, passwordOptions, writable } from './auth.js';
+import { actor, changePassword, login, miniLogin, logout, owner, passwordOptions, writable } from './auth.js';
 import { ApiError, audit, bad, body, command, hash, id, missing, nonempty, requireKey } from './core.js';
 import { registerCatalog } from './catalog.js';
 import { registerInventory } from './inventory.js';
@@ -17,6 +17,8 @@ import { registerReturns } from './returns.js';
 import { registerCommissions } from './commissions.js';
 import { registerCatalogUpdates } from './catalog-updates.js';
 import { registerReports } from './reports.js';
+import {registerOperations} from './operations.js';
+import {registerExchanges} from './exchanges.js';
 import { RuleError } from './fix-rules.js';
 import { listPage } from './pagination.js';
 
@@ -39,6 +41,7 @@ app.setErrorHandler((error,req,reply)=>{
 app.get('/health/live',async()=>({status:'alive'}));
 app.get('/health/ready',async()=>{const db=await pool.getConnection();try{const migration=await first<RowDataPacket>(db,'SELECT version FROM schema_migrations ORDER BY version DESC LIMIT 1');if(!migration) throw new Error('Schema missing');return {status:'ready',schema:migration.version};}finally{db.release();}});
 app.post('/api/v1/auth/login',login);
+app.post('/api/v1/auth/mini/login',miniLogin);
 app.post('/api/v1/auth/logout',logout);
 app.post('/api/v1/auth/password',changePassword);
 app.get('/api/v1/auth/me',async req=>{
@@ -67,6 +70,7 @@ app.patch('/api/v1/users/:id/active',async req=>{
   }));
 });
 registerCatalog(app);registerCatalogUpdates(app);registerInventory(app);registerSales(app);registerReturns(app);registerCommissions(app);registerReports(app);
+registerOperations(app);registerExchanges(app);
 
 app.get('/api/v1/audit',async req=>{const a=await actor(req);owner(a);return listPage('SELECT id,actor_id,action,subject_type,subject_id,detail_json,created_at FROM audit_events ORDER BY id DESC',[],req.query as Record<string,unknown>,100);});
 

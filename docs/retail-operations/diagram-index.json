@@ -1,0 +1,93 @@
+[
+  {
+    "id": "01-system-usecases",
+    "title": "系统用例图 · 共享业务与管理边界",
+    "source": "diagrams/01-system-usecases.puml",
+    "svg": "diagrams/01-system-usecases.svg",
+    "png": "diagrams/01-system-usecases.png"
+  },
+  {
+    "id": "02-domain-classes",
+    "title": "概念类图 · 业务实体与事务服务",
+    "source": "diagrams/02-domain-classes.puml",
+    "svg": "diagrams/02-domain-classes.svg",
+    "png": "diagrams/02-domain-classes.png"
+  },
+  {
+    "id": "03a-database-complete",
+    "title": "完整物理 ERD · 34 张实际表",
+    "source": "diagrams/03a-database-complete.puml",
+    "svg": "diagrams/03a-database-complete.svg",
+    "png": "diagrams/03a-database-complete.png"
+  },
+  {
+    "id": "03b-stock-erd",
+    "title": "库存模块 ERD · 数量与单据追溯",
+    "source": "diagrams/03b-stock-erd.puml",
+    "svg": "diagrams/03b-stock-erd.svg",
+    "png": "diagrams/03b-stock-erd.png"
+  },
+  {
+    "id": "03c-financial-erd",
+    "title": "销售退换货与佣金 ERD",
+    "source": "diagrams/03c-financial-erd.puml",
+    "svg": "diagrams/03c-financial-erd.svg",
+    "png": "diagrams/03c-financial-erd.png"
+  },
+  {
+    "id": "03d-drafts-access-erd",
+    "title": "账号、云端草稿和审批 ERD",
+    "source": "diagrams/03d-drafts-access-erd.puml",
+    "svg": "diagrams/03d-drafts-access-erd.svg",
+    "png": "diagrams/03d-drafts-access-erd.png"
+  },
+  {
+    "id": "04-exchange-sequence",
+    "title": "独立换货时序图 · 原子退入与换出",
+    "source": "diagrams/04-exchange-sequence.puml",
+    "svg": "diagrams/04-exchange-sequence.svg",
+    "png": "diagrams/04-exchange-sequence.png"
+  },
+  {
+    "id": "05-transfer-damage-states",
+    "title": "调拨与损坏品状态图",
+    "source": "diagrams/05-transfer-damage-states.puml",
+    "svg": "diagrams/05-transfer-damage-states.svg",
+    "png": "diagrams/05-transfer-damage-states.png"
+  },
+  {
+    "id": "06-sales-returns-states",
+    "title": "销售、退货和独立换货状态图",
+    "source": "diagrams/06-sales-returns-states.puml",
+    "svg": "diagrams/06-sales-returns-states.svg",
+    "png": "diagrams/06-sales-returns-states.png"
+  },
+  {
+    "id": "07-cash-commission-flow",
+    "title": "交班与活动结转活动图",
+    "source": "diagrams/07-cash-commission-flow.puml",
+    "svg": "diagrams/07-cash-commission-flow.svg",
+    "png": "diagrams/07-cash-commission-flow.png"
+  },
+  {
+    "id": "08-draft-recovery-sequence",
+    "title": "跨设备草稿与丢响应恢复时序图",
+    "source": "diagrams/08-draft-recovery-sequence.puml",
+    "svg": "diagrams/08-draft-recovery-sequence.svg",
+    "png": "diagrams/08-draft-recovery-sequence.png"
+  },
+  {
+    "id": "09-architecture-deployment",
+    "title": "组件与部署图 · 当前交付和后续上线",
+    "source": "diagrams/09-architecture-deployment.puml",
+    "svg": "diagrams/09-architecture-deployment.svg",
+    "png": "diagrams/09-architecture-deployment.png"
+  },
+  {
+    "id": "10-dataflow-context",
+    "title": "业务数据流图 · 外部事实与账内事实",
+    "source": "diagrams/10-dataflow-context.puml",
+    "svg": "diagrams/10-dataflow-context.svg",
+    "png": "diagrams/10-dataflow-context.png"
+  }
+]

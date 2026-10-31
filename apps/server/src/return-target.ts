@@ -6,11 +6,11 @@ import { assertReturnTarget, sortedIds, type ReturnDestination } from './fix-rul
 /** Acquire all involved events before sale/return/location locks, including legacy cross-event targets.
  * Invalid legacy documents must remain cancellable, so locking and policy validation are separate.
  */
-export async function lockReturnEvents(db: Db, sourceEventId: string, locationId: string | null): Promise<Set<string>> {
+export async function lockReturnEvents(db: Db, sourceEventId: string, locationId: string | null, extraEventIds:string[]=[]): Promise<Set<string>> {
   const destination = locationId === null ? undefined : await first<RowDataPacket>(db,
     'SELECT b.event_id FROM stock_locations l LEFT JOIN booths b ON b.id=l.booth_id WHERE l.id=?',[locationId]);
   // Null/missing legacy targets can still be cancelled; validation is mandatory before writes.
-  const ids = sortedIds([sourceEventId,...(destination?.event_id ? [String(destination.event_id)] : [])]);
+  const ids = sortedIds([sourceEventId,...(destination?.event_id ? [String(destination.event_id)] : []),...extraEventIds]);
   for (const eventId of ids) {
     if (!await first<RowDataPacket>(db,'SELECT id FROM events WHERE id=? FOR UPDATE',[eventId])) throw missing();
   }

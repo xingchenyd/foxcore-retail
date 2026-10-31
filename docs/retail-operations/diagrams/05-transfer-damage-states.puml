@@ -1,0 +1,35 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 15
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #356553
+skinparam LineColor #356553
+skinparam packageStyle rectangle
+skinparam classBackgroundColor #F4F7EF
+skinparam classBorderColor #356553
+skinparam usecaseBackgroundColor #F4F7EF
+skinparam usecaseBorderColor #356553
+skinparam stateBackgroundColor #F4F7EF
+skinparam stateBorderColor #356553
+skinparam noteBackgroundColor #FFF6DC
+skinparam noteBorderColor #C7AB63
+hide empty members
+title 调拨与损坏品状态图
+state "调拨" as T {
+[*] --> DISPATCHED : 发出；来源扣减 / 在途增加
+DISPATCHED --> RECEIVED : 版本匹配；良品+损坏+短缺=发出数量
+DISPATCHED --> CANCELLED : 实物全部收回；退回来源
+RECEIVED --> [*]
+CANCELLED --> [*]
+}
+state "损坏品数量账户" as D {
+state "隔离余额 = 登记 - 已维修 - 已报废" as Q
+[*] --> Q : 仓内损坏登记 / 签收损坏
+Q --> Q : REPAIR：隔离扣减、MAIN 增加
+Q --> Q : DISPOSE：隔离扣减、报废留痕
+}
+note right of RECEIVED : 良品进入目标可售库存\n损坏进入独立 DAMAGED 库\n短缺记录差异，不虚增库存
+note bottom of D : 维修和报废使用乐观版本；\n不允许通过普通调拨/盘点绕过隔离账户
+@enduml

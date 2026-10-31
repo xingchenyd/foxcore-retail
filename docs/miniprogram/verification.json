@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-26",
+  "baseCommit": "744c36ac67abb28963f32077c219fbb4047d28c4",
+  "deliveryBranch": "codex/staff-miniprogram-20261026",
+  "status": "CODE_AND_LOCAL_FLOWS_VALIDATED_WECHAT_RUNTIME_PENDING",
+  "environment": {
+    "node": "24.19.0",
+    "typescript": "5.9.3",
+    "mariadb": "11.8.9",
+    "database": "isolated loopback instance with synthetic data"
+  },
+  "nativePages": 13,
+  "databaseMigration": "UNCHANGED",
+  "databaseTables": 26,
+  "apiPaths": 51,
+  "apiOperations": 61,
+  "checks": {
+    "documentation": "PASS",
+    "serverWebMiniTypecheck": "PASS",
+    "unit": {
+      "passed": 73,
+      "failed": 0
+    },
+    "pureProductionLogic": {
+      "passed": 94,
+      "failed": 0
+    },
+    "webServerMiniBuild": "PASS",
+    "httpIntegration": {
+      "passed": 3,
+      "failed": 0,
+      "includes": [
+        "existing concurrency and cookie regressions",
+        "mini bearer roles, cross-web readback and four workflows",
+        "actual native Page handlers and request layer against MariaDB"
+      ]
+    },
+    "existingHttpAcceptanceNativeAdapter": {
+      "passed": 14,
+      "failed": 0
+    },
+    "invariants": {
+      "passed": 19,
+      "violations": 0
+    },
+    "appendOnlyPermissions": "PASS",
+    "npmAudit": {
+      "total": 0
+    },
+    "invalidReleaseConfigurationsRejected": 3,
+    "diagramsRendered": 2,
+    "browserDevelopmentAdapter": "Login, navigation, product search, integer-cent preview and five screen checks; not WeChat engine proof"
+  },
+  "wechatIdeCompile": "NOT_RUN",
+  "wechatDeviceTest": "NOT_RUN",
+  "wechatUpload": "NOT_RUN",
+  "publicDeployment": false,
+  "notVerified": [
+    "WeChat developer tool WXML/WXSS compile and runtime",
+    "WeChat iOS and Android true-device behavior, backgrounding, storage and weak-network recovery",
+    "real AppID, HTTPS API and WeChat legal-domain configuration",
+    "WeChat preview upload, audit and release",
+    "Docker deployment, backup/restore and arbitrary historical data upgrade"
+  ],
+  "webHistory": {
+    "mergedPR": 1,
+    "mergeCommit": "744c36ac67abb28963f32077c219fbb4047d28c4",
+    "backupBranch": "backup/main-before-web-review-20261026",
+    "backupCommit": "3393bc3a4989b642f881cc891dc305cfda37ee5a"
+  },
+  "privateMaterialExcluded": [
+    "credentials",
+    "session tokens",
+    "database and backups",
+    "raw browser traces",
+    "original course/reference PDFs"
+  ]
+}
