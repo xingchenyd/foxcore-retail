@@ -1,30 +1,23 @@
-import mysql from 'mysql2/promise';
-import { readFile, readdir } from 'node:fs/promises';
-import { createHash } from 'node:crypto';
-import { join } from 'node:path';
+import {connect,secret} from './pg-connection.mjs';
+import {migrate,requireProductionGate} from './pg-migrations.mjs';
 
-const rootPassword=(await readFile(process.env.DB_ROOT_PASSWORD_FILE,'utf8')).trim();
-const db=await mysql.createConnection({host:process.env.DB_HOST,port:Number(process.env.DB_PORT??3306),user:'root',password:rootPassword,database:process.env.DB_NAME,multipleStatements:true});
-const database=process.env.DB_NAME;
-if(!/^[a-z][a-z0-9_]*$/.test(database??'')) throw new Error('Invalid database name');
-const dbUser=process.env.DB_USER;
-if(!/^[a-z][a-z0-9_]*$/.test(dbUser??'')) throw new Error('Invalid database user');
-const principal=`'${dbUser}'@'%'`;
+requireProductionGate();
+const user=process.env.DB_USER;
+if (!/^[a-z][a-z0-9_]{0,62}$/.test(user??'') || user==='postgres') throw Error('Invalid runtime database role');
+const db=await connect({user:'postgres',password:await secret('DB_ROOT_PASSWORD')});
+const principal='"'+user+'"';
+const updateTables=['venues','events','booths','products','salespeople','shifts','users','sessions','sales','sale_lines','stock_locations','stock_balances','stock_holds','returns','return_lines','commission_settlements','idempotency_keys','business_settings','stock_transfers','damage_records','cash_handovers','shift_extensions','sale_workspaces','exchanges','commission_claims'];
 try {
-  const [lock]=await db.query('SELECT GET_LOCK(?,15) AS locked',['foxcore_migrate_'+database]);if(lock[0]?.locked!==1) throw new Error('Migration lock unavailable');
-  await db.query('CREATE TABLE IF NOT EXISTS schema_migrations(version VARCHAR(100) PRIMARY KEY,checksum CHAR(64) NOT NULL,applied_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)) ENGINE=InnoDB');
-  for(const file of (await readdir('db/migrations')).filter(x=>x.endsWith('.sql')).sort()){
-    const sql=await readFile(join('db/migrations',file),'utf8'),digest=createHash('sha256').update(sql.replace(/\r\n/g,'\n')).digest('hex');
-    const [old]=await db.query('SELECT checksum FROM schema_migrations WHERE version=?',[file]);
-    if(old.length){if(![digest,createHash('sha256').update(sql.replace(/\r?\n/g,'\r\n')).digest('hex')].includes(old[0].checksum)) throw new Error('Migration checksum mismatch: '+file);console.log('verified',file);continue;}
-    await db.query(sql);await db.query('INSERT INTO schema_migrations(version,checksum) VALUES(?,?)',[file,digest]);console.log('applied',file);
-  }
-  await db.query(`REVOKE ALL PRIVILEGES, GRANT OPTION FROM ${principal}`);
-  await db.query(`GRANT SELECT,INSERT ON ${database}.* TO ${principal}`);
-  const updateTables=['venues','events','booths','products','salespeople','shifts','users','sessions','sales','sale_lines','stock_locations','stock_balances','stock_holds','returns','return_lines','commission_settlements','idempotency_keys','business_settings','stock_transfers','damage_records','cash_handovers','shift_extensions','sale_workspaces','exchanges'];
-  for(const table of updateTables) await db.query(`GRANT UPDATE ON ${database}.${table} TO ${principal}`);
-  for(const table of ['sale_lines','commission_claims']) await db.query(`GRANT DELETE ON ${database}.${table} TO ${principal}`);
-  await db.query(`GRANT UPDATE ON ${database}.commission_claims TO ${principal}`);
-  await db.query('FLUSH PRIVILEGES');
+  await migrate(db,async()=>{
+    await db.query('REVOKE CREATE ON SCHEMA public FROM PUBLIC');
+    await db.query('GRANT USAGE ON SCHEMA public TO '+principal);
+    await db.query('REVOKE ALL ON ALL TABLES IN SCHEMA public FROM '+principal);
+    await db.query('REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM '+principal);
+    await db.query('GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA public TO '+principal);
+    await db.query('REVOKE INSERT ON schema_migrations FROM '+principal);
+    await db.query('GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO '+principal);
+    await db.query('GRANT UPDATE ON '+updateTables.join(',')+' TO '+principal);
+    await db.query('GRANT DELETE ON sale_lines, commission_claims TO '+principal);
+  });
   console.log('Runtime grants restricted; schema ready.');
-} finally {await db.query('SELECT RELEASE_LOCK(?)',['foxcore_migrate_'+database]);await db.end();}
+} finally { await db.end(); }

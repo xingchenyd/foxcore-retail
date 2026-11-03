@@ -1,5 +1,12 @@
 # WorkBuddy 适配交付（2026-10-31）
 
+## PostgreSQL port · 2026-11-03
+
+从 d8cca2a 分支独立移植。pg 8、5432、严格 TLS（可选自定义 CA）、事务咨询锁、IDENTITY/RETURNING、VARCHAR/CHECK、UTC TIMESTAMP(3)，并保持金额和 ID 的字符串形态。幂等冲突使用指定唯一键的 ON CONFLICT DO NOTHING 与 rowCount，不吞掉其他数据库错误。
+
+[83 处行锁审计](docs/workbuddy/postgresql-lock-audit.md)说明退货目标和佣金准备的锁调整。佣金流水维持只追加，准备结算通过员工行串行化，唯一 claim 防重。初始化不会复制 MariaDB 数据；文本比较、整数类型范围差异及云端待验见 [数据库设计](docs/04-database.md) 和 [验收记录](docs/workbuddy/verification.json)。
+
+
 用户提供的旧指南以 `backup/retail-before-operations-20261028` 为基线；本次改用已合并 PR #4 的最终版本 `ef6fd92`，保留完整经营流程和恢复修复。main 合并前已备份为 `backup/main-before-operations-merge-20261031`（744c36a）。本适配在 `codex/workbuddy-deploy-20261031`，不合入 main。
 
 ## F1–F8 对照

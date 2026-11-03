@@ -66,6 +66,10 @@ function main(){
     assert.equal(release.mainModified,true);assert.equal(release.miniProgramMergedToMain,true);assert.equal(release.workbuddyChangesMergedToMain,false);assert.equal(release.publicDeployment,false);
     const v=JSON.parse(readFileSync(join(root,release.evidence),'utf8'));assert.equal(v.branch,release.branch);assert.equal(v.baseMainCommit,release.mainCommit);assert.equal(v.local.invariants.violations,0);
     for(const key of ['workbuddyPublicDeployment','tidbCloud','wechatIdeCompile','wechatDevice'])assert.equal(v.external[key],'NOT_RUN');
+  }else if(release.status==='WORKBUDDY_POSTGRESQL_TARGET_VALIDATION_PENDING'){
+    const v=JSON.parse(readFileSync(join(root,release.evidence),'utf8'));
+    assert.equal(v.branch,release.branch);assert.equal(release.mainModified,false);assert.equal(release.publicDeployment,false);
+    assert.equal(v.pg_port.tidbCloud,'NOT_RUN');assert.equal(v.pg_port.workbuddyPublicDeployment,'NOT_RUN');
   }else assert.equal(release.status,'REPAIR_CANDIDATE_RUNTIME_UNVERIFIED');
   console.log('Documentation checks passed: registry/references, seven SDD mappings, overlay/source routes and repair tracking. Not a proof that every prose statement or runtime contract is correct.');
 }

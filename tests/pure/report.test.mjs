@@ -20,7 +20,7 @@ test('salesperson cannot accidentally get global report with missing identity',(
 test('FX-F04-02/03 report facts retain POSTED sales and POSTED returns only',()=>{
   const q=buildReportQuery({group:'product'},owner);
   assert.match(q.sql,/sa\.state='POSTED'/); assert.match(q.sql,/r\.state='POSTED'/); assert.match(q.sql,/UNION ALL/);
-  assert.match(q.sql,/IF\(rl\.disposition='RESTOCK'/);
+  assert.match(q.sql,/CASE WHEN rl\.disposition='RESTOCK'/);
 });
 // RFC-style state parser for tests: handles quoted commas, escaped quotes, CR/LF and BOM.
 function parseCsv(csv) {

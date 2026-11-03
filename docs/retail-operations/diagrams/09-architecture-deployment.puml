@@ -29,7 +29,7 @@ node "已实现的同源应用" {
 component "静态 Web 资源" as Web
 component "Fastify API\n会话/CSRF/角色/字段权限" as API
 component "事务用例\n幂等/金额/库存/审计" as Usecases
-database "MariaDB 11.8\n33业务表+1迁移表" as DB
+database "PostgreSQL 16\n33业务表+1迁移表" as DB
 }
 Mini --> API : Bearer 会话 + CSRF
 StaffWeb --> Web

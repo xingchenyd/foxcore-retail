@@ -23,59 +23,59 @@ skinparam linetype ortho
 skinparam nodesep 65
 skinparam ranksep 95
 entity "audit_events" as audit_events {
- {field} * id : bigint(20) unsigned <<PK>>
- {field} actor_id : bigint(20) unsigned <<FK>>
- {field} * created_at : datetime(3)
+ {field} * id : bigint <<PK>>
+ {field} actor_id : bigint <<FK>>
+ {field} * created_at : timestamp(3)
 }
 entity "business_settings" as business_settings {
- {field} * id : tinyint(3) unsigned <<PK>>
- {field} * currency : char(3)
- {field} * price_basis : enum('EXCLUSIVE','INCLUSIVE')
- {field} * return_days : smallint(5) unsigned
- {field} * version : int(10) unsigned
+ {field} * id : smallint <<PK>>
+ {field} * currency : character(3)
+ {field} * price_basis : varchar(32)
+ {field} * return_days : integer
+ {field} * version : integer
 }
 entity "idempotency_keys" as idempotency_keys {
- {field} * actor_id : bigint(20) unsigned <<PK,FK>>
+ {field} * actor_id : bigint <<PK,FK>>
  {field} * operation : varchar(80) <<PK>>
- {field} * command_key : char(36) <<PK>>
+ {field} * command_key : character(36) <<PK>>
 }
 entity "salespeople" as salespeople {
- {field} * id : bigint(20) unsigned <<PK>>
- {field} * version : int(10) unsigned
+ {field} * id : bigint <<PK>>
+ {field} * version : integer
 }
 entity "sale_workspaces" as sale_workspaces {
- {field} * owner_id : bigint(20) unsigned <<PK,FK>>
+ {field} * owner_id : bigint <<PK,FK>>
  {field} * workspace_key : varchar(80) <<PK>>
- {field} * revision : int(10) unsigned
+ {field} * revision : integer
 }
 entity "sale_workspace_revisions" as sale_workspace_revisions {
- {field} * owner_id : bigint(20) unsigned <<PK,FK>>
+ {field} * owner_id : bigint <<PK,FK>>
  {field} * workspace_key : varchar(80) <<PK,FK>>
- {field} * revision : int(10) unsigned <<PK>>
+ {field} * revision : integer <<PK>>
 }
 entity "sessions" as sessions {
- {field} * id : bigint(20) unsigned <<PK>>
- {field} * user_id : bigint(20) unsigned <<FK>>
- {field} * token_hash : char(64) <<UK>>
+ {field} * id : bigint <<PK>>
+ {field} * user_id : bigint <<FK>>
+ {field} * token_hash : character(64) <<UK>>
 }
 entity "shifts" as shifts {
- {field} * id : bigint(20) unsigned <<PK>>
- {field} * salesperson_id : bigint(20) unsigned <<FK>>
- {field} * booth_id : bigint(20) unsigned <<FK>>
- {field} * status : enum('PLANNED','ACTIVE','CLOSED','CANCELLED')
- {field} * version : int(10) unsigned
+ {field} * id : bigint <<PK>>
+ {field} * salesperson_id : bigint <<FK>>
+ {field} * booth_id : bigint <<FK>>
+ {field} * status : varchar(32)
+ {field} * version : integer
 }
 entity "shift_extensions" as shift_extensions {
- {field} * id : bigint(20) unsigned <<PK>>
- {field} * shift_id : bigint(20) unsigned <<FK>>
- {field} * state : enum('PENDING','APPROVED','REJECTED')
- {field} * requested_by : bigint(20) unsigned <<FK>>
- {field} reviewed_by : bigint(20) unsigned <<FK>>
+ {field} * id : bigint <<PK>>
+ {field} * shift_id : bigint <<FK>>
+ {field} * state : varchar(32)
+ {field} * requested_by : bigint <<FK>>
+ {field} reviewed_by : bigint <<FK>>
 }
 entity "users" as users {
- {field} * id : bigint(20) unsigned <<PK>>
+ {field} * id : bigint <<PK>>
  {field} * username : varchar(80) <<UK>>
- {field} salesperson_id : bigint(20) unsigned <<UK,FK>>
+ {field} salesperson_id : bigint <<UK,FK>>
 }
 users |o--o{ audit_events
 users ||--o{ idempotency_keys

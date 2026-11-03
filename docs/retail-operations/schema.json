@@ -1,467 +1,495 @@
 {
-  "source": "MariaDB information_schema after migrations 001-005; structure only, no business rows",
+  "source": "PostgreSQL 16 pg_catalog after migrations 001–005; structure only",
   "businessTables": 33,
   "migrationTables": 1,
+  "migrations": {
+    "001_core.sql": "f89217501864f3771e6ea4c10de059e75504e2ecacec3f67edf66db90a7cf095",
+    "002_retail_operations.sql": "5f1f12d9e1f696b6b481896db70df827797821e0616367142e5bd38c55280e24",
+    "003_operation_history_indexes.sql": "09267d01bfab0d950a4a6099ef3b5ac36dff6054e284a4a855f0dd4932319626",
+    "004_refund_method.sql": "26807390c4c30970e9814118f5c76274392c2ade8035729d98d019a3b0b6d023",
+    "005_event_timezone_consistency.sql": "2d8f1f2e0ae3fa992e0e0e5d78ec991b51fde2b73e5c5bbeb5793ce468c4b217"
+  },
   "columns": [
     {
       "tableName": "audit_events",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "audit_events",
       "name": "actor_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "YES",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "audit_events",
       "name": "action",
-      "type": "varchar(100)",
+      "type": "character varying(100)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "audit_events",
       "name": "subject_type",
-      "type": "varchar(60)",
+      "type": "character varying(60)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "audit_events",
       "name": "subject_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "audit_events",
       "name": "detail_json",
-      "type": "longtext",
+      "type": "text",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "audit_events",
       "name": "created_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "booths",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "booths",
       "name": "event_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": "UNI"
     },
     {
       "tableName": "booths",
       "name": "location",
-      "type": "varchar(80)",
+      "type": "character varying(80)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "booths",
       "name": "active",
-      "type": "tinyint(1)",
+      "type": "boolean",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "business_settings",
       "name": "id",
-      "type": "tinyint(3) unsigned",
+      "type": "smallint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "business_settings",
       "name": "currency",
-      "type": "char(3)",
+      "type": "character(3)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "business_settings",
       "name": "business_timezone",
-      "type": "varchar(64)",
+      "type": "character varying(64)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "business_settings",
       "name": "price_basis",
-      "type": "enum('EXCLUSIVE','INCLUSIVE')",
+      "type": "character varying(32)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "business_settings",
       "name": "return_days",
-      "type": "smallint(5) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "business_settings",
       "name": "version",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "cash_handovers",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "cash_handovers",
       "name": "shift_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "UNI"
     },
     {
       "tableName": "cash_handovers",
       "name": "expected_cents",
-      "type": "bigint(20)",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "cash_handovers",
       "name": "actual_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "cash_handovers",
       "name": "difference_cents",
-      "type": "bigint(20)",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "cash_handovers",
       "name": "reason",
-      "type": "varchar(500)",
+      "type": "character varying(500)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "cash_handovers",
       "name": "state",
-      "type": "enum('SUBMITTED','VERIFIED','RETURNED')",
+      "type": "character varying(32)",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "cash_handovers",
       "name": "submitted_by",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "cash_handovers",
       "name": "reviewed_by",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "YES",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "cash_handovers",
       "name": "review_note",
-      "type": "varchar(500)",
+      "type": "character varying(500)",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "cash_handovers",
       "name": "created_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "cash_handovers",
       "name": "reviewed_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "cash_handovers",
       "name": "version",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "commission_claims",
       "name": "entry_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "commission_claims",
       "name": "settlement_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "commission_entries",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "commission_entries",
       "name": "salesperson_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "commission_entries",
       "name": "amount_cents",
-      "type": "bigint(20)",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "commission_entries",
       "name": "source_kind",
-      "type": "enum('SALE','RETURN')",
+      "type": "character varying(32)",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": "UNI"
     },
     {
       "tableName": "commission_entries",
       "name": "source_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": ""
+      "keyKind": "UNI"
     },
     {
       "tableName": "commission_entries",
       "name": "source_line_no",
-      "type": "smallint(5) unsigned",
+      "type": "integer",
       "nullable": "NO",
-      "keyKind": ""
+      "keyKind": "UNI"
     },
     {
       "tableName": "commission_entries",
       "name": "created_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "commission_entries",
       "name": "currency",
-      "type": "char(3)",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "commission_settlements",
-      "name": "id",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": "PRI"
-    },
-    {
-      "tableName": "commission_settlements",
-      "name": "salesperson_id",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "commission_settlements",
-      "name": "state",
-      "type": "enum('PREPARED','PAID','CANCELLED')",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "commission_settlements",
-      "name": "cutoff_at",
-      "type": "datetime(3)",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "commission_settlements",
-      "name": "total_cents",
-      "type": "bigint(20)",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "commission_settlements",
-      "name": "payment_reference",
-      "type": "varchar(120)",
-      "nullable": "YES",
-      "keyKind": ""
-    },
-    {
-      "tableName": "commission_settlements",
-      "name": "created_by",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "commission_settlements",
-      "name": "created_at",
-      "type": "datetime(3)",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "commission_settlements",
-      "name": "paid_at",
-      "type": "datetime(3)",
-      "nullable": "YES",
-      "keyKind": ""
-    },
-    {
-      "tableName": "commission_settlements",
-      "name": "currency",
-      "type": "char(3)",
+      "type": "character(3)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "commission_settlement_lines",
       "name": "settlement_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "commission_settlement_lines",
       "name": "entry_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "commission_settlement_lines",
       "name": "amount_cents",
-      "type": "bigint(20)",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "id",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "salesperson_id",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "state",
+      "type": "character varying(32)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "cutoff_at",
+      "type": "timestamp(3) without time zone",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "total_cents",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "payment_reference",
+      "type": "character varying(120)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "created_by",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "created_at",
+      "type": "timestamp(3) without time zone",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "paid_at",
+      "type": "timestamp(3) without time zone",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "currency",
+      "type": "character(3)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "damage_records",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "damage_records",
       "name": "product_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "damage_records",
       "name": "quantity",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "damage_records",
       "name": "repaired_quantity",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "damage_records",
       "name": "disposed_quantity",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "damage_records",
       "name": "reason",
-      "type": "varchar(500)",
+      "type": "character varying(500)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "damage_records",
       "name": "created_by",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "damage_records",
       "name": "created_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "damage_records",
       "name": "version",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
+      "tableName": "event_categories",
+      "name": "id",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "event_categories",
+      "name": "code",
+      "type": "character varying(40)",
+      "nullable": "NO",
+      "keyKind": "UNI"
+    },
+    {
+      "tableName": "event_categories",
+      "name": "type",
+      "type": "character varying(80)",
+      "nullable": "NO",
+      "keyKind": "UNI"
+    },
+    {
       "tableName": "events",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "events",
       "name": "venue_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "events",
       "name": "category_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "events",
       "name": "name",
-      "type": "varchar(120)",
+      "type": "character varying(120)",
       "nullable": "NO",
       "keyKind": ""
     },
@@ -482,961 +510,1017 @@
     {
       "tableName": "events",
       "name": "description",
-      "type": "varchar(500)",
+      "type": "character varying(500)",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "events",
       "name": "status",
-      "type": "enum('DRAFT','OPEN','CLOSED','CANCELLED')",
+      "type": "character varying(32)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "events",
       "name": "timezone",
-      "type": "varchar(64)",
+      "type": "character varying(64)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "events",
       "name": "tax_bps",
-      "type": "smallint(5) unsigned",
+      "type": "integer",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "events",
       "name": "policy_confirmed",
-      "type": "tinyint(1)",
+      "type": "boolean",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "events",
       "name": "version",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "events",
       "name": "currency",
-      "type": "char(3)",
+      "type": "character(3)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "events",
       "name": "business_timezone",
-      "type": "varchar(64)",
+      "type": "character varying(64)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "events",
       "name": "price_basis",
-      "type": "enum('EXCLUSIVE','INCLUSIVE')",
+      "type": "character varying(32)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "events",
       "name": "return_days",
-      "type": "smallint(5) unsigned",
+      "type": "integer",
       "nullable": "YES",
       "keyKind": ""
     },
     {
-      "tableName": "event_categories",
-      "name": "id",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": "PRI"
-    },
-    {
-      "tableName": "event_categories",
-      "name": "code",
-      "type": "varchar(40)",
-      "nullable": "NO",
-      "keyKind": "UNI"
-    },
-    {
-      "tableName": "event_categories",
-      "name": "type",
-      "type": "varchar(80)",
-      "nullable": "NO",
-      "keyKind": "UNI"
-    },
-    {
       "tableName": "exchanges",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "exchanges",
       "name": "original_sale_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "exchanges",
       "name": "return_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "YES",
       "keyKind": "UNI"
     },
     {
       "tableName": "exchanges",
       "name": "new_sale_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "YES",
       "keyKind": "UNI"
     },
     {
       "tableName": "exchanges",
       "name": "state",
-      "type": "enum('PREPARED','POSTED','CANCELLED')",
+      "type": "character varying(32)",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "exchanges",
       "name": "currency",
-      "type": "char(3)",
+      "type": "character(3)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "exchanges",
       "name": "difference_cents",
-      "type": "bigint(20)",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "exchanges",
       "name": "payment_method",
-      "type": "enum('CASH','TERMINAL')",
+      "type": "character varying(32)",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "exchanges",
       "name": "payment_reference",
-      "type": "varchar(120)",
+      "type": "character varying(120)",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "exchanges",
       "name": "cash_received_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "exchanges",
       "name": "created_by",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "exchanges",
       "name": "created_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "exchanges",
       "name": "posted_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "idempotency_keys",
       "name": "actor_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "idempotency_keys",
       "name": "operation",
-      "type": "varchar(80)",
+      "type": "character varying(80)",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "idempotency_keys",
       "name": "command_key",
-      "type": "char(36)",
+      "type": "character(36)",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "idempotency_keys",
       "name": "request_hash",
-      "type": "char(64)",
+      "type": "character(64)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "idempotency_keys",
       "name": "response_json",
-      "type": "longtext",
+      "type": "text",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "idempotency_keys",
       "name": "created_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "products",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "products",
       "name": "sku",
-      "type": "varchar(64)",
+      "type": "character varying(64)",
       "nullable": "NO",
-      "keyKind": "UNI"
+      "keyKind": ""
     },
     {
       "tableName": "products",
       "name": "name",
-      "type": "varchar(160)",
+      "type": "character varying(160)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "products",
       "name": "wholesale_cost_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "products",
       "name": "min_price_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "products",
       "name": "suggested_price_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "products",
       "name": "active",
-      "type": "tinyint(1)",
+      "type": "boolean",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "products",
       "name": "version",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "products",
       "name": "currency",
-      "type": "char(3)",
+      "type": "character(3)",
       "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "returns",
-      "name": "id",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": "PRI"
-    },
-    {
-      "tableName": "returns",
-      "name": "sale_id",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "returns",
-      "name": "state",
-      "type": "enum('DRAFT','AUTHORIZED','POSTED','CANCELLED')",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "returns",
-      "name": "reason",
-      "type": "varchar(500)",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "returns",
-      "name": "refund_reference",
-      "type": "varchar(120)",
-      "nullable": "YES",
-      "keyKind": ""
-    },
-    {
-      "tableName": "returns",
-      "name": "destination_location_id",
-      "type": "bigint(20) unsigned",
-      "nullable": "YES",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "returns",
-      "name": "created_by",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "returns",
-      "name": "authorized_at",
-      "type": "datetime(3)",
-      "nullable": "YES",
-      "keyKind": ""
-    },
-    {
-      "tableName": "returns",
-      "name": "posted_at",
-      "type": "datetime(3)",
-      "nullable": "YES",
-      "keyKind": ""
-    },
-    {
-      "tableName": "returns",
-      "name": "net_cents",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "returns",
-      "name": "tax_cents",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "returns",
-      "name": "total_cents",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "returns",
-      "name": "created_at",
-      "type": "datetime(3)",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "returns",
-      "name": "cash_shift_id",
-      "type": "bigint(20) unsigned",
-      "nullable": "YES",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "returns",
-      "name": "exchange_id",
-      "type": "bigint(20) unsigned",
-      "nullable": "YES",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "returns",
-      "name": "refund_method",
-      "type": "enum('CASH','TERMINAL','EXCHANGE')",
-      "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "return_lines",
       "name": "return_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "return_lines",
       "name": "line_no",
-      "type": "smallint(5) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "return_lines",
       "name": "sale_line_no",
-      "type": "smallint(5) unsigned",
+      "type": "integer",
       "nullable": "NO",
-      "keyKind": ""
+      "keyKind": "UNI"
     },
     {
       "tableName": "return_lines",
       "name": "quantity",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "return_lines",
       "name": "disposition",
-      "type": "enum('RESTOCK','DAMAGED')",
+      "type": "character varying(32)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "return_lines",
       "name": "net_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "return_lines",
       "name": "tax_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "return_lines",
       "name": "commission_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
-      "tableName": "sales",
+      "tableName": "returns",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
-      "tableName": "sales",
-      "name": "sale_no",
-      "type": "varchar(40)",
-      "nullable": "YES",
-      "keyKind": "UNI"
-    },
-    {
-      "tableName": "sales",
-      "name": "shift_id",
-      "type": "bigint(20) unsigned",
+      "tableName": "returns",
+      "name": "sale_id",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
-      "tableName": "sales",
-      "name": "event_id",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "sales",
+      "tableName": "returns",
       "name": "state",
-      "type": "enum('DRAFT','CHECKOUT','POSTED','CANCELLED')",
-      "nullable": "NO",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "sales",
-      "name": "created_at",
-      "type": "datetime(3)",
+      "type": "character varying(32)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
-      "tableName": "sales",
-      "name": "prepared_at",
-      "type": "datetime(3)",
+      "tableName": "returns",
+      "name": "reason",
+      "type": "character varying(500)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "returns",
+      "name": "refund_reference",
+      "type": "character varying(120)",
       "nullable": "YES",
       "keyKind": ""
     },
     {
-      "tableName": "sales",
-      "name": "posted_at",
-      "type": "datetime(3)",
+      "tableName": "returns",
+      "name": "destination_location_id",
+      "type": "bigint",
       "nullable": "YES",
       "keyKind": ""
     },
     {
-      "tableName": "sales",
+      "tableName": "returns",
       "name": "created_by",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
-      "tableName": "sales",
-      "name": "posted_by",
-      "type": "bigint(20) unsigned",
-      "nullable": "YES",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "sales",
-      "name": "payment_method",
-      "type": "enum('CASH','TERMINAL','EXCHANGE')",
+      "tableName": "returns",
+      "name": "authorized_at",
+      "type": "timestamp(3) without time zone",
       "nullable": "YES",
       "keyKind": ""
     },
     {
-      "tableName": "sales",
-      "name": "payment_reference",
-      "type": "varchar(120)",
+      "tableName": "returns",
+      "name": "posted_at",
+      "type": "timestamp(3) without time zone",
       "nullable": "YES",
       "keyKind": ""
     },
     {
-      "tableName": "sales",
-      "name": "cash_received_cents",
-      "type": "bigint(20) unsigned",
-      "nullable": "YES",
-      "keyKind": ""
-    },
-    {
-      "tableName": "sales",
+      "tableName": "returns",
       "name": "net_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
-      "tableName": "sales",
+      "tableName": "returns",
       "name": "tax_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
-      "tableName": "sales",
+      "tableName": "returns",
       "name": "total_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
-      "tableName": "sales",
-      "name": "version",
-      "type": "int(10) unsigned",
+      "tableName": "returns",
+      "name": "created_at",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
-      "tableName": "sales",
-      "name": "currency",
-      "type": "char(3)",
-      "nullable": "NO",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "sales",
-      "name": "price_basis",
-      "type": "enum('EXCLUSIVE','INCLUSIVE')",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "sales",
-      "name": "return_days",
-      "type": "smallint(5) unsigned",
+      "tableName": "returns",
+      "name": "cash_shift_id",
+      "type": "bigint",
       "nullable": "YES",
       "keyKind": ""
     },
     {
-      "tableName": "sales",
+      "tableName": "returns",
       "name": "exchange_id",
-      "type": "bigint(20) unsigned",
-      "nullable": "YES",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "salespeople",
-      "name": "id",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": "PRI"
-    },
-    {
-      "tableName": "salespeople",
-      "name": "first_name",
-      "type": "varchar(80)",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "salespeople",
-      "name": "last_name",
-      "type": "varchar(80)",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "salespeople",
-      "name": "street",
-      "type": "varchar(120)",
+      "type": "bigint",
       "nullable": "YES",
       "keyKind": ""
     },
     {
-      "tableName": "salespeople",
-      "name": "city",
-      "type": "varchar(80)",
+      "tableName": "returns",
+      "name": "refund_method",
+      "type": "character varying(32)",
       "nullable": "YES",
-      "keyKind": ""
-    },
-    {
-      "tableName": "salespeople",
-      "name": "province",
-      "type": "varchar(80)",
-      "nullable": "YES",
-      "keyKind": ""
-    },
-    {
-      "tableName": "salespeople",
-      "name": "postal_code",
-      "type": "varchar(16)",
-      "nullable": "YES",
-      "keyKind": ""
-    },
-    {
-      "tableName": "salespeople",
-      "name": "phone",
-      "type": "varchar(32)",
-      "nullable": "YES",
-      "keyKind": ""
-    },
-    {
-      "tableName": "salespeople",
-      "name": "description",
-      "type": "varchar(500)",
-      "nullable": "YES",
-      "keyKind": ""
-    },
-    {
-      "tableName": "salespeople",
-      "name": "active",
-      "type": "tinyint(1)",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "salespeople",
-      "name": "commission_bps",
-      "type": "smallint(5) unsigned",
-      "nullable": "YES",
-      "keyKind": ""
-    },
-    {
-      "tableName": "salespeople",
-      "name": "version",
-      "type": "int(10) unsigned",
-      "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "sale_lines",
       "name": "sale_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "sale_lines",
       "name": "line_no",
-      "type": "smallint(5) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "sale_lines",
       "name": "product_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "sale_lines",
       "name": "quantity",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "sale_lines",
       "name": "final_unit_price_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "sale_lines",
       "name": "line_net_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "sale_lines",
       "name": "line_tax_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "sale_lines",
       "name": "line_commission_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "sale_lines",
       "name": "cost_snapshot_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "sale_lines",
       "name": "min_snapshot_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "sale_lines",
       "name": "tax_bps_snapshot",
-      "type": "smallint(5) unsigned",
+      "type": "integer",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "sale_lines",
       "name": "commission_bps_snapshot",
-      "type": "smallint(5) unsigned",
+      "type": "integer",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "sale_lines",
       "name": "name_snapshot",
-      "type": "varchar(160)",
+      "type": "character varying(160)",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "sale_lines",
       "name": "sku_snapshot",
-      "type": "varchar(64)",
+      "type": "character varying(64)",
       "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_workspace_revisions",
+      "name": "owner_id",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "sale_workspace_revisions",
+      "name": "workspace_key",
+      "type": "character varying(80)",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "sale_workspace_revisions",
+      "name": "revision",
+      "type": "integer",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "sale_workspace_revisions",
+      "name": "payload_json",
+      "type": "text",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sale_workspace_revisions",
+      "name": "created_at",
+      "type": "timestamp(3) without time zone",
+      "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "sale_workspaces",
       "name": "owner_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "sale_workspaces",
       "name": "workspace_key",
-      "type": "varchar(80)",
+      "type": "character varying(80)",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "sale_workspaces",
       "name": "payload_json",
-      "type": "longtext",
+      "type": "text",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "sale_workspaces",
       "name": "revision",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "sale_workspaces",
       "name": "updated_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
-      "tableName": "sale_workspace_revisions",
-      "name": "owner_id",
-      "type": "bigint(20) unsigned",
+      "tableName": "sales",
+      "name": "id",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
-      "tableName": "sale_workspace_revisions",
-      "name": "workspace_key",
-      "type": "varchar(80)",
-      "nullable": "NO",
-      "keyKind": "PRI"
+      "tableName": "sales",
+      "name": "sale_no",
+      "type": "character varying(40)",
+      "nullable": "YES",
+      "keyKind": "UNI"
     },
     {
-      "tableName": "sale_workspace_revisions",
-      "name": "revision",
-      "type": "int(10) unsigned",
-      "nullable": "NO",
-      "keyKind": "PRI"
-    },
-    {
-      "tableName": "sale_workspace_revisions",
-      "name": "payload_json",
-      "type": "longtext",
+      "tableName": "sales",
+      "name": "shift_id",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
-      "tableName": "sale_workspace_revisions",
+      "tableName": "sales",
+      "name": "event_id",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "state",
+      "type": "character varying(32)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
       "name": "created_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "prepared_at",
+      "type": "timestamp(3) without time zone",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "posted_at",
+      "type": "timestamp(3) without time zone",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "created_by",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "posted_by",
+      "type": "bigint",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "payment_method",
+      "type": "character varying(32)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "payment_reference",
+      "type": "character varying(120)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "cash_received_cents",
+      "type": "bigint",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "net_cents",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "tax_cents",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "total_cents",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "version",
+      "type": "integer",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "currency",
+      "type": "character(3)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "price_basis",
+      "type": "character varying(32)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "return_days",
+      "type": "integer",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "sales",
+      "name": "exchange_id",
+      "type": "bigint",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "id",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "salespeople",
+      "name": "first_name",
+      "type": "character varying(80)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "last_name",
+      "type": "character varying(80)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "street",
+      "type": "character varying(120)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "city",
+      "type": "character varying(80)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "province",
+      "type": "character varying(80)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "postal_code",
+      "type": "character varying(16)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "phone",
+      "type": "character varying(32)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "description",
+      "type": "character varying(500)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "active",
+      "type": "boolean",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "commission_bps",
+      "type": "integer",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "salespeople",
+      "name": "version",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "schema_migrations",
       "name": "version",
-      "type": "varchar(100)",
+      "type": "character varying(100)",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "schema_migrations",
       "name": "checksum",
-      "type": "char(64)",
+      "type": "character(64)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "schema_migrations",
       "name": "applied_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "sessions",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "sessions",
       "name": "user_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "sessions",
       "name": "token_hash",
-      "type": "char(64)",
+      "type": "character(64)",
       "nullable": "NO",
       "keyKind": "UNI"
     },
     {
       "tableName": "sessions",
       "name": "csrf_hash",
-      "type": "char(64)",
+      "type": "character(64)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "sessions",
       "name": "created_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "sessions",
       "name": "last_seen_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "sessions",
       "name": "expires_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "sessions",
       "name": "revoked_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "id",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "shift_id",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "proposed_end",
+      "type": "timestamp(3) without time zone",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "reason",
+      "type": "character varying(500)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "state",
+      "type": "character varying(32)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "requested_by",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "reviewed_by",
+      "type": "bigint",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "review_note",
+      "type": "character varying(500)",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "base_version",
+      "type": "integer",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "created_at",
+      "type": "timestamp(3) without time zone",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "reviewed_at",
+      "type": "timestamp(3) without time zone",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "shifts",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "shifts",
       "name": "salesperson_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "shifts",
       "name": "booth_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "shifts",
       "name": "event_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": ""
+      "keyKind": "UNI"
     },
     {
       "tableName": "shifts",
@@ -1448,630 +1532,553 @@
     {
       "tableName": "shifts",
       "name": "planned_start",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "shifts",
       "name": "planned_end",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "shifts",
       "name": "actual_start",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "shifts",
       "name": "actual_end",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "shifts",
       "name": "status",
-      "type": "enum('PLANNED','ACTIVE','CLOSED','CANCELLED')",
+      "type": "character varying(32)",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "shifts",
       "name": "version",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "shifts",
       "name": "opening_cash_cents",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "shift_extensions",
-      "name": "id",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": "PRI"
-    },
-    {
-      "tableName": "shift_extensions",
-      "name": "shift_id",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "shift_extensions",
-      "name": "proposed_end",
-      "type": "datetime(3)",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "shift_extensions",
-      "name": "reason",
-      "type": "varchar(500)",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "shift_extensions",
-      "name": "state",
-      "type": "enum('PENDING','APPROVED','REJECTED')",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "shift_extensions",
-      "name": "requested_by",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "shift_extensions",
-      "name": "reviewed_by",
-      "type": "bigint(20) unsigned",
-      "nullable": "YES",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "shift_extensions",
-      "name": "review_note",
-      "type": "varchar(500)",
-      "nullable": "YES",
-      "keyKind": ""
-    },
-    {
-      "tableName": "shift_extensions",
-      "name": "base_version",
-      "type": "int(10) unsigned",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "shift_extensions",
-      "name": "created_at",
-      "type": "datetime(3)",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "shift_extensions",
-      "name": "reviewed_at",
-      "type": "datetime(3)",
-      "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "stock_balances",
       "name": "location_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "stock_balances",
       "name": "product_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "stock_balances",
       "name": "on_hand",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "stock_balances",
       "name": "reserved",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "stock_balances",
       "name": "version",
-      "type": "int(10) unsigned",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "stock_documents",
-      "name": "id",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": "PRI"
-    },
-    {
-      "tableName": "stock_documents",
-      "name": "kind",
-      "type": "enum('RECEIVE','TRANSFER','ADJUST','RETURN','DISPATCH','ACCEPT','RECALL','DAMAGE','REPAIR','DISPOSE')",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "stock_documents",
-      "name": "from_location_id",
-      "type": "bigint(20) unsigned",
-      "nullable": "YES",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "stock_documents",
-      "name": "to_location_id",
-      "type": "bigint(20) unsigned",
-      "nullable": "YES",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "stock_documents",
-      "name": "reason",
-      "type": "varchar(500)",
-      "nullable": "NO",
-      "keyKind": ""
-    },
-    {
-      "tableName": "stock_documents",
-      "name": "created_by",
-      "type": "bigint(20) unsigned",
-      "nullable": "NO",
-      "keyKind": "MUL"
-    },
-    {
-      "tableName": "stock_documents",
-      "name": "created_at",
-      "type": "datetime(3)",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "stock_document_lines",
       "name": "document_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "stock_document_lines",
       "name": "line_no",
-      "type": "smallint(5) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "stock_document_lines",
       "name": "product_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "stock_document_lines",
       "name": "quantity",
-      "type": "int(11)",
+      "type": "integer",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "id",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": "PRI"
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "kind",
+      "type": "character varying(32)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "from_location_id",
+      "type": "bigint",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "to_location_id",
+      "type": "bigint",
+      "nullable": "YES",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "reason",
+      "type": "character varying(500)",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "created_by",
+      "type": "bigint",
+      "nullable": "NO",
+      "keyKind": ""
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "created_at",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "stock_holds",
       "name": "sale_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "stock_holds",
       "name": "line_no",
-      "type": "smallint(5) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "stock_holds",
       "name": "location_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "stock_holds",
       "name": "product_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "stock_holds",
       "name": "quantity",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "stock_holds",
       "name": "status",
-      "type": "enum('ACTIVE','CONSUMED','RELEASED')",
+      "type": "character varying(32)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "stock_ledger",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "stock_ledger",
       "name": "location_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": "UNI"
     },
     {
       "tableName": "stock_ledger",
       "name": "product_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "stock_ledger",
       "name": "delta",
-      "type": "bigint(20)",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "stock_ledger",
       "name": "source_kind",
-      "type": "enum('DOCUMENT','SALE','RETURN')",
+      "type": "character varying(32)",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": "UNI"
     },
     {
       "tableName": "stock_ledger",
       "name": "source_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": ""
+      "keyKind": "UNI"
     },
     {
       "tableName": "stock_ledger",
       "name": "source_line_no",
-      "type": "smallint(5) unsigned",
+      "type": "integer",
       "nullable": "NO",
-      "keyKind": ""
+      "keyKind": "UNI"
     },
     {
       "tableName": "stock_ledger",
       "name": "created_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "stock_locations",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "stock_locations",
       "name": "code",
-      "type": "varchar(80)",
+      "type": "character varying(80)",
       "nullable": "NO",
       "keyKind": "UNI"
     },
     {
       "tableName": "stock_locations",
       "name": "name",
-      "type": "varchar(120)",
+      "type": "character varying(120)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "stock_locations",
       "name": "kind",
-      "type": "enum('WAREHOUSE','BOOTH','TRANSIT','DAMAGED')",
+      "type": "character varying(32)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "stock_locations",
       "name": "booth_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "YES",
       "keyKind": "UNI"
     },
     {
       "tableName": "stock_locations",
       "name": "active",
-      "type": "tinyint(1)",
+      "type": "boolean",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "stock_transfers",
       "name": "product_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "from_location_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "to_location_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "transit_location_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "quantity",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "state",
-      "type": "enum('DISPATCHED','RECEIVED','CANCELLED')",
+      "type": "character varying(32)",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "received_quantity",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "damaged_quantity",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "missing_quantity",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "reason",
-      "type": "varchar(500)",
+      "type": "character varying(500)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "receiving_note",
-      "type": "varchar(500)",
+      "type": "character varying(500)",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "created_by",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "received_by",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "YES",
-      "keyKind": "MUL"
+      "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "created_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "received_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "stock_transfers",
       "name": "version",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "users",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "users",
       "name": "username",
-      "type": "varchar(80)",
+      "type": "character varying(80)",
       "nullable": "NO",
-      "keyKind": "UNI"
+      "keyKind": ""
     },
     {
       "tableName": "users",
       "name": "password_hash",
-      "type": "varchar(255)",
+      "type": "character varying(255)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "users",
       "name": "role",
-      "type": "enum('OWNER','SALESPERSON')",
+      "type": "character varying(32)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "users",
       "name": "salesperson_id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "YES",
       "keyKind": "UNI"
     },
     {
       "tableName": "users",
       "name": "active",
-      "type": "tinyint(1)",
+      "type": "boolean",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "users",
       "name": "must_change_password",
-      "type": "tinyint(1)",
+      "type": "boolean",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "users",
       "name": "failed_logins",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "users",
       "name": "locked_until",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "users",
       "name": "created_at",
-      "type": "datetime(3)",
+      "type": "timestamp(3) without time zone",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "venues",
       "name": "id",
-      "type": "bigint(20) unsigned",
+      "type": "bigint",
       "nullable": "NO",
       "keyKind": "PRI"
     },
     {
       "tableName": "venues",
       "name": "name",
-      "type": "varchar(120)",
+      "type": "character varying(120)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "venues",
       "name": "street",
-      "type": "varchar(120)",
+      "type": "character varying(120)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "venues",
       "name": "city",
-      "type": "varchar(80)",
+      "type": "character varying(80)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "venues",
       "name": "province",
-      "type": "varchar(80)",
+      "type": "character varying(80)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "venues",
       "name": "postal_code",
-      "type": "varchar(16)",
+      "type": "character varying(16)",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "venues",
       "name": "description",
-      "type": "varchar(500)",
+      "type": "character varying(500)",
       "nullable": "YES",
       "keyKind": ""
     },
     {
       "tableName": "venues",
       "name": "active",
-      "type": "tinyint(1)",
+      "type": "boolean",
       "nullable": "NO",
       "keyKind": ""
     },
     {
       "tableName": "venues",
       "name": "version",
-      "type": "int(10) unsigned",
+      "type": "integer",
       "nullable": "NO",
       "keyKind": ""
     }
@@ -2134,20 +2141,6 @@
       "name": "fk_commission_salesperson"
     },
     {
-      "source": "commission_settlements",
-      "sourceColumn": "salesperson_id",
-      "target": "salespeople",
-      "targetColumn": "id",
-      "name": "fk_settlement_salesperson"
-    },
-    {
-      "source": "commission_settlements",
-      "sourceColumn": "created_by",
-      "target": "users",
-      "targetColumn": "id",
-      "name": "fk_settlement_user"
-    },
-    {
       "source": "commission_settlement_lines",
       "sourceColumn": "entry_id",
       "target": "commission_entries",
@@ -2160,6 +2153,20 @@
       "target": "commission_settlements",
       "targetColumn": "id",
       "name": "fk_settlementline_settlement"
+    },
+    {
+      "source": "commission_settlements",
+      "sourceColumn": "salesperson_id",
+      "target": "salespeople",
+      "targetColumn": "id",
+      "name": "fk_settlement_salesperson"
+    },
+    {
+      "source": "commission_settlements",
+      "sourceColumn": "created_by",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_settlement_user"
     },
     {
       "source": "damage_records",
@@ -2225,6 +2232,13 @@
       "name": "fk_idempotency_actor"
     },
     {
+      "source": "return_lines",
+      "sourceColumn": "return_id",
+      "target": "returns",
+      "targetColumn": "id",
+      "name": "fk_returnline_return"
+    },
+    {
       "source": "returns",
       "sourceColumn": "cash_shift_id",
       "target": "shifts",
@@ -2260,11 +2274,39 @@
       "name": "fk_return_user"
     },
     {
-      "source": "return_lines",
-      "sourceColumn": "return_id",
-      "target": "returns",
+      "source": "sale_lines",
+      "sourceColumn": "product_id",
+      "target": "products",
       "targetColumn": "id",
-      "name": "fk_returnline_return"
+      "name": "fk_line_product"
+    },
+    {
+      "source": "sale_lines",
+      "sourceColumn": "sale_id",
+      "target": "sales",
+      "targetColumn": "id",
+      "name": "fk_line_sale"
+    },
+    {
+      "source": "sale_workspace_revisions",
+      "sourceColumn": "owner_id",
+      "target": "sale_workspaces",
+      "targetColumn": "owner_id",
+      "name": "fk_workspace_revision"
+    },
+    {
+      "source": "sale_workspace_revisions",
+      "sourceColumn": "workspace_key",
+      "target": "sale_workspaces",
+      "targetColumn": "workspace_key",
+      "name": "fk_workspace_revision"
+    },
+    {
+      "source": "sale_workspaces",
+      "sourceColumn": "owner_id",
+      "target": "users",
+      "targetColumn": "id",
+      "name": "fk_workspace_owner"
     },
     {
       "source": "sales",
@@ -2302,67 +2344,11 @@
       "name": "fk_sale_shift_event"
     },
     {
-      "source": "sale_lines",
-      "sourceColumn": "product_id",
-      "target": "products",
-      "targetColumn": "id",
-      "name": "fk_line_product"
-    },
-    {
-      "source": "sale_lines",
-      "sourceColumn": "sale_id",
-      "target": "sales",
-      "targetColumn": "id",
-      "name": "fk_line_sale"
-    },
-    {
-      "source": "sale_workspaces",
-      "sourceColumn": "owner_id",
-      "target": "users",
-      "targetColumn": "id",
-      "name": "fk_workspace_owner"
-    },
-    {
-      "source": "sale_workspace_revisions",
-      "sourceColumn": "owner_id",
-      "target": "sale_workspaces",
-      "targetColumn": "owner_id",
-      "name": "fk_workspace_revision"
-    },
-    {
-      "source": "sale_workspace_revisions",
-      "sourceColumn": "workspace_key",
-      "target": "sale_workspaces",
-      "targetColumn": "workspace_key",
-      "name": "fk_workspace_revision"
-    },
-    {
       "source": "sessions",
       "sourceColumn": "user_id",
       "target": "users",
       "targetColumn": "id",
       "name": "fk_session_user"
-    },
-    {
-      "source": "shifts",
-      "sourceColumn": "booth_id",
-      "target": "booths",
-      "targetColumn": "id",
-      "name": "fk_shift_booth_event"
-    },
-    {
-      "source": "shifts",
-      "sourceColumn": "event_id",
-      "target": "booths",
-      "targetColumn": "event_id",
-      "name": "fk_shift_booth_event"
-    },
-    {
-      "source": "shifts",
-      "sourceColumn": "salesperson_id",
-      "target": "salespeople",
-      "targetColumn": "id",
-      "name": "fk_shift_salesperson"
     },
     {
       "source": "shift_extensions",
@@ -2386,6 +2372,27 @@
       "name": "fk_extension_shift"
     },
     {
+      "source": "shifts",
+      "sourceColumn": "booth_id",
+      "target": "booths",
+      "targetColumn": "id",
+      "name": "fk_shift_booth_event"
+    },
+    {
+      "source": "shifts",
+      "sourceColumn": "event_id",
+      "target": "booths",
+      "targetColumn": "event_id",
+      "name": "fk_shift_booth_event"
+    },
+    {
+      "source": "shifts",
+      "sourceColumn": "salesperson_id",
+      "target": "salespeople",
+      "targetColumn": "id",
+      "name": "fk_shift_salesperson"
+    },
+    {
       "source": "stock_balances",
       "sourceColumn": "location_id",
       "target": "stock_locations",
@@ -2398,6 +2405,20 @@
       "target": "products",
       "targetColumn": "id",
       "name": "fk_balance_product"
+    },
+    {
+      "source": "stock_document_lines",
+      "sourceColumn": "document_id",
+      "target": "stock_documents",
+      "targetColumn": "id",
+      "name": "fk_docline_doc"
+    },
+    {
+      "source": "stock_document_lines",
+      "sourceColumn": "product_id",
+      "target": "products",
+      "targetColumn": "id",
+      "name": "fk_docline_product"
     },
     {
       "source": "stock_documents",
@@ -2419,20 +2440,6 @@
       "target": "users",
       "targetColumn": "id",
       "name": "fk_doc_user"
-    },
-    {
-      "source": "stock_document_lines",
-      "sourceColumn": "document_id",
-      "target": "stock_documents",
-      "targetColumn": "id",
-      "name": "fk_docline_doc"
-    },
-    {
-      "source": "stock_document_lines",
-      "sourceColumn": "product_id",
-      "target": "products",
-      "targetColumn": "id",
-      "name": "fk_docline_product"
     },
     {
       "source": "stock_holds",
@@ -2531,6 +2538,1875 @@
       "target": "salespeople",
       "targetColumn": "id",
       "name": "fk_user_salesperson"
+    }
+  ],
+  "constraints": [
+    {
+      "tableName": "audit_events",
+      "name": "audit_events_actor_id_check",
+      "definition": "CHECK ((actor_id >= 0))"
+    },
+    {
+      "tableName": "audit_events",
+      "name": "audit_events_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "audit_events",
+      "name": "audit_events_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "audit_events",
+      "name": "audit_events_subject_id_check",
+      "definition": "CHECK ((subject_id >= 0))"
+    },
+    {
+      "tableName": "audit_events",
+      "name": "fk_audit_actor",
+      "definition": "FOREIGN KEY (actor_id) REFERENCES users(id)"
+    },
+    {
+      "tableName": "booths",
+      "name": "booths_event_id_check",
+      "definition": "CHECK ((event_id >= 0))"
+    },
+    {
+      "tableName": "booths",
+      "name": "booths_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "booths",
+      "name": "booths_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "booths",
+      "name": "fk_booths_event",
+      "definition": "FOREIGN KEY (event_id) REFERENCES events(id)"
+    },
+    {
+      "tableName": "booths",
+      "name": "uq_booth_id_event",
+      "definition": "UNIQUE (id, event_id)"
+    },
+    {
+      "tableName": "business_settings",
+      "name": "business_settings_id_check",
+      "definition": "CHECK (((id >= 0) AND (id <= 255)))"
+    },
+    {
+      "tableName": "business_settings",
+      "name": "business_settings_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "business_settings",
+      "name": "business_settings_return_days_check",
+      "definition": "CHECK (((return_days >= 0) AND (return_days <= 65535)))"
+    },
+    {
+      "tableName": "business_settings",
+      "name": "business_settings_version_check",
+      "definition": "CHECK ((version >= 0))"
+    },
+    {
+      "tableName": "business_settings",
+      "name": "price_basis_allowed",
+      "definition": "CHECK (((price_basis)::text = ANY ((ARRAY['EXCLUSIVE'::character varying, 'INCLUSIVE'::character varying])::text[])))"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "cash_handovers_actual_cents_check",
+      "definition": "CHECK ((actual_cents >= 0))"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "cash_handovers_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "cash_handovers_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "cash_handovers_reviewed_by_check",
+      "definition": "CHECK ((reviewed_by >= 0))"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "cash_handovers_shift_id_check",
+      "definition": "CHECK ((shift_id >= 0))"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "cash_handovers_shift_id_key",
+      "definition": "UNIQUE (shift_id)"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "cash_handovers_submitted_by_check",
+      "definition": "CHECK ((submitted_by >= 0))"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "cash_handovers_version_check",
+      "definition": "CHECK ((version >= 0))"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "ck_cash_difference",
+      "definition": "CHECK ((difference_cents = (actual_cents - expected_cents)))"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "fk_cash_reviewer",
+      "definition": "FOREIGN KEY (reviewed_by) REFERENCES users(id)"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "fk_cash_shift",
+      "definition": "FOREIGN KEY (shift_id) REFERENCES shifts(id)"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "fk_cash_submitter",
+      "definition": "FOREIGN KEY (submitted_by) REFERENCES users(id)"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "state_allowed",
+      "definition": "CHECK (((state)::text = ANY ((ARRAY['SUBMITTED'::character varying, 'VERIFIED'::character varying, 'RETURNED'::character varying])::text[])))"
+    },
+    {
+      "tableName": "commission_claims",
+      "name": "commission_claims_entry_id_check",
+      "definition": "CHECK ((entry_id >= 0))"
+    },
+    {
+      "tableName": "commission_claims",
+      "name": "commission_claims_pkey",
+      "definition": "PRIMARY KEY (entry_id)"
+    },
+    {
+      "tableName": "commission_claims",
+      "name": "commission_claims_settlement_id_check",
+      "definition": "CHECK ((settlement_id >= 0))"
+    },
+    {
+      "tableName": "commission_claims",
+      "name": "fk_claim_entry",
+      "definition": "FOREIGN KEY (entry_id) REFERENCES commission_entries(id)"
+    },
+    {
+      "tableName": "commission_claims",
+      "name": "fk_claim_settlement",
+      "definition": "FOREIGN KEY (settlement_id) REFERENCES commission_settlements(id)"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "ck_commission_nonzero",
+      "definition": "CHECK ((amount_cents <> 0))"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "commission_entries_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "commission_entries_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "commission_entries_salesperson_id_check",
+      "definition": "CHECK ((salesperson_id >= 0))"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "commission_entries_source_id_check",
+      "definition": "CHECK ((source_id >= 0))"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "commission_entries_source_line_no_check",
+      "definition": "CHECK (((source_line_no >= 0) AND (source_line_no <= 65535)))"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "fk_commission_salesperson",
+      "definition": "FOREIGN KEY (salesperson_id) REFERENCES salespeople(id)"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "source_kind_allowed",
+      "definition": "CHECK (((source_kind)::text = ANY ((ARRAY['SALE'::character varying, 'RETURN'::character varying])::text[])))"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "uq_commission_source",
+      "definition": "UNIQUE (source_kind, source_id, source_line_no)"
+    },
+    {
+      "tableName": "commission_settlement_lines",
+      "name": "commission_settlement_lines_entry_id_check",
+      "definition": "CHECK ((entry_id >= 0))"
+    },
+    {
+      "tableName": "commission_settlement_lines",
+      "name": "commission_settlement_lines_pkey",
+      "definition": "PRIMARY KEY (settlement_id, entry_id)"
+    },
+    {
+      "tableName": "commission_settlement_lines",
+      "name": "commission_settlement_lines_settlement_id_check",
+      "definition": "CHECK ((settlement_id >= 0))"
+    },
+    {
+      "tableName": "commission_settlement_lines",
+      "name": "fk_settlementline_entry",
+      "definition": "FOREIGN KEY (entry_id) REFERENCES commission_entries(id)"
+    },
+    {
+      "tableName": "commission_settlement_lines",
+      "name": "fk_settlementline_settlement",
+      "definition": "FOREIGN KEY (settlement_id) REFERENCES commission_settlements(id)"
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "ck_settlement_positive",
+      "definition": "CHECK ((total_cents > 0))"
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "commission_settlements_created_by_check",
+      "definition": "CHECK ((created_by >= 0))"
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "commission_settlements_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "commission_settlements_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "commission_settlements_salesperson_id_check",
+      "definition": "CHECK ((salesperson_id >= 0))"
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "fk_settlement_salesperson",
+      "definition": "FOREIGN KEY (salesperson_id) REFERENCES salespeople(id)"
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "fk_settlement_user",
+      "definition": "FOREIGN KEY (created_by) REFERENCES users(id)"
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "state_allowed",
+      "definition": "CHECK (((state)::text = ANY ((ARRAY['PREPARED'::character varying, 'PAID'::character varying, 'CANCELLED'::character varying])::text[])))"
+    },
+    {
+      "tableName": "damage_records",
+      "name": "ck_damage_remaining",
+      "definition": "CHECK (((repaired_quantity + disposed_quantity) <= quantity))"
+    },
+    {
+      "tableName": "damage_records",
+      "name": "damage_records_created_by_check",
+      "definition": "CHECK ((created_by >= 0))"
+    },
+    {
+      "tableName": "damage_records",
+      "name": "damage_records_disposed_quantity_check",
+      "definition": "CHECK ((disposed_quantity >= 0))"
+    },
+    {
+      "tableName": "damage_records",
+      "name": "damage_records_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "damage_records",
+      "name": "damage_records_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "damage_records",
+      "name": "damage_records_product_id_check",
+      "definition": "CHECK ((product_id >= 0))"
+    },
+    {
+      "tableName": "damage_records",
+      "name": "damage_records_quantity_check",
+      "definition": "CHECK ((quantity >= 0))"
+    },
+    {
+      "tableName": "damage_records",
+      "name": "damage_records_repaired_quantity_check",
+      "definition": "CHECK ((repaired_quantity >= 0))"
+    },
+    {
+      "tableName": "damage_records",
+      "name": "damage_records_version_check",
+      "definition": "CHECK ((version >= 0))"
+    },
+    {
+      "tableName": "damage_records",
+      "name": "fk_damage_creator",
+      "definition": "FOREIGN KEY (created_by) REFERENCES users(id)"
+    },
+    {
+      "tableName": "damage_records",
+      "name": "fk_damage_product",
+      "definition": "FOREIGN KEY (product_id) REFERENCES products(id)"
+    },
+    {
+      "tableName": "event_categories",
+      "name": "event_categories_code_key",
+      "definition": "UNIQUE (code)"
+    },
+    {
+      "tableName": "event_categories",
+      "name": "event_categories_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "event_categories",
+      "name": "event_categories_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "event_categories",
+      "name": "event_categories_type_key",
+      "definition": "UNIQUE (type)"
+    },
+    {
+      "tableName": "events",
+      "name": "ck_event_dates",
+      "definition": "CHECK ((end_date >= start_date))"
+    },
+    {
+      "tableName": "events",
+      "name": "ck_event_tax",
+      "definition": "CHECK (((tax_bps IS NULL) OR (tax_bps <= 10000)))"
+    },
+    {
+      "tableName": "events",
+      "name": "ck_event_timezone_alias",
+      "definition": "CHECK (((timezone)::text = (business_timezone)::text))"
+    },
+    {
+      "tableName": "events",
+      "name": "events_category_id_check",
+      "definition": "CHECK ((category_id >= 0))"
+    },
+    {
+      "tableName": "events",
+      "name": "events_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "events",
+      "name": "events_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "events",
+      "name": "events_return_days_check",
+      "definition": "CHECK (((return_days >= 0) AND (return_days <= 65535)))"
+    },
+    {
+      "tableName": "events",
+      "name": "events_tax_bps_check",
+      "definition": "CHECK (((tax_bps >= 0) AND (tax_bps <= 65535)))"
+    },
+    {
+      "tableName": "events",
+      "name": "events_venue_id_check",
+      "definition": "CHECK ((venue_id >= 0))"
+    },
+    {
+      "tableName": "events",
+      "name": "events_version_check",
+      "definition": "CHECK ((version >= 0))"
+    },
+    {
+      "tableName": "events",
+      "name": "fk_events_category",
+      "definition": "FOREIGN KEY (category_id) REFERENCES event_categories(id)"
+    },
+    {
+      "tableName": "events",
+      "name": "fk_events_venue",
+      "definition": "FOREIGN KEY (venue_id) REFERENCES venues(id)"
+    },
+    {
+      "tableName": "events",
+      "name": "price_basis_allowed",
+      "definition": "CHECK (((price_basis)::text = ANY ((ARRAY['EXCLUSIVE'::character varying, 'INCLUSIVE'::character varying])::text[])))"
+    },
+    {
+      "tableName": "events",
+      "name": "status_allowed",
+      "definition": "CHECK (((status)::text = ANY ((ARRAY['DRAFT'::character varying, 'OPEN'::character varying, 'CLOSED'::character varying, 'CANCELLED'::character varying])::text[])))"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "exchanges_cash_received_cents_check",
+      "definition": "CHECK ((cash_received_cents >= 0))"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "exchanges_created_by_check",
+      "definition": "CHECK ((created_by >= 0))"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "exchanges_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "exchanges_new_sale_id_check",
+      "definition": "CHECK ((new_sale_id >= 0))"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "exchanges_new_sale_id_key",
+      "definition": "UNIQUE (new_sale_id)"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "exchanges_original_sale_id_check",
+      "definition": "CHECK ((original_sale_id >= 0))"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "exchanges_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "exchanges_return_id_check",
+      "definition": "CHECK ((return_id >= 0))"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "exchanges_return_id_key",
+      "definition": "UNIQUE (return_id)"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "fk_exchange_creator",
+      "definition": "FOREIGN KEY (created_by) REFERENCES users(id)"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "fk_exchange_new",
+      "definition": "FOREIGN KEY (new_sale_id) REFERENCES sales(id)"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "fk_exchange_original",
+      "definition": "FOREIGN KEY (original_sale_id) REFERENCES sales(id)"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "fk_exchange_return",
+      "definition": "FOREIGN KEY (return_id) REFERENCES returns(id)"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "payment_method_allowed",
+      "definition": "CHECK (((payment_method)::text = ANY ((ARRAY['CASH'::character varying, 'TERMINAL'::character varying])::text[])))"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "state_allowed",
+      "definition": "CHECK (((state)::text = ANY ((ARRAY['PREPARED'::character varying, 'POSTED'::character varying, 'CANCELLED'::character varying])::text[])))"
+    },
+    {
+      "tableName": "idempotency_keys",
+      "name": "fk_idempotency_actor",
+      "definition": "FOREIGN KEY (actor_id) REFERENCES users(id)"
+    },
+    {
+      "tableName": "idempotency_keys",
+      "name": "idempotency_keys_actor_id_check",
+      "definition": "CHECK ((actor_id >= 0))"
+    },
+    {
+      "tableName": "idempotency_keys",
+      "name": "idempotency_keys_pkey",
+      "definition": "PRIMARY KEY (actor_id, operation, command_key)"
+    },
+    {
+      "tableName": "products",
+      "name": "ck_product_prices",
+      "definition": "CHECK (((suggested_price_cents IS NULL) OR (suggested_price_cents >= min_price_cents)))"
+    },
+    {
+      "tableName": "products",
+      "name": "products_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "products",
+      "name": "products_min_price_cents_check",
+      "definition": "CHECK ((min_price_cents >= 0))"
+    },
+    {
+      "tableName": "products",
+      "name": "products_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "products",
+      "name": "products_suggested_price_cents_check",
+      "definition": "CHECK ((suggested_price_cents >= 0))"
+    },
+    {
+      "tableName": "products",
+      "name": "products_version_check",
+      "definition": "CHECK ((version >= 0))"
+    },
+    {
+      "tableName": "products",
+      "name": "products_wholesale_cost_cents_check",
+      "definition": "CHECK ((wholesale_cost_cents >= 0))"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "ck_returnline_qty",
+      "definition": "CHECK ((quantity > 0))"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "disposition_allowed",
+      "definition": "CHECK (((disposition)::text = ANY ((ARRAY['RESTOCK'::character varying, 'DAMAGED'::character varying])::text[])))"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "fk_returnline_return",
+      "definition": "FOREIGN KEY (return_id) REFERENCES returns(id)"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "return_lines_commission_cents_check",
+      "definition": "CHECK ((commission_cents >= 0))"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "return_lines_line_no_check",
+      "definition": "CHECK (((line_no >= 0) AND (line_no <= 65535)))"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "return_lines_net_cents_check",
+      "definition": "CHECK ((net_cents >= 0))"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "return_lines_pkey",
+      "definition": "PRIMARY KEY (return_id, line_no)"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "return_lines_quantity_check",
+      "definition": "CHECK ((quantity >= 0))"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "return_lines_return_id_check",
+      "definition": "CHECK ((return_id >= 0))"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "return_lines_sale_line_no_check",
+      "definition": "CHECK (((sale_line_no >= 0) AND (sale_line_no <= 65535)))"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "return_lines_tax_cents_check",
+      "definition": "CHECK ((tax_cents >= 0))"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "uq_return_orig_line",
+      "definition": "UNIQUE (return_id, sale_line_no)"
+    },
+    {
+      "tableName": "returns",
+      "name": "fk_return_cash_shift",
+      "definition": "FOREIGN KEY (cash_shift_id) REFERENCES shifts(id)"
+    },
+    {
+      "tableName": "returns",
+      "name": "fk_return_exchange",
+      "definition": "FOREIGN KEY (exchange_id) REFERENCES exchanges(id)"
+    },
+    {
+      "tableName": "returns",
+      "name": "fk_return_location",
+      "definition": "FOREIGN KEY (destination_location_id) REFERENCES stock_locations(id)"
+    },
+    {
+      "tableName": "returns",
+      "name": "fk_return_sale",
+      "definition": "FOREIGN KEY (sale_id) REFERENCES sales(id)"
+    },
+    {
+      "tableName": "returns",
+      "name": "fk_return_user",
+      "definition": "FOREIGN KEY (created_by) REFERENCES users(id)"
+    },
+    {
+      "tableName": "returns",
+      "name": "refund_method_allowed",
+      "definition": "CHECK (((refund_method)::text = ANY ((ARRAY['CASH'::character varying, 'TERMINAL'::character varying, 'EXCHANGE'::character varying])::text[])))"
+    },
+    {
+      "tableName": "returns",
+      "name": "returns_cash_shift_id_check",
+      "definition": "CHECK ((cash_shift_id >= 0))"
+    },
+    {
+      "tableName": "returns",
+      "name": "returns_created_by_check",
+      "definition": "CHECK ((created_by >= 0))"
+    },
+    {
+      "tableName": "returns",
+      "name": "returns_destination_location_id_check",
+      "definition": "CHECK ((destination_location_id >= 0))"
+    },
+    {
+      "tableName": "returns",
+      "name": "returns_exchange_id_check",
+      "definition": "CHECK ((exchange_id >= 0))"
+    },
+    {
+      "tableName": "returns",
+      "name": "returns_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "returns",
+      "name": "returns_net_cents_check",
+      "definition": "CHECK ((net_cents >= 0))"
+    },
+    {
+      "tableName": "returns",
+      "name": "returns_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "returns",
+      "name": "returns_sale_id_check",
+      "definition": "CHECK ((sale_id >= 0))"
+    },
+    {
+      "tableName": "returns",
+      "name": "returns_tax_cents_check",
+      "definition": "CHECK ((tax_cents >= 0))"
+    },
+    {
+      "tableName": "returns",
+      "name": "returns_total_cents_check",
+      "definition": "CHECK ((total_cents >= 0))"
+    },
+    {
+      "tableName": "returns",
+      "name": "state_allowed",
+      "definition": "CHECK (((state)::text = ANY ((ARRAY['DRAFT'::character varying, 'AUTHORIZED'::character varying, 'POSTED'::character varying, 'CANCELLED'::character varying])::text[])))"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "ck_line_qty",
+      "definition": "CHECK (((quantity >= 1) AND (quantity <= 9999)))"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "fk_line_product",
+      "definition": "FOREIGN KEY (product_id) REFERENCES products(id)"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "fk_line_sale",
+      "definition": "FOREIGN KEY (sale_id) REFERENCES sales(id)"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sale_lines_commission_bps_snapshot_check",
+      "definition": "CHECK (((commission_bps_snapshot >= 0) AND (commission_bps_snapshot <= 65535)))"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sale_lines_cost_snapshot_cents_check",
+      "definition": "CHECK ((cost_snapshot_cents >= 0))"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sale_lines_final_unit_price_cents_check",
+      "definition": "CHECK ((final_unit_price_cents >= 0))"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sale_lines_line_commission_cents_check",
+      "definition": "CHECK ((line_commission_cents >= 0))"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sale_lines_line_net_cents_check",
+      "definition": "CHECK ((line_net_cents >= 0))"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sale_lines_line_no_check",
+      "definition": "CHECK (((line_no >= 0) AND (line_no <= 65535)))"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sale_lines_line_tax_cents_check",
+      "definition": "CHECK ((line_tax_cents >= 0))"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sale_lines_min_snapshot_cents_check",
+      "definition": "CHECK ((min_snapshot_cents >= 0))"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sale_lines_pkey",
+      "definition": "PRIMARY KEY (sale_id, line_no)"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sale_lines_product_id_check",
+      "definition": "CHECK ((product_id >= 0))"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sale_lines_quantity_check",
+      "definition": "CHECK ((quantity >= 0))"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sale_lines_sale_id_check",
+      "definition": "CHECK ((sale_id >= 0))"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sale_lines_tax_bps_snapshot_check",
+      "definition": "CHECK (((tax_bps_snapshot >= 0) AND (tax_bps_snapshot <= 65535)))"
+    },
+    {
+      "tableName": "sale_workspace_revisions",
+      "name": "fk_workspace_revision",
+      "definition": "FOREIGN KEY (owner_id, workspace_key) REFERENCES sale_workspaces(owner_id, workspace_key)"
+    },
+    {
+      "tableName": "sale_workspace_revisions",
+      "name": "sale_workspace_revisions_owner_id_check",
+      "definition": "CHECK ((owner_id >= 0))"
+    },
+    {
+      "tableName": "sale_workspace_revisions",
+      "name": "sale_workspace_revisions_pkey",
+      "definition": "PRIMARY KEY (owner_id, workspace_key, revision)"
+    },
+    {
+      "tableName": "sale_workspace_revisions",
+      "name": "sale_workspace_revisions_revision_check",
+      "definition": "CHECK ((revision >= 0))"
+    },
+    {
+      "tableName": "sale_workspaces",
+      "name": "fk_workspace_owner",
+      "definition": "FOREIGN KEY (owner_id) REFERENCES users(id)"
+    },
+    {
+      "tableName": "sale_workspaces",
+      "name": "sale_workspaces_owner_id_check",
+      "definition": "CHECK ((owner_id >= 0))"
+    },
+    {
+      "tableName": "sale_workspaces",
+      "name": "sale_workspaces_pkey",
+      "definition": "PRIMARY KEY (owner_id, workspace_key)"
+    },
+    {
+      "tableName": "sale_workspaces",
+      "name": "sale_workspaces_revision_check",
+      "definition": "CHECK ((revision >= 0))"
+    },
+    {
+      "tableName": "sales",
+      "name": "fk_sale_creator",
+      "definition": "FOREIGN KEY (created_by) REFERENCES users(id)"
+    },
+    {
+      "tableName": "sales",
+      "name": "fk_sale_exchange",
+      "definition": "FOREIGN KEY (exchange_id) REFERENCES exchanges(id)"
+    },
+    {
+      "tableName": "sales",
+      "name": "fk_sale_poster",
+      "definition": "FOREIGN KEY (posted_by) REFERENCES users(id)"
+    },
+    {
+      "tableName": "sales",
+      "name": "fk_sale_shift_event",
+      "definition": "FOREIGN KEY (shift_id, event_id) REFERENCES shifts(id, event_id)"
+    },
+    {
+      "tableName": "sales",
+      "name": "payment_method_allowed",
+      "definition": "CHECK (((payment_method)::text = ANY ((ARRAY['CASH'::character varying, 'TERMINAL'::character varying, 'EXCHANGE'::character varying])::text[])))"
+    },
+    {
+      "tableName": "sales",
+      "name": "price_basis_allowed",
+      "definition": "CHECK (((price_basis)::text = ANY ((ARRAY['EXCLUSIVE'::character varying, 'INCLUSIVE'::character varying])::text[])))"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_cash_received_cents_check",
+      "definition": "CHECK ((cash_received_cents >= 0))"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_created_by_check",
+      "definition": "CHECK ((created_by >= 0))"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_event_id_check",
+      "definition": "CHECK ((event_id >= 0))"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_exchange_id_check",
+      "definition": "CHECK ((exchange_id >= 0))"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_net_cents_check",
+      "definition": "CHECK ((net_cents >= 0))"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_posted_by_check",
+      "definition": "CHECK ((posted_by >= 0))"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_return_days_check",
+      "definition": "CHECK (((return_days >= 0) AND (return_days <= 65535)))"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_sale_no_key",
+      "definition": "UNIQUE (sale_no)"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_shift_id_check",
+      "definition": "CHECK ((shift_id >= 0))"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_tax_cents_check",
+      "definition": "CHECK ((tax_cents >= 0))"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_total_cents_check",
+      "definition": "CHECK ((total_cents >= 0))"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_version_check",
+      "definition": "CHECK ((version >= 0))"
+    },
+    {
+      "tableName": "sales",
+      "name": "state_allowed",
+      "definition": "CHECK (((state)::text = ANY ((ARRAY['DRAFT'::character varying, 'CHECKOUT'::character varying, 'POSTED'::character varying, 'CANCELLED'::character varying])::text[])))"
+    },
+    {
+      "tableName": "salespeople",
+      "name": "ck_commission_rate",
+      "definition": "CHECK (((commission_bps IS NULL) OR (commission_bps <= 10000)))"
+    },
+    {
+      "tableName": "salespeople",
+      "name": "salespeople_commission_bps_check",
+      "definition": "CHECK (((commission_bps >= 0) AND (commission_bps <= 65535)))"
+    },
+    {
+      "tableName": "salespeople",
+      "name": "salespeople_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "salespeople",
+      "name": "salespeople_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "salespeople",
+      "name": "salespeople_version_check",
+      "definition": "CHECK ((version >= 0))"
+    },
+    {
+      "tableName": "schema_migrations",
+      "name": "schema_migrations_pkey",
+      "definition": "PRIMARY KEY (version)"
+    },
+    {
+      "tableName": "sessions",
+      "name": "fk_session_user",
+      "definition": "FOREIGN KEY (user_id) REFERENCES users(id)"
+    },
+    {
+      "tableName": "sessions",
+      "name": "sessions_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "sessions",
+      "name": "sessions_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "sessions",
+      "name": "sessions_token_hash_key",
+      "definition": "UNIQUE (token_hash)"
+    },
+    {
+      "tableName": "sessions",
+      "name": "sessions_user_id_check",
+      "definition": "CHECK ((user_id >= 0))"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "fk_extension_requester",
+      "definition": "FOREIGN KEY (requested_by) REFERENCES users(id)"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "fk_extension_reviewer",
+      "definition": "FOREIGN KEY (reviewed_by) REFERENCES users(id)"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "fk_extension_shift",
+      "definition": "FOREIGN KEY (shift_id) REFERENCES shifts(id)"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "shift_extensions_base_version_check",
+      "definition": "CHECK ((base_version >= 0))"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "shift_extensions_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "shift_extensions_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "shift_extensions_requested_by_check",
+      "definition": "CHECK ((requested_by >= 0))"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "shift_extensions_reviewed_by_check",
+      "definition": "CHECK ((reviewed_by >= 0))"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "shift_extensions_shift_id_check",
+      "definition": "CHECK ((shift_id >= 0))"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "state_allowed",
+      "definition": "CHECK (((state)::text = ANY ((ARRAY['PENDING'::character varying, 'APPROVED'::character varying, 'REJECTED'::character varying])::text[])))"
+    },
+    {
+      "tableName": "shifts",
+      "name": "ck_shift_times",
+      "definition": "CHECK ((planned_end > planned_start))"
+    },
+    {
+      "tableName": "shifts",
+      "name": "fk_shift_booth_event",
+      "definition": "FOREIGN KEY (booth_id, event_id) REFERENCES booths(id, event_id)"
+    },
+    {
+      "tableName": "shifts",
+      "name": "fk_shift_salesperson",
+      "definition": "FOREIGN KEY (salesperson_id) REFERENCES salespeople(id)"
+    },
+    {
+      "tableName": "shifts",
+      "name": "shifts_booth_id_check",
+      "definition": "CHECK ((booth_id >= 0))"
+    },
+    {
+      "tableName": "shifts",
+      "name": "shifts_event_id_check",
+      "definition": "CHECK ((event_id >= 0))"
+    },
+    {
+      "tableName": "shifts",
+      "name": "shifts_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "shifts",
+      "name": "shifts_opening_cash_cents_check",
+      "definition": "CHECK ((opening_cash_cents >= 0))"
+    },
+    {
+      "tableName": "shifts",
+      "name": "shifts_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "shifts",
+      "name": "shifts_salesperson_id_check",
+      "definition": "CHECK ((salesperson_id >= 0))"
+    },
+    {
+      "tableName": "shifts",
+      "name": "shifts_version_check",
+      "definition": "CHECK ((version >= 0))"
+    },
+    {
+      "tableName": "shifts",
+      "name": "status_allowed",
+      "definition": "CHECK (((status)::text = ANY ((ARRAY['PLANNED'::character varying, 'ACTIVE'::character varying, 'CLOSED'::character varying, 'CANCELLED'::character varying])::text[])))"
+    },
+    {
+      "tableName": "shifts",
+      "name": "uq_shift_id_event",
+      "definition": "UNIQUE (id, event_id)"
+    },
+    {
+      "tableName": "stock_balances",
+      "name": "ck_balance_reserved",
+      "definition": "CHECK ((on_hand >= reserved))"
+    },
+    {
+      "tableName": "stock_balances",
+      "name": "fk_balance_location",
+      "definition": "FOREIGN KEY (location_id) REFERENCES stock_locations(id)"
+    },
+    {
+      "tableName": "stock_balances",
+      "name": "fk_balance_product",
+      "definition": "FOREIGN KEY (product_id) REFERENCES products(id)"
+    },
+    {
+      "tableName": "stock_balances",
+      "name": "stock_balances_location_id_check",
+      "definition": "CHECK ((location_id >= 0))"
+    },
+    {
+      "tableName": "stock_balances",
+      "name": "stock_balances_on_hand_check",
+      "definition": "CHECK ((on_hand >= 0))"
+    },
+    {
+      "tableName": "stock_balances",
+      "name": "stock_balances_pkey",
+      "definition": "PRIMARY KEY (location_id, product_id)"
+    },
+    {
+      "tableName": "stock_balances",
+      "name": "stock_balances_product_id_check",
+      "definition": "CHECK ((product_id >= 0))"
+    },
+    {
+      "tableName": "stock_balances",
+      "name": "stock_balances_reserved_check",
+      "definition": "CHECK ((reserved >= 0))"
+    },
+    {
+      "tableName": "stock_balances",
+      "name": "stock_balances_version_check",
+      "definition": "CHECK ((version >= 0))"
+    },
+    {
+      "tableName": "stock_document_lines",
+      "name": "ck_docline_nonzero",
+      "definition": "CHECK ((quantity <> 0))"
+    },
+    {
+      "tableName": "stock_document_lines",
+      "name": "fk_docline_doc",
+      "definition": "FOREIGN KEY (document_id) REFERENCES stock_documents(id)"
+    },
+    {
+      "tableName": "stock_document_lines",
+      "name": "fk_docline_product",
+      "definition": "FOREIGN KEY (product_id) REFERENCES products(id)"
+    },
+    {
+      "tableName": "stock_document_lines",
+      "name": "stock_document_lines_document_id_check",
+      "definition": "CHECK ((document_id >= 0))"
+    },
+    {
+      "tableName": "stock_document_lines",
+      "name": "stock_document_lines_line_no_check",
+      "definition": "CHECK (((line_no >= 0) AND (line_no <= 65535)))"
+    },
+    {
+      "tableName": "stock_document_lines",
+      "name": "stock_document_lines_pkey",
+      "definition": "PRIMARY KEY (document_id, line_no)"
+    },
+    {
+      "tableName": "stock_document_lines",
+      "name": "stock_document_lines_product_id_check",
+      "definition": "CHECK ((product_id >= 0))"
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "fk_doc_from",
+      "definition": "FOREIGN KEY (from_location_id) REFERENCES stock_locations(id)"
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "fk_doc_to",
+      "definition": "FOREIGN KEY (to_location_id) REFERENCES stock_locations(id)"
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "fk_doc_user",
+      "definition": "FOREIGN KEY (created_by) REFERENCES users(id)"
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "kind_allowed",
+      "definition": "CHECK (((kind)::text = ANY ((ARRAY['RECEIVE'::character varying, 'TRANSFER'::character varying, 'ADJUST'::character varying, 'RETURN'::character varying, 'DISPATCH'::character varying, 'ACCEPT'::character varying, 'RECALL'::character varying, 'DAMAGE'::character varying, 'REPAIR'::character varying, 'DISPOSE'::character varying])::text[])))"
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "stock_documents_created_by_check",
+      "definition": "CHECK ((created_by >= 0))"
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "stock_documents_from_location_id_check",
+      "definition": "CHECK ((from_location_id >= 0))"
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "stock_documents_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "stock_documents_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "stock_documents_to_location_id_check",
+      "definition": "CHECK ((to_location_id >= 0))"
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "fk_hold_line",
+      "definition": "FOREIGN KEY (sale_id, line_no) REFERENCES sale_lines(sale_id, line_no)"
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "fk_hold_location",
+      "definition": "FOREIGN KEY (location_id) REFERENCES stock_locations(id)"
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "fk_hold_product",
+      "definition": "FOREIGN KEY (product_id) REFERENCES products(id)"
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "status_allowed",
+      "definition": "CHECK (((status)::text = ANY ((ARRAY['ACTIVE'::character varying, 'CONSUMED'::character varying, 'RELEASED'::character varying])::text[])))"
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "stock_holds_line_no_check",
+      "definition": "CHECK (((line_no >= 0) AND (line_no <= 65535)))"
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "stock_holds_location_id_check",
+      "definition": "CHECK ((location_id >= 0))"
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "stock_holds_pkey",
+      "definition": "PRIMARY KEY (sale_id, line_no)"
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "stock_holds_product_id_check",
+      "definition": "CHECK ((product_id >= 0))"
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "stock_holds_quantity_check",
+      "definition": "CHECK ((quantity >= 0))"
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "stock_holds_sale_id_check",
+      "definition": "CHECK ((sale_id >= 0))"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "ck_ledger_nonzero",
+      "definition": "CHECK ((delta <> 0))"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "fk_ledger_location",
+      "definition": "FOREIGN KEY (location_id) REFERENCES stock_locations(id)"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "fk_ledger_product",
+      "definition": "FOREIGN KEY (product_id) REFERENCES products(id)"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "source_kind_allowed",
+      "definition": "CHECK (((source_kind)::text = ANY ((ARRAY['DOCUMENT'::character varying, 'SALE'::character varying, 'RETURN'::character varying])::text[])))"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "stock_ledger_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "stock_ledger_location_id_check",
+      "definition": "CHECK ((location_id >= 0))"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "stock_ledger_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "stock_ledger_product_id_check",
+      "definition": "CHECK ((product_id >= 0))"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "stock_ledger_source_id_check",
+      "definition": "CHECK ((source_id >= 0))"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "stock_ledger_source_line_no_check",
+      "definition": "CHECK (((source_line_no >= 0) AND (source_line_no <= 65535)))"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "uq_stock_source",
+      "definition": "UNIQUE (source_kind, source_id, source_line_no, location_id)"
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "ck_location_kind",
+      "definition": "CHECK (((((kind)::text = 'BOOTH'::text) AND (booth_id IS NOT NULL)) OR (((kind)::text <> 'BOOTH'::text) AND (booth_id IS NULL))))"
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "fk_location_booth",
+      "definition": "FOREIGN KEY (booth_id) REFERENCES booths(id)"
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "kind_allowed",
+      "definition": "CHECK (((kind)::text = ANY ((ARRAY['WAREHOUSE'::character varying, 'BOOTH'::character varying, 'TRANSIT'::character varying, 'DAMAGED'::character varying])::text[])))"
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "stock_locations_booth_id_check",
+      "definition": "CHECK ((booth_id >= 0))"
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "stock_locations_booth_id_key",
+      "definition": "UNIQUE (booth_id)"
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "stock_locations_code_key",
+      "definition": "UNIQUE (code)"
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "stock_locations_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "stock_locations_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "ck_transfer_qty",
+      "definition": "CHECK ((quantity > 0))"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "ck_transfer_received_complete",
+      "definition": "CHECK ((((state)::text <> 'RECEIVED'::text) OR ((received_quantity IS NOT NULL) AND (damaged_quantity IS NOT NULL) AND (missing_quantity IS NOT NULL) AND (((received_quantity + damaged_quantity) + missing_quantity) = quantity))))"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "fk_transfer_creator",
+      "definition": "FOREIGN KEY (created_by) REFERENCES users(id)"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "fk_transfer_from",
+      "definition": "FOREIGN KEY (from_location_id) REFERENCES stock_locations(id)"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "fk_transfer_product",
+      "definition": "FOREIGN KEY (product_id) REFERENCES products(id)"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "fk_transfer_receiver",
+      "definition": "FOREIGN KEY (received_by) REFERENCES users(id)"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "fk_transfer_to",
+      "definition": "FOREIGN KEY (to_location_id) REFERENCES stock_locations(id)"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "fk_transfer_transit",
+      "definition": "FOREIGN KEY (transit_location_id) REFERENCES stock_locations(id)"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "state_allowed",
+      "definition": "CHECK (((state)::text = ANY ((ARRAY['DISPATCHED'::character varying, 'RECEIVED'::character varying, 'CANCELLED'::character varying])::text[])))"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "stock_transfers_created_by_check",
+      "definition": "CHECK ((created_by >= 0))"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "stock_transfers_damaged_quantity_check",
+      "definition": "CHECK ((damaged_quantity >= 0))"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "stock_transfers_from_location_id_check",
+      "definition": "CHECK ((from_location_id >= 0))"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "stock_transfers_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "stock_transfers_missing_quantity_check",
+      "definition": "CHECK ((missing_quantity >= 0))"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "stock_transfers_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "stock_transfers_product_id_check",
+      "definition": "CHECK ((product_id >= 0))"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "stock_transfers_quantity_check",
+      "definition": "CHECK ((quantity >= 0))"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "stock_transfers_received_by_check",
+      "definition": "CHECK ((received_by >= 0))"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "stock_transfers_received_quantity_check",
+      "definition": "CHECK ((received_quantity >= 0))"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "stock_transfers_to_location_id_check",
+      "definition": "CHECK ((to_location_id >= 0))"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "stock_transfers_transit_location_id_check",
+      "definition": "CHECK ((transit_location_id >= 0))"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "stock_transfers_version_check",
+      "definition": "CHECK ((version >= 0))"
+    },
+    {
+      "tableName": "users",
+      "name": "ck_user_salesperson_role",
+      "definition": "CHECK (((((role)::text = 'OWNER'::text) AND (salesperson_id IS NULL)) OR (((role)::text = 'SALESPERSON'::text) AND (salesperson_id IS NOT NULL))))"
+    },
+    {
+      "tableName": "users",
+      "name": "fk_user_salesperson",
+      "definition": "FOREIGN KEY (salesperson_id) REFERENCES salespeople(id)"
+    },
+    {
+      "tableName": "users",
+      "name": "role_allowed",
+      "definition": "CHECK (((role)::text = ANY ((ARRAY['OWNER'::character varying, 'SALESPERSON'::character varying])::text[])))"
+    },
+    {
+      "tableName": "users",
+      "name": "users_failed_logins_check",
+      "definition": "CHECK ((failed_logins >= 0))"
+    },
+    {
+      "tableName": "users",
+      "name": "users_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "users",
+      "name": "users_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "users",
+      "name": "users_salesperson_id_check",
+      "definition": "CHECK ((salesperson_id >= 0))"
+    },
+    {
+      "tableName": "users",
+      "name": "users_salesperson_id_key",
+      "definition": "UNIQUE (salesperson_id)"
+    },
+    {
+      "tableName": "venues",
+      "name": "venues_id_check",
+      "definition": "CHECK ((id >= 0))"
+    },
+    {
+      "tableName": "venues",
+      "name": "venues_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "tableName": "venues",
+      "name": "venues_version_check",
+      "definition": "CHECK ((version >= 0))"
+    }
+  ],
+  "indexes": [
+    {
+      "tableName": "audit_events",
+      "name": "audit_events_pkey",
+      "definition": "CREATE UNIQUE INDEX audit_events_pkey ON public.audit_events USING btree (id)"
+    },
+    {
+      "tableName": "audit_events",
+      "name": "ix_audit_date",
+      "definition": "CREATE INDEX ix_audit_date ON public.audit_events USING btree (created_at)"
+    },
+    {
+      "tableName": "booths",
+      "name": "booths_pkey",
+      "definition": "CREATE UNIQUE INDEX booths_pkey ON public.booths USING btree (id)"
+    },
+    {
+      "tableName": "booths",
+      "name": "uq_booth_event_location",
+      "definition": "CREATE UNIQUE INDEX uq_booth_event_location ON public.booths USING btree (event_id, lower((location)::text))"
+    },
+    {
+      "tableName": "booths",
+      "name": "uq_booth_id_event",
+      "definition": "CREATE UNIQUE INDEX uq_booth_id_event ON public.booths USING btree (id, event_id)"
+    },
+    {
+      "tableName": "business_settings",
+      "name": "business_settings_pkey",
+      "definition": "CREATE UNIQUE INDEX business_settings_pkey ON public.business_settings USING btree (id)"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "cash_handovers_pkey",
+      "definition": "CREATE UNIQUE INDEX cash_handovers_pkey ON public.cash_handovers USING btree (id)"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "cash_handovers_shift_id_key",
+      "definition": "CREATE UNIQUE INDEX cash_handovers_shift_id_key ON public.cash_handovers USING btree (shift_id)"
+    },
+    {
+      "tableName": "cash_handovers",
+      "name": "ix_cash_handover_state",
+      "definition": "CREATE INDEX ix_cash_handover_state ON public.cash_handovers USING btree (state, id)"
+    },
+    {
+      "tableName": "commission_claims",
+      "name": "commission_claims_pkey",
+      "definition": "CREATE UNIQUE INDEX commission_claims_pkey ON public.commission_claims USING btree (entry_id)"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "commission_entries_pkey",
+      "definition": "CREATE UNIQUE INDEX commission_entries_pkey ON public.commission_entries USING btree (id)"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "ix_commission_person_currency",
+      "definition": "CREATE INDEX ix_commission_person_currency ON public.commission_entries USING btree (salesperson_id, currency, id)"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "ix_commission_salesperson_date",
+      "definition": "CREATE INDEX ix_commission_salesperson_date ON public.commission_entries USING btree (salesperson_id, created_at)"
+    },
+    {
+      "tableName": "commission_entries",
+      "name": "uq_commission_source",
+      "definition": "CREATE UNIQUE INDEX uq_commission_source ON public.commission_entries USING btree (source_kind, source_id, source_line_no)"
+    },
+    {
+      "tableName": "commission_settlement_lines",
+      "name": "commission_settlement_lines_pkey",
+      "definition": "CREATE UNIQUE INDEX commission_settlement_lines_pkey ON public.commission_settlement_lines USING btree (settlement_id, entry_id)"
+    },
+    {
+      "tableName": "commission_settlements",
+      "name": "commission_settlements_pkey",
+      "definition": "CREATE UNIQUE INDEX commission_settlements_pkey ON public.commission_settlements USING btree (id)"
+    },
+    {
+      "tableName": "damage_records",
+      "name": "damage_records_pkey",
+      "definition": "CREATE UNIQUE INDEX damage_records_pkey ON public.damage_records USING btree (id)"
+    },
+    {
+      "tableName": "event_categories",
+      "name": "event_categories_code_key",
+      "definition": "CREATE UNIQUE INDEX event_categories_code_key ON public.event_categories USING btree (code)"
+    },
+    {
+      "tableName": "event_categories",
+      "name": "event_categories_pkey",
+      "definition": "CREATE UNIQUE INDEX event_categories_pkey ON public.event_categories USING btree (id)"
+    },
+    {
+      "tableName": "event_categories",
+      "name": "event_categories_type_key",
+      "definition": "CREATE UNIQUE INDEX event_categories_type_key ON public.event_categories USING btree (type)"
+    },
+    {
+      "tableName": "events",
+      "name": "events_pkey",
+      "definition": "CREATE UNIQUE INDEX events_pkey ON public.events USING btree (id)"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "exchanges_new_sale_id_key",
+      "definition": "CREATE UNIQUE INDEX exchanges_new_sale_id_key ON public.exchanges USING btree (new_sale_id)"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "exchanges_pkey",
+      "definition": "CREATE UNIQUE INDEX exchanges_pkey ON public.exchanges USING btree (id)"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "exchanges_return_id_key",
+      "definition": "CREATE UNIQUE INDEX exchanges_return_id_key ON public.exchanges USING btree (return_id)"
+    },
+    {
+      "tableName": "exchanges",
+      "name": "ix_exchanges_state",
+      "definition": "CREATE INDEX ix_exchanges_state ON public.exchanges USING btree (state, id)"
+    },
+    {
+      "tableName": "idempotency_keys",
+      "name": "idempotency_keys_pkey",
+      "definition": "CREATE UNIQUE INDEX idempotency_keys_pkey ON public.idempotency_keys USING btree (actor_id, operation, command_key)"
+    },
+    {
+      "tableName": "products",
+      "name": "products_pkey",
+      "definition": "CREATE UNIQUE INDEX products_pkey ON public.products USING btree (id)"
+    },
+    {
+      "tableName": "products",
+      "name": "uq_products_sku_ci",
+      "definition": "CREATE UNIQUE INDEX uq_products_sku_ci ON public.products USING btree (lower((sku)::text))"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "return_lines_pkey",
+      "definition": "CREATE UNIQUE INDEX return_lines_pkey ON public.return_lines USING btree (return_id, line_no)"
+    },
+    {
+      "tableName": "return_lines",
+      "name": "uq_return_orig_line",
+      "definition": "CREATE UNIQUE INDEX uq_return_orig_line ON public.return_lines USING btree (return_id, sale_line_no)"
+    },
+    {
+      "tableName": "returns",
+      "name": "ix_returns_cash_shift",
+      "definition": "CREATE INDEX ix_returns_cash_shift ON public.returns USING btree (cash_shift_id, state)"
+    },
+    {
+      "tableName": "returns",
+      "name": "ix_returns_sale",
+      "definition": "CREATE INDEX ix_returns_sale ON public.returns USING btree (sale_id)"
+    },
+    {
+      "tableName": "returns",
+      "name": "returns_pkey",
+      "definition": "CREATE UNIQUE INDEX returns_pkey ON public.returns USING btree (id)"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "ix_sale_line_product",
+      "definition": "CREATE INDEX ix_sale_line_product ON public.sale_lines USING btree (product_id, sale_id)"
+    },
+    {
+      "tableName": "sale_lines",
+      "name": "sale_lines_pkey",
+      "definition": "CREATE UNIQUE INDEX sale_lines_pkey ON public.sale_lines USING btree (sale_id, line_no)"
+    },
+    {
+      "tableName": "sale_workspace_revisions",
+      "name": "sale_workspace_revisions_pkey",
+      "definition": "CREATE UNIQUE INDEX sale_workspace_revisions_pkey ON public.sale_workspace_revisions USING btree (owner_id, workspace_key, revision)"
+    },
+    {
+      "tableName": "sale_workspaces",
+      "name": "sale_workspaces_pkey",
+      "definition": "CREATE UNIQUE INDEX sale_workspaces_pkey ON public.sale_workspaces USING btree (owner_id, workspace_key)"
+    },
+    {
+      "tableName": "sales",
+      "name": "ix_sales_currency_event",
+      "definition": "CREATE INDEX ix_sales_currency_event ON public.sales USING btree (currency, event_id, posted_at)"
+    },
+    {
+      "tableName": "sales",
+      "name": "ix_sales_event_posted",
+      "definition": "CREATE INDEX ix_sales_event_posted ON public.sales USING btree (event_id, posted_at)"
+    },
+    {
+      "tableName": "sales",
+      "name": "ix_sales_shift_posted",
+      "definition": "CREATE INDEX ix_sales_shift_posted ON public.sales USING btree (shift_id, posted_at)"
+    },
+    {
+      "tableName": "sales",
+      "name": "ix_sales_state_id",
+      "definition": "CREATE INDEX ix_sales_state_id ON public.sales USING btree (state, id)"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_pkey",
+      "definition": "CREATE UNIQUE INDEX sales_pkey ON public.sales USING btree (id)"
+    },
+    {
+      "tableName": "sales",
+      "name": "sales_sale_no_key",
+      "definition": "CREATE UNIQUE INDEX sales_sale_no_key ON public.sales USING btree (sale_no)"
+    },
+    {
+      "tableName": "salespeople",
+      "name": "salespeople_pkey",
+      "definition": "CREATE UNIQUE INDEX salespeople_pkey ON public.salespeople USING btree (id)"
+    },
+    {
+      "tableName": "schema_migrations",
+      "name": "schema_migrations_pkey",
+      "definition": "CREATE UNIQUE INDEX schema_migrations_pkey ON public.schema_migrations USING btree (version)"
+    },
+    {
+      "tableName": "sessions",
+      "name": "ix_sessions_user",
+      "definition": "CREATE INDEX ix_sessions_user ON public.sessions USING btree (user_id)"
+    },
+    {
+      "tableName": "sessions",
+      "name": "sessions_pkey",
+      "definition": "CREATE UNIQUE INDEX sessions_pkey ON public.sessions USING btree (id)"
+    },
+    {
+      "tableName": "sessions",
+      "name": "sessions_token_hash_key",
+      "definition": "CREATE UNIQUE INDEX sessions_token_hash_key ON public.sessions USING btree (token_hash)"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "ix_extension_pending",
+      "definition": "CREATE INDEX ix_extension_pending ON public.shift_extensions USING btree (shift_id, state)"
+    },
+    {
+      "tableName": "shift_extensions",
+      "name": "shift_extensions_pkey",
+      "definition": "CREATE UNIQUE INDEX shift_extensions_pkey ON public.shift_extensions USING btree (id)"
+    },
+    {
+      "tableName": "shifts",
+      "name": "ix_shift_salesperson_date",
+      "definition": "CREATE INDEX ix_shift_salesperson_date ON public.shifts USING btree (salesperson_id, business_date)"
+    },
+    {
+      "tableName": "shifts",
+      "name": "ix_shifts_status_owner",
+      "definition": "CREATE INDEX ix_shifts_status_owner ON public.shifts USING btree (status, salesperson_id, id)"
+    },
+    {
+      "tableName": "shifts",
+      "name": "shifts_pkey",
+      "definition": "CREATE UNIQUE INDEX shifts_pkey ON public.shifts USING btree (id)"
+    },
+    {
+      "tableName": "shifts",
+      "name": "uq_shift_id_event",
+      "definition": "CREATE UNIQUE INDEX uq_shift_id_event ON public.shifts USING btree (id, event_id)"
+    },
+    {
+      "tableName": "stock_balances",
+      "name": "stock_balances_pkey",
+      "definition": "CREATE UNIQUE INDEX stock_balances_pkey ON public.stock_balances USING btree (location_id, product_id)"
+    },
+    {
+      "tableName": "stock_document_lines",
+      "name": "stock_document_lines_pkey",
+      "definition": "CREATE UNIQUE INDEX stock_document_lines_pkey ON public.stock_document_lines USING btree (document_id, line_no)"
+    },
+    {
+      "tableName": "stock_documents",
+      "name": "stock_documents_pkey",
+      "definition": "CREATE UNIQUE INDEX stock_documents_pkey ON public.stock_documents USING btree (id)"
+    },
+    {
+      "tableName": "stock_holds",
+      "name": "stock_holds_pkey",
+      "definition": "CREATE UNIQUE INDEX stock_holds_pkey ON public.stock_holds USING btree (sale_id, line_no)"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "ix_ledger_location_product",
+      "definition": "CREATE INDEX ix_ledger_location_product ON public.stock_ledger USING btree (location_id, product_id)"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "stock_ledger_pkey",
+      "definition": "CREATE UNIQUE INDEX stock_ledger_pkey ON public.stock_ledger USING btree (id)"
+    },
+    {
+      "tableName": "stock_ledger",
+      "name": "uq_stock_source",
+      "definition": "CREATE UNIQUE INDEX uq_stock_source ON public.stock_ledger USING btree (source_kind, source_id, source_line_no, location_id)"
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "stock_locations_booth_id_key",
+      "definition": "CREATE UNIQUE INDEX stock_locations_booth_id_key ON public.stock_locations USING btree (booth_id)"
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "stock_locations_code_key",
+      "definition": "CREATE UNIQUE INDEX stock_locations_code_key ON public.stock_locations USING btree (code)"
+    },
+    {
+      "tableName": "stock_locations",
+      "name": "stock_locations_pkey",
+      "definition": "CREATE UNIQUE INDEX stock_locations_pkey ON public.stock_locations USING btree (id)"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "ix_transfers_state",
+      "definition": "CREATE INDEX ix_transfers_state ON public.stock_transfers USING btree (state, id)"
+    },
+    {
+      "tableName": "stock_transfers",
+      "name": "stock_transfers_pkey",
+      "definition": "CREATE UNIQUE INDEX stock_transfers_pkey ON public.stock_transfers USING btree (id)"
+    },
+    {
+      "tableName": "users",
+      "name": "uq_users_username_ci",
+      "definition": "CREATE UNIQUE INDEX uq_users_username_ci ON public.users USING btree (lower((username)::text))"
+    },
+    {
+      "tableName": "users",
+      "name": "users_pkey",
+      "definition": "CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)"
+    },
+    {
+      "tableName": "users",
+      "name": "users_salesperson_id_key",
+      "definition": "CREATE UNIQUE INDEX users_salesperson_id_key ON public.users USING btree (salesperson_id)"
+    },
+    {
+      "tableName": "venues",
+      "name": "venues_pkey",
+      "definition": "CREATE UNIQUE INDEX venues_pkey ON public.venues USING btree (id)"
     }
   ]
 }

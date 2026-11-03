@@ -19,7 +19,7 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/apps/server/dist ./apps/server/dist
 COPY --from=build /app/apps/web/dist ./apps/web/dist
 COPY db ./db
-COPY scripts/runtime-migrate.mjs scripts/runtime-owner.mjs scripts/seed.mjs ./scripts/
+COPY scripts/runtime-migrate.mjs scripts/runtime-owner.mjs scripts/seed.mjs scripts/pg-connection.mjs scripts/pg-migrations.mjs scripts/pg-owner.mjs ./scripts/
 RUN mkdir -p /run/foxcore-app && chown node:node /run/foxcore-app
 USER node
 EXPOSE 3000

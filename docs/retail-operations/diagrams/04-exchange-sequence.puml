@@ -21,7 +21,7 @@ actor 办理员工 as U
 participant "Web / 小程序" as C
 participant "exchanges.ts" as X
 participant "returns.ts / sales.ts" as S
-database MariaDB as D
+database PostgreSQL as D
 U -> C : 选择原单、无损退入、新商品和当前班次
 C -> X : POST /exchanges + 原操作 UUID
 X -> D : BEGIN；认领幂等键；按序锁活动

@@ -4,7 +4,7 @@ SELECT 'chinese_profile',COUNT(*) FROM events WHERE currency='CNY' AND (price_ba
 UNION ALL
 SELECT 'inclusive_sale_totals',COUNT(*) FROM sales s WHERE s.price_basis='INCLUSIVE' AND s.state IN ('CHECKOUT','POSTED') AND s.total_cents<>(SELECT COALESCE(SUM(l.quantity*l.final_unit_price_cents),0) FROM sale_lines l WHERE l.sale_id=s.id)
 UNION ALL
-SELECT 'transfer_transit_quantity',COUNT(*) FROM stock_transfers t LEFT JOIN stock_balances b ON b.location_id=t.transit_location_id AND b.product_id=t.product_id WHERE COALESCE(b.on_hand,0)<>IF(t.state='DISPATCHED',t.quantity,0)
+SELECT 'transfer_transit_quantity',COUNT(*) FROM stock_transfers t LEFT JOIN stock_balances b ON b.location_id=t.transit_location_id AND b.product_id=t.product_id WHERE COALESCE(b.on_hand,0)<>(CASE WHEN t.state='DISPATCHED' THEN t.quantity ELSE 0 END)
 UNION ALL
 SELECT 'transfer_receipt_components',COUNT(*) FROM stock_transfers WHERE state='RECEIVED' AND (received_quantity IS NULL OR damaged_quantity IS NULL OR missing_quantity IS NULL OR received_quantity+damaged_quantity+missing_quantity<>quantity)
 UNION ALL
@@ -14,7 +14,7 @@ SELECT 'damaged_inventory_matches_records',COUNT(*) FROM (SELECT p.id,COALESCE(b
 UNION ALL
 SELECT 'exchange_child_state',COUNT(*) FROM exchanges x JOIN returns r ON r.id=x.return_id JOIN sales s ON s.id=x.new_sale_id WHERE (x.state='PREPARED' AND (r.state<>'AUTHORIZED' OR s.state<>'CHECKOUT')) OR (x.state='POSTED' AND (r.state<>'POSTED' OR s.state<>'POSTED')) OR (x.state='CANCELLED' AND (r.state<>'CANCELLED' OR s.state<>'CANCELLED'))
 UNION ALL
-SELECT 'exchange_amount_and_currency',COUNT(*) FROM exchanges x JOIN returns r ON r.id=x.return_id JOIN sales s ON s.id=x.new_sale_id JOIN sales o ON o.id=x.original_sale_id WHERE x.difference_cents<>CAST(s.total_cents AS SIGNED)-CAST(r.total_cents AS SIGNED) OR x.currency<>s.currency OR x.currency<>o.currency
+SELECT 'exchange_amount_and_currency',COUNT(*) FROM exchanges x JOIN returns r ON r.id=x.return_id JOIN sales s ON s.id=x.new_sale_id JOIN sales o ON o.id=x.original_sale_id WHERE x.difference_cents<>CAST(s.total_cents AS BIGINT)-CAST(r.total_cents AS BIGINT) OR x.currency<>s.currency OR x.currency<>o.currency
 UNION ALL
 SELECT 'workspace_current_revision',COUNT(*) FROM sale_workspaces w LEFT JOIN sale_workspace_revisions h ON h.owner_id=w.owner_id AND h.workspace_key=w.workspace_key AND h.revision=w.revision WHERE h.revision IS NULL OR h.payload_json<>w.payload_json
 UNION ALL

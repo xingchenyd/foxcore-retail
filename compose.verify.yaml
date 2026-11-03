@@ -8,11 +8,11 @@ services:
     labels: {foxcore.verify.run: "${FOXCORE_VERIFY_RUN:?use verify-full.mjs}"}
     environment: {TZ: UTC}
     volumes:
-      - verify_db:/var/lib/mysql
+      - verify_pg:/var/lib/postgresql/data
       - verify_root:/run/foxcore-root
       - verify_app:/run/foxcore-app
     healthcheck:
-      test: [CMD-SHELL, 'mariadb-admin ping --host=127.0.0.1 --user=root --password="$$(cat /run/foxcore-root/password)" --silent']
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d foxcore"]
       interval: 3s
       timeout: 5s
       retries: 60
@@ -35,7 +35,7 @@ services:
     labels: {foxcore.verify.run: "${FOXCORE_VERIFY_RUN:?use verify-full.mjs}"}
     entrypoint: [/bin/sh, -ec, 'node scripts/runtime-owner.mjs && exec node apps/server/dist/index.js']
     environment:
-      APP_ENV: production
+      APP_ENV: local
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: '3000'
@@ -52,7 +52,7 @@ services:
     depends_on: {migrate: {condition: service_completed_successfully}}
     networks: [backend, frontend]
 volumes:
-  verify_db:
+  verify_pg:
   verify_root:
   verify_app:
 networks:

@@ -12,7 +12,7 @@ SELECT 'negative_available',COUNT(*) FROM stock_balances WHERE on_hand<reserved
 UNION ALL
 SELECT 'posted_sale_amount_difference',COUNT(*) FROM sales sa JOIN (SELECT sale_id,SUM(line_net_cents) AS net,SUM(line_tax_cents) AS tax FROM sale_lines GROUP BY sale_id) l ON l.sale_id=sa.id WHERE sa.state='POSTED' AND (sa.net_cents<>l.net OR sa.tax_cents<>l.tax OR sa.total_cents<>l.net+l.tax)
 UNION ALL
-SELECT 'posted_sale_missing_ledger',COUNT(*) FROM sale_lines l JOIN sales sa ON sa.id=l.sale_id LEFT JOIN stock_ledger sl ON sl.source_kind='SALE' AND sl.source_id=l.sale_id AND sl.source_line_no=l.line_no WHERE sa.state='POSTED' AND (sl.id IS NULL OR sl.delta<>-CAST(l.quantity AS SIGNED))
+SELECT 'posted_sale_missing_ledger',COUNT(*) FROM sale_lines l JOIN sales sa ON sa.id=l.sale_id LEFT JOIN stock_ledger sl ON sl.source_kind='SALE' AND sl.source_id=l.sale_id AND sl.source_line_no=l.line_no WHERE sa.state='POSTED' AND (sl.id IS NULL OR sl.delta<>-CAST(l.quantity AS BIGINT))
 UNION ALL
 SELECT 'posted_sale_missing_commission',COUNT(*) FROM sale_lines l JOIN sales sa ON sa.id=l.sale_id LEFT JOIN commission_entries ce ON ce.source_kind='SALE' AND ce.source_id=l.sale_id AND ce.source_line_no=l.line_no WHERE sa.state='POSTED' AND l.line_commission_cents>0 AND (ce.id IS NULL OR ce.amount_cents<>l.line_commission_cents)
 UNION ALL
@@ -24,7 +24,7 @@ SELECT 'return_wrong_original_line',COUNT(*) FROM return_lines rl JOIN returns r
 UNION ALL
 SELECT 'posted_return_missing_restock_ledger',COUNT(*) FROM return_lines rl JOIN returns r ON r.id=rl.return_id LEFT JOIN stock_ledger sl ON sl.source_kind='RETURN' AND sl.source_id=rl.return_id AND sl.source_line_no=rl.line_no WHERE r.state='POSTED' AND rl.disposition='RESTOCK' AND (sl.id IS NULL OR sl.delta<>rl.quantity)
 UNION ALL
-SELECT 'posted_return_missing_commission',COUNT(*) FROM return_lines rl JOIN returns r ON r.id=rl.return_id LEFT JOIN commission_entries ce ON ce.source_kind='RETURN' AND ce.source_id=rl.return_id AND ce.source_line_no=rl.line_no WHERE r.state='POSTED' AND rl.commission_cents>0 AND (ce.id IS NULL OR ce.amount_cents<>-CAST(rl.commission_cents AS SIGNED))
+SELECT 'posted_return_missing_commission',COUNT(*) FROM return_lines rl JOIN returns r ON r.id=rl.return_id LEFT JOIN commission_entries ce ON ce.source_kind='RETURN' AND ce.source_id=rl.return_id AND ce.source_line_no=rl.line_no WHERE r.state='POSTED' AND rl.commission_cents>0 AND (ce.id IS NULL OR ce.amount_cents<>-CAST(rl.commission_cents AS BIGINT))
 UNION ALL
 SELECT 'cancelled_settlement_has_claim',COUNT(*) FROM commission_claims cc JOIN commission_settlements cs ON cs.id=cc.settlement_id WHERE cs.state='CANCELLED'
 UNION ALL
