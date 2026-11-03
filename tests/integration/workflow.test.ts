@@ -17,7 +17,7 @@ async function request(method:string,path:string,payload?:unknown,key?:string):P
 async function ok(method:string,path:string,payload?:unknown,key?:string):Promise<Json>{const r=await request(method,path,payload,key);expect(r.status,`${method} ${path}: ${JSON.stringify(r.data)}`).toBeGreaterThanOrEqual(200);expect(r.status).toBeLessThan(300);return r.data;}
 async function all(path:string):Promise<Json[]>{const items:Json[]=[];for(;;){const page=await ok('GET',path+'?limit=100&offset='+items.length);items.push(...page.items);if(!page.hasMore)return items;}}
 
-describe('real MariaDB HTTP workflow',()=>{
+describe('real database HTTP workflow',()=>{
   it('protects stock, history, refund and commission under concurrent commands',async()=>{
     const login=await ok('POST','/auth/login',{username,password});expect(login.user.role).toBe('OWNER');expect(login.user.mustChangePassword).toBe(false);csrf=login.csrf;
     const tag=randomUUID().slice(0,8),day=DateTime.now().setZone('America/Toronto');

@@ -1,6 +1,8 @@
+> **2026-11-03**：本分支使用 PostgreSQL。请先完成 [目标库探针和权限检查](postgresql.md)，然后再按下文执行 WorkBuddy 部署。历史验证不继承。
+
 # Foxcore · WorkBuddy 部署与小程序交接
 
-复核日期：2026-10-31。基线：已合入 main 的经营流程最终版本（PR #4，合并提交 `ef6fd92b6904f18eb8007312be72bca1eb65722e`）。本轮适配分支：`codex/workbuddy-deploy-20261031`。**不要从旧备份分支重新开始。**
+PostgreSQL 适配日期：2026-11-03。当前分支 `codex/workbuddy-deploy-pg-20261103`，以 WorkBuddy 部署版 `d8cca2a` 为基线；经营流程来自已合入 main 的 PR #4。
 
 本说明根据用户提供的 2026-10-28 指南复核后修订。原文件是参考材料，其中的“全链路 ¥0”、旧表数、旧迁移、平台参数、sharecode 有效期和已验证 TiDB 等说法不能作为当前验收结论。
 
@@ -15,11 +17,11 @@
 ```text
 电脑 Web ───────────┐
 员工原生微信小程序 ──┴─ HTTPS → 单端口 Fastify（静态 Web + /api/v1）
-                                      │ MySQL 协议 + 远程验证 TLS
-                                      └→ 现有数据库或另建 TiDB MySQL-compatible Starter
+                                      │ PostgreSQL 协议 + 远程验证 TLS
+                                      └→ 现有数据库或另建 TiDB PostgreSQL-compatible Starter
 ```
 
-现有 MariaDB 数据不会自动搬到 TiDB。新实例初始化只是空库建表，不能声称完成旧数据迁移。WorkBuddy 内置云数据库/登录/文件存储也不会自动接管本项目 mysql2、事务、会话、审计和权限；本轮不重写这些业务。以后若改用内置云数据库，需要单独验证 SQL 方言、事务/锁、约束、权限、数据迁移和回滚。
+现有 MariaDB 数据不会自动搬到 TiDB。新实例初始化只是空库建表，不能声称完成旧数据迁移。WorkBuddy 内置云数据库/登录/文件存储也不会自动接管本项目 pg、事务、会话、审计和权限；本轮不重写这些业务。以后若改用内置云数据库，需要单独验证 SQL 方言、事务/锁、约束、权限、数据迁移和回滚。
 
 ## 2. 免费额度的准确含义
 
@@ -27,7 +29,7 @@
 
 资源点用尽会暂停云服务；官方说明体验/标准/高级版暂停数据保留 30 天，旗舰版 60 天，到期仍未恢复可能永久删除，暂停时无法导出。需要正常运行时主动备份，不能保证无限保留。
 
-TiDB 的免费额度属于另一家数据库服务：每组织前五个符合条件的 MySQL-compatible Starter 实例，每实例 5 GiB 行存储、5 GiB 列存储、每月 5,000 万 RU。免费模式超额限制连接/读写；设置 spending limit 后超额可能计费。**RU 不是 API 请求次数**，不能用本机 9,900 请求换算月成本。不开付费能力、不填写预算上限，先检查控制台模式；本轮不注册、不购买、不启用计费。
+TiDB PostgreSQL-compatible Starter 仍处公开预览，配额及超量行为以 [官方预览说明](https://docs.pingcap.com/tidbcloud/postgresql-compatibility/) 和账号控制台为准。RU 不是 API 请求次数。
 
 不能保证当前正式运营规模永久免费；TiDB 的数据库额度也不等于 WorkBuddy 文件存储额度。
 
@@ -50,7 +52,7 @@ npm run build:cloud
 ## 4. 私下配置数据库
 
 1. 若已有正式数据库，先备份，记录当前迁移及受限账号；**不要对未知业务库运行初始化**。
-2. 若选 TiDB，自己在控制台创建 MySQL-compatible Starter 免费实例和专用空库 `foxcore`，保存连接参数。TiDB 实例实际兼容性仍待验证，不继承历史 MariaDB 通过结果。
+2. 若选 TiDB，自己在控制台创建 PostgreSQL-compatible Starter 预览实例和专用空库 `foxcore`，保存连接参数。TiDB 实例实际兼容性仍待验证，不继承历史 MariaDB 通过结果。
 3. 优先用平台私密环境变量/密钥；若当前 WorkBuddy 只有项目文件配置，则从 `.env.workbuddy.example` 私下复制为仓库根 `.env`。真实进程变量优先，生产环境也读取 `.env` 兜底。
 4. `.env` 已忽略，不得进 Git、压缩包、公开静态目录、聊天记录或部署截图。不要把数据库密码发给 Codex 对话；按 WorkBuddy 的私密配置界面填写。平台能否妥善注入私密配置需在账号内确认。
 5. `DB_USER/DB_PASSWORD` 是应用运行账号；初始化时可另外提供 `DB_MIGRATION_USER/DB_MIGRATION_PASSWORD`（支持 `_FILE`），不要让长期应用用 root/DDL 管理账号。
@@ -99,7 +101,7 @@ npm run check:cloud -- --url https://实际域名
 
 随后人工验收：owner 登录/强制改密 → 创建中国含税活动并确认税率 → 排班/开班 → 收货、调拨、签收、损坏登记 → 销售 → 原单退货、独立换货及差价 → 交班复核 → 活动结束佣金结转。再运行 `npm run db:check` 的 31 项约束检查，测试两端权限、重复命令和并发。
 
-实际 TiDB 还需证明 CHECK/FK 约束执行、命名锁/事务、append-only 权限，备份独立库恢复和目标容量；MySQL 协议能连通不等于 MariaDB 等价。当前业务库不会自动拷贝到新库。
+实际 TiDB 还需证明 CHECK/FK 约束执行、命名锁/事务、append-only 权限，备份独立库恢复和目标容量；PostgreSQL 协议连通不能证明锁和约束行为一致。当前业务库不会自动拷贝到新库。
 
 ## 8. 小程序如何接入这个 API
 

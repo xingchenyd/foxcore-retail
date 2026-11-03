@@ -1,3 +1,5 @@
+> **2026-11-03**：当前任务仅在 PostgreSQL 分支 codex/workbuddy-deploy-pg-20261103。本地目标 PostgreSQL 16，云端待实例验证；原 MariaDB 条款属历史。当前证据见 docs/workbuddy/verification.json。
+
 > **2026-10-31**：用户已授权并完成 PR #4 合入 main（ef6fd92）；合并前 main 备份为 backup/main-before-operations-merge-20261031。WorkBuddy 部署适配在 codex/workbuddy-deploy-20261031 独立交付；当前增量证据见 docs/workbuddy/verification.json，云端和微信验收未完成。下方是历史记录。
 
 > **当前版本：2026-10-28**。本轮已修复历史三项缺陷并扩展中国业务。请以[经营流程与设计v2](docs/retail-operations/README.md)、[可视化说明](docs/retail-operations/index.html)和当前验证JSON为准；以下日期段落是保留的历史基线。

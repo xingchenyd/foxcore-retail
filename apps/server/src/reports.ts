@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import type { RowDataPacket } from 'mysql2/promise';
+import type { Row } from './db.js';
 import { actor, owner } from './auth.js';
 import { rows } from './db.js';
 import { buildReportQuery } from './report-query.js';
@@ -19,7 +19,7 @@ export function registerReports(app: FastifyInstance): void {
     const q=req.query as Record<string,unknown>;
     parsePage(q); // Reject invalid paging values, but deliberately export ALL matching groups.
     const {sql,values}=buildReportQuery(q,a);
-    const items=await readSnapshot(db=>rows<RowDataPacket>(db,sql+' LIMIT ?',[...values,MAX_EXPORT_GROUPS+1]));
+    const items=await readSnapshot(db=>rows<Row>(db,sql+' LIMIT ?',[...values,MAX_EXPORT_GROUPS+1]));
     const csv=salesCsv(items); // Over-limit is an explicit 413, never a successful truncated export.
     reply.header('Content-Type','text/csv; charset=utf-8').header('Content-Disposition','attachment; filename="foxcore-report.csv"');
     return csv;

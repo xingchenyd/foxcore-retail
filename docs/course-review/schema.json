@@ -1,4 +1,6 @@
 {
+  "status": "historical MariaDB course baseline; use currentPhysicalSchema for this branch",
+  "currentPhysicalSchema": "../retail-operations/schema.json",
   "migrationSha256": "dd39132d2b1682d5cd1468127406799e664250e45a4b1349f679d8a7f70f5a67",
   "businessTableCount": 25,
   "tables": {

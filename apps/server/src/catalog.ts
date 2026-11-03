@@ -1,5 +1,5 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
-import type { RowDataPacket } from 'mysql2/promise';
+import type { Row } from './db.js';
 import { DateTime } from 'luxon';
 import { pool, exec, first, rows, tx } from './db.js';
 import { actor, owner, writable, type Actor } from './auth.js';
@@ -10,7 +10,7 @@ import { lockShiftEvent } from './catalog-updates.js';
 import { parseCalendarDate } from './fix-rules.js';
 import {settings,currency} from './business.js';
 
-interface Basic extends RowDataPacket { id: string; event_id?: string; status?: string; version?: number; start_date?: string; end_date?: string; planned_start?: string; planned_end?: string; salesperson_id?: string; active?: number; policy_confirmed?: number; tax_bps?: number | null }
+interface Basic extends Row { id: string; event_id?: string; status?: string; version?: number; start_date?: string; end_date?: string; planned_start?: string; planned_end?: string; salesperson_id?: string; active?: number; policy_confirmed?: number; tax_bps?: number | null }
 const params = (req: FastifyRequest) => req.params as Record<string, unknown>;
 async function ownerWrite(req: FastifyRequest): Promise<Actor> { const a = await actor(req); owner(a); writable(req, a); return a; }
 async function list(sql: string, values: unknown[], req: FastifyRequest): Promise<unknown> {
@@ -31,9 +31,9 @@ export function registerCatalog(app: FastifyInstance): void {
   app.post('/api/v1/venues', async req => {
     const a = await ownerWrite(req); const d = body(req.body, ['name','street','city','province','postalCode','description']); const k = requireKey(req.headers['idempotency-key']);
     return tx(db => command(db,a.id,'venue.create',k,d,async () => {
-      const r = await exec(db,'INSERT INTO venues(name,street,city,province,postal_code,description) VALUES(?,?,?,?,?,?)',
+      const r = await exec(db,'INSERT INTO venues(name,street,city,province,postal_code,description) VALUES(?,?,?,?,?,?) RETURNING id',
         [nonempty(d.name,120),nonempty(d.street,120),nonempty(d.city,80),nonempty(d.province,80),nonempty(d.postalCode,16),opt(d.description)]);
-      const result = { id: String(r.insertId) }; await audit(db,a.id,'VENUE_CREATED','VENUE',result.id); return result;
+      const result = { id: String(r.rows[0].id) }; await audit(db,a.id,'VENUE_CREATED','VENUE',result.id); return result;
     }));
   });
   app.get('/api/v1/events', async req => { await actor(req); return list('SELECT e.*,v.name AS venue_name,c.type AS category_type FROM events e JOIN venues v ON v.id=e.venue_id JOIN event_categories c ON c.id=e.category_id ORDER BY e.id DESC', [], req); });
@@ -46,9 +46,9 @@ export function registerCatalog(app: FastifyInstance): void {
       const config=await settings(db),cur=currency(d.currency??config.currency),basis=d.priceBasis??config.price_basis,zone=d.businessTimezone??config.business_timezone;
       if(!['INCLUSIVE','EXCLUSIVE'].includes(String(basis))||!['Asia/Shanghai','America/Toronto'].includes(String(zone)))throw bad('价格口径或业务时区无效');
       if(cur==='CNY'&&(basis!=='INCLUSIVE'||zone!=='Asia/Shanghai'))throw bad('人民币活动须使用中国含税价格和北京时间');
-      const r=await exec(db,'INSERT INTO events(venue_id,category_id,name,start_date,end_date,description,tax_bps,policy_confirmed,currency,price_basis,business_timezone,return_days,timezone) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      const r=await exec(db,'INSERT INTO events(venue_id,category_id,name,start_date,end_date,description,tax_bps,policy_confirmed,currency,price_basis,business_timezone,return_days,timezone) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id',
         [id(d.venueId),id(d.categoryId),nonempty(d.name,120),startDate,endDate,opt(d.description),d.taxBps === null || d.taxBps === undefined ? null : bps(d.taxBps),d.policyConfirmed,cur,basis,zone,cur==='CNY'?config.return_days:null,zone]);
-      const result={id:String(r.insertId)}; await audit(db,a.id,'EVENT_CREATED','EVENT',result.id); return result;
+      const result={id:String(r.rows[0].id)}; await audit(db,a.id,'EVENT_CREATED','EVENT',result.id); return result;
     }));
   });
   app.post('/api/v1/events/:id/open', async req => {
@@ -64,12 +64,12 @@ export function registerCatalog(app: FastifyInstance): void {
     const a=await ownerWrite(req); const eventId=id(params(req).id); const k=requireKey(req.headers['idempotency-key']);
     return tx(db => command(db,a.id,'event.close',k,{eventId},async () => {
       const event=await first<Basic>(db,'SELECT * FROM events WHERE id=? FOR UPDATE',[eventId]); if(!event) throw missing(); if(event.status!=='OPEN') throw conflict('活动未开放');
-      const pending=await first<RowDataPacket>(db,"SELECT COUNT(*) AS n FROM shifts WHERE event_id=? AND status IN ('PLANNED','ACTIVE')",[eventId]);
-      const sales=await first<RowDataPacket>(db,"SELECT COUNT(*) AS n FROM sales WHERE event_id=? AND state IN ('DRAFT','CHECKOUT')",[eventId]);
-      const stock=await first<RowDataPacket>(db,"SELECT COUNT(*) AS n FROM stock_balances b JOIN stock_locations l ON l.id=b.location_id JOIN booths bo ON bo.id=l.booth_id WHERE bo.event_id=? AND b.on_hand>0",[eventId]);
-      const returns=await first<RowDataPacket>(db,"SELECT COUNT(*) AS n FROM returns r JOIN stock_locations l ON l.id=r.destination_location_id JOIN booths b ON b.id=l.booth_id WHERE r.state='AUTHORIZED' AND b.event_id=? AND EXISTS (SELECT 1 FROM return_lines rl WHERE rl.return_id=r.id AND rl.disposition='RESTOCK')",[eventId]);
-      const transit=await first<RowDataPacket>(db,"SELECT COUNT(*) n FROM stock_transfers t JOIN stock_locations f ON f.id=t.from_location_id JOIN stock_locations l ON l.id=t.to_location_id LEFT JOIN booths bf ON bf.id=f.booth_id LEFT JOIN booths bt ON bt.id=l.booth_id WHERE t.state='DISPATCHED' AND (bf.event_id=? OR bt.event_id=?)",[eventId,eventId]);
-      const cash=await first<RowDataPacket>(db,"SELECT COUNT(*) n FROM shifts s LEFT JOIN cash_handovers h ON h.shift_id=s.id JOIN events e ON e.id=s.event_id WHERE s.event_id=? AND s.status='CLOSED' AND e.return_days IS NOT NULL AND (h.id IS NULL OR h.state<>'VERIFIED')",[eventId]);
+      const pending=await first<Row>(db,"SELECT COUNT(*) AS n FROM shifts WHERE event_id=? AND status IN ('PLANNED','ACTIVE')",[eventId]);
+      const sales=await first<Row>(db,"SELECT COUNT(*) AS n FROM sales WHERE event_id=? AND state IN ('DRAFT','CHECKOUT')",[eventId]);
+      const stock=await first<Row>(db,"SELECT COUNT(*) AS n FROM stock_balances b JOIN stock_locations l ON l.id=b.location_id JOIN booths bo ON bo.id=l.booth_id WHERE bo.event_id=? AND b.on_hand>0",[eventId]);
+      const returns=await first<Row>(db,"SELECT COUNT(*) AS n FROM returns r JOIN stock_locations l ON l.id=r.destination_location_id JOIN booths b ON b.id=l.booth_id WHERE r.state='AUTHORIZED' AND b.event_id=? AND EXISTS (SELECT 1 FROM return_lines rl WHERE rl.return_id=r.id AND rl.disposition='RESTOCK')",[eventId]);
+      const transit=await first<Row>(db,"SELECT COUNT(*) n FROM stock_transfers t JOIN stock_locations f ON f.id=t.from_location_id JOIN stock_locations l ON l.id=t.to_location_id LEFT JOIN booths bf ON bf.id=f.booth_id LEFT JOIN booths bt ON bt.id=l.booth_id WHERE t.state='DISPATCHED' AND (bf.event_id=? OR bt.event_id=?)",[eventId,eventId]);
+      const cash=await first<Row>(db,"SELECT COUNT(*) n FROM shifts s LEFT JOIN cash_handovers h ON h.shift_id=s.id JOIN events e ON e.id=s.event_id WHERE s.event_id=? AND s.status='CLOSED' AND e.return_days IS NOT NULL AND (h.id IS NULL OR h.state<>'VERIFIED')",[eventId]);
       if(Number(pending?.n)||Number(sales?.n)||Number(stock?.n)||Number(returns?.n)||Number(transit?.n)||Number(cash?.n)) throw conflict(`不能闭场：未结束班次 ${pending?.n}、待处理销售 ${sales?.n}、有货库存行 ${stock?.n}、待入库退货 ${returns?.n}、在途调拨 ${transit?.n}、未核对交班 ${cash?.n}。请在对应单据中处理后重试`);
       await exec(db,"UPDATE events SET status='CLOSED',version=version+1 WHERE id=?",[eventId]); await audit(db,a.id,'EVENT_CLOSED','EVENT',eventId); return {id:eventId,status:'CLOSED'};
     }));
@@ -79,8 +79,8 @@ export function registerCatalog(app: FastifyInstance): void {
     const a=await ownerWrite(req); const d=body(req.body,['eventId','location']); const k=requireKey(req.headers['idempotency-key']);
     return tx(db => command(db,a.id,'booth.create',k,d,async () => {
       const eventId=id(d.eventId); const event=await first<Basic>(db,'SELECT * FROM events WHERE id=? FOR UPDATE',[eventId]); if(!event) throw missing(); if(event.status==='CLOSED'||event.status==='CANCELLED') throw conflict('活动已结束');
-      const r=await exec(db,'INSERT INTO booths(event_id,location) VALUES(?,?)',[eventId,nonempty(d.location,80)]);
-      const boothId=String(r.insertId); await exec(db,'INSERT INTO stock_locations(code,name,kind,booth_id) VALUES(?,?,?,?)',[`BOOTH-${boothId}`,`展位 ${d.location}`,'BOOTH',boothId]);
+      const r=await exec(db,'INSERT INTO booths(event_id,location) VALUES(?,?) RETURNING id',[eventId,nonempty(d.location,80)]);
+      const boothId=String(r.rows[0].id); await exec(db,'INSERT INTO stock_locations(code,name,kind,booth_id) VALUES(?,?,?,?)',[`BOOTH-${boothId}`,`展位 ${d.location}`,'BOOTH',boothId]);
       await audit(db,a.id,'BOOTH_CREATED','BOOTH',boothId); return {id:boothId};
     }));
   });
@@ -94,9 +94,9 @@ export function registerCatalog(app: FastifyInstance): void {
       const cost=money(d.wholesaleCost); const min=money(d.minPrice); const suggested=d.suggestedPrice===undefined||d.suggestedPrice===null?null:money(d.suggestedPrice);
       if(suggested!==null&&suggested<min) throw bad('建议售价低于最低售价');
       const config=await settings(db);
-      const r=await exec(db,'INSERT INTO products(sku,name,wholesale_cost_cents,min_price_cents,suggested_price_cents,currency) VALUES(?,?,?,?,?,?)',
+      const r=await exec(db,'INSERT INTO products(sku,name,wholesale_cost_cents,min_price_cents,suggested_price_cents,currency) VALUES(?,?,?,?,?,?) RETURNING id',
         [nonempty(d.sku,64),nonempty(d.name,160),String(cost),String(min),suggested===null?null:String(suggested),currency(d.currency??config.currency)]);
-      const result={id:String(r.insertId)}; await audit(db,a.id,'PRODUCT_CREATED','PRODUCT',result.id); return result;
+      const result={id:String(r.rows[0].id)}; await audit(db,a.id,'PRODUCT_CREATED','PRODUCT',result.id); return result;
     }));
   });
   app.patch('/api/v1/products/:id', async req => {
@@ -119,9 +119,9 @@ export function registerCatalog(app: FastifyInstance): void {
   app.post('/api/v1/salespeople', async req => {
     const a=await ownerWrite(req); const d=body(req.body,['firstName','lastName','street','city','province','postalCode','phone','description','commissionBps']); const k=requireKey(req.headers['idempotency-key']);
     return tx(db => command(db,a.id,'salesperson.create',k,d,async () => {
-      const r=await exec(db,'INSERT INTO salespeople(first_name,last_name,street,city,province,postal_code,phone,description,commission_bps) VALUES(?,?,?,?,?,?,?,?,?)',
+      const r=await exec(db,'INSERT INTO salespeople(first_name,last_name,street,city,province,postal_code,phone,description,commission_bps) VALUES(?,?,?,?,?,?,?,?,?) RETURNING id',
         [nonempty(d.firstName,80),nonempty(d.lastName,80),opt(d.street,120),opt(d.city,80),opt(d.province,80),opt(d.postalCode,16),opt(d.phone,32),opt(d.description),d.commissionBps===undefined||d.commissionBps===null?null:bps(d.commissionBps)]);
-      const result={id:String(r.insertId)}; await audit(db,a.id,'SALESPERSON_CREATED','SALESPERSON',result.id); return result;
+      const result={id:String(r.rows[0].id)}; await audit(db,a.id,'SALESPERSON_CREATED','SALESPERSON',result.id); return result;
     }));
   });
   app.get('/api/v1/shifts', async req => {
@@ -133,7 +133,7 @@ export function registerCatalog(app: FastifyInstance): void {
       if(typeof q.status!=='string'||!['PLANNED','ACTIVE','CLOSED','CANCELLED'].includes(q.status)) throw bad('班次状态筛选无效');
       conditions.push('s.status=?');values.push(q.status);
     }
-    if(q.actionable!==undefined){if(q.actionable!=='true')throw bad('待办筛选无效');conditions.push("(s.status='ACTIVE' OR (s.status='PLANNED' AND s.planned_start<=UTC_TIMESTAMP(3) AND s.planned_end>UTC_TIMESTAMP(3)))");}
+    if(q.actionable!==undefined){if(q.actionable!=='true')throw bad('待办筛选无效');conditions.push("(s.status='ACTIVE' OR (s.status='PLANNED' AND s.planned_start<=(clock_timestamp() AT TIME ZONE 'UTC') AND s.planned_end>(clock_timestamp() AT TIME ZONE 'UTC')))");}
     const filter=conditions.length?' WHERE '+conditions.join(' AND '):'';
     return list('SELECT s.*,b.location AS booth_location,e.name AS event_name,e.currency,e.price_basis,e.business_timezone,sp.first_name,sp.last_name FROM shifts s JOIN booths b ON b.id=s.booth_id JOIN events e ON e.id=s.event_id JOIN salespeople sp ON sp.id=s.salesperson_id'+filter+' ORDER BY s.id DESC',values,req);
   });
@@ -148,10 +148,10 @@ export function registerCatalog(app: FastifyInstance): void {
       if(booth.status==='CLOSED'||booth.status==='CANCELLED') throw conflict('活动已结束');
       const sp=await first<Basic>(db,'SELECT * FROM salespeople WHERE id=? FOR UPDATE',[salespersonId]); if(!sp||!sp.active) throw missing();
       const date=toLocalDate(start,String(booth.business_timezone)); if(!date||date<booth.start_date!||date>booth.end_date!||toLocalDate(end,String(booth.business_timezone))!==date) throw bad('班次须位于活动当地日期内');
-      const overlap=await first<RowDataPacket>(db,"SELECT id FROM shifts WHERE salesperson_id=? AND status IN ('PLANNED','ACTIVE') AND planned_start<? AND planned_end>? LIMIT 1",[salespersonId,end,start]);
+      const overlap=await first<Row>(db,"SELECT id FROM shifts WHERE salesperson_id=? AND status IN ('PLANNED','ACTIVE') AND planned_start<? AND planned_end>? LIMIT 1",[salespersonId,end,start]);
       if(overlap) throw conflict('员工已有重叠班次');
-      const r=await exec(db,'INSERT INTO shifts(salesperson_id,booth_id,event_id,business_date,planned_start,planned_end) VALUES(?,?,?,?,?,?)',[salespersonId,boothId,booth.event_id,date,start,end]);
-      const result={id:String(r.insertId)}; await audit(db,a.id,'SHIFT_CREATED','SHIFT',result.id); return result;
+      const r=await exec(db,'INSERT INTO shifts(salesperson_id,booth_id,event_id,business_date,planned_start,planned_end) VALUES(?,?,?,?,?,?) RETURNING id',[salespersonId,boothId,booth.event_id,date,start,end]);
+      const result={id:String(r.rows[0].id)}; await audit(db,a.id,'SHIFT_CREATED','SHIFT',result.id); return result;
     }));
   });
   app.post('/api/v1/shifts/:id/start', async req => {
@@ -162,9 +162,9 @@ export function registerCatalog(app: FastifyInstance): void {
       if(a.role!=='OWNER'&&shift.salesperson_id!==a.salespersonId) throw missing();
       if(shift.status!=='PLANNED'||shift.event_status!=='OPEN') throw conflict('活动未开放或班次不在计划状态');
       const now=nowSql(); if(now<shift.planned_start!||now>=shift.planned_end!) throw conflict('当前不在计划班次时间内');
-      await first<RowDataPacket>(db,'SELECT id FROM salespeople WHERE id=? FOR UPDATE',[shift.salesperson_id]);
-      const other=await first<RowDataPacket>(db,"SELECT id FROM shifts WHERE salesperson_id=? AND status='ACTIVE' LIMIT 1",[shift.salesperson_id]); if(other) throw conflict('员工已有进行中班次');
-      await exec(db,"UPDATE shifts SET status='ACTIVE',opening_cash_cents=?,actual_start=UTC_TIMESTAMP(3),version=version+1 WHERE id=?",[String(openingCash),shiftId]); await audit(db,a.id,'SHIFT_STARTED','SHIFT',shiftId); return {id:shiftId,status:'ACTIVE'};
+      await first<Row>(db,'SELECT id FROM salespeople WHERE id=? FOR UPDATE',[shift.salesperson_id]);
+      const other=await first<Row>(db,"SELECT id FROM shifts WHERE salesperson_id=? AND status='ACTIVE' LIMIT 1",[shift.salesperson_id]); if(other) throw conflict('员工已有进行中班次');
+      await exec(db,"UPDATE shifts SET status='ACTIVE',opening_cash_cents=?,actual_start=(clock_timestamp() AT TIME ZONE 'UTC'),version=version+1 WHERE id=?",[String(openingCash),shiftId]); await audit(db,a.id,'SHIFT_STARTED','SHIFT',shiftId); return {id:shiftId,status:'ACTIVE'};
     }));
   });
   app.post('/api/v1/shifts/:id/close', async req => {
@@ -172,11 +172,11 @@ export function registerCatalog(app: FastifyInstance): void {
     return tx(db => command(db,a.id,'shift.close',k,{shiftId},async () => {
       await lockShiftEvent(db,shiftId);
       const shift=await first<Basic>(db,'SELECT * FROM shifts WHERE id=? FOR UPDATE',[shiftId]); if(!shift) throw missing(); if(a.role!=='OWNER'&&shift.salesperson_id!==a.salespersonId) throw missing(); if(shift.status!=='ACTIVE') throw conflict('班次未开始');
-      const open=await first<RowDataPacket>(db,"SELECT id FROM sales WHERE shift_id=? AND state IN ('DRAFT','CHECKOUT') LIMIT 1",[shiftId]); if(open) throw conflict('班次仍有待处理销售');
-      const profile=await first<RowDataPacket>(db,'SELECT return_days FROM events WHERE id=?',[shift.event_id]);
-      if(profile?.return_days!==null&&!await first<RowDataPacket>(db,"SELECT id FROM cash_handovers WHERE shift_id=? AND state IN ('SUBMITTED','VERIFIED')",[shiftId]))throw conflict('请先提交本班现金交班单，再结束班次');
-      await exec(db,"UPDATE shift_extensions SET state='REJECTED',review_note='班次已结束，申请自动失效',reviewed_at=UTC_TIMESTAMP(3) WHERE shift_id=? AND state='PENDING'",[shiftId]);
-      await exec(db,"UPDATE shifts SET status='CLOSED',actual_end=UTC_TIMESTAMP(3),version=version+1 WHERE id=?",[shiftId]); await audit(db,a.id,'SHIFT_CLOSED','SHIFT',shiftId); return {id:shiftId,status:'CLOSED'};
+      const open=await first<Row>(db,"SELECT id FROM sales WHERE shift_id=? AND state IN ('DRAFT','CHECKOUT') LIMIT 1",[shiftId]); if(open) throw conflict('班次仍有待处理销售');
+      const profile=await first<Row>(db,'SELECT return_days FROM events WHERE id=?',[shift.event_id]);
+      if(profile?.return_days!==null&&!await first<Row>(db,"SELECT id FROM cash_handovers WHERE shift_id=? AND state IN ('SUBMITTED','VERIFIED')",[shiftId]))throw conflict('请先提交本班现金交班单，再结束班次');
+      await exec(db,"UPDATE shift_extensions SET state='REJECTED',review_note='班次已结束，申请自动失效',reviewed_at=(clock_timestamp() AT TIME ZONE 'UTC') WHERE shift_id=? AND state='PENDING'",[shiftId]);
+      await exec(db,"UPDATE shifts SET status='CLOSED',actual_end=(clock_timestamp() AT TIME ZONE 'UTC'),version=version+1 WHERE id=?",[shiftId]); await audit(db,a.id,'SHIFT_CLOSED','SHIFT',shiftId); return {id:shiftId,status:'CLOSED'};
     }));
   });
 }

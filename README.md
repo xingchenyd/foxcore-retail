@@ -1,3 +1,5 @@
+> **2026-11-03 · PostgreSQL 分支**：当前数据库实现见 [PostgreSQL 设计](docs/04-database.md) 和 [WorkBuddy 部署指南](docs/workbuddy/postgresql.md)。历史 MariaDB 验收不沿用。
+
 > **2026-10-31 当前交付**：此前经营流程最终版本已通过 PR #4 合入 main（ef6fd92），合并前备份为 backup/main-before-operations-merge-20261031。本分支只做 [WorkBuddy 部署适配](docs/workbuddy/README.md)，变更与验收见 [CHANGELOG-workbuddy.md](CHANGELOG-workbuddy.md)。公网、TiDB、微信发布尚未执行。以下日期段落保留历史语境。
 
 > **当前版本：2026-10-28**。本轮已修复历史三项缺陷并扩展中国业务。请以[经营流程与设计v2](docs/retail-operations/README.md)、[可视化说明](docs/retail-operations/index.html)和当前验证JSON为准；以下日期段落是保留的历史基线。
@@ -14,7 +16,7 @@
 
 # Foxcore Retail · 现场销售管理系统
 
-Foxcore Retail（Ivey 案例编号 9B18E016 / 9B18E017）的独立教学实现：React + TypeScript + Vite、Node.js + Fastify、MariaDB 和 Docker Compose。覆盖原案例的九个核心实体与真实库存、销售、退货、佣金、权限、审计全流程——系统只记录线下收付款确认，不处理银行卡。
+Foxcore Retail（Ivey 案例编号 9B18E016 / 9B18E017）的独立教学实现：React + TypeScript + Vite、Node.js + Fastify、PostgreSQL 和 Docker Compose。覆盖原案例的九个核心实体与真实库存、销售、退货、佣金、权限、审计全流程——系统只记录线下收付款确认，不处理银行卡。
 
 ## 业务背景
 
@@ -37,7 +39,7 @@ Foxcore Retail 在展会、市集等**七类活动**（商贸展、肋排节、�
 
 ## 系统架构
 
-B/S 单体同源架构：客户端仅需浏览器；服务端为 Node.js 单进程 Fastify 应用，通过 `@fastify/static` 在同一端口（3000）同源托管前端静态资源与 `/api/v1` 接口（共 46 个业务路径，另有 2 个健康检查路径），无跨域配置；数据层为 MariaDB 11.8。
+B/S 单体同源架构：客户端仅需浏览器；服务端为 Node.js 单进程 Fastify 应用，通过 `@fastify/static` 在同一端口（3000）同源托管前端静态资源与 `/api/v1` 接口（共 46 个业务路径，另有 2 个健康检查路径），无跨域配置；数据层为 PostgreSQL 16。
 
 ```
 浏览器 (React SPA)
@@ -47,14 +49,14 @@ Fastify 应用 ── 静态资源 (apps/web 构建产物)
    │  └─ /api/v1/*  59 个业务方法操作（显式服务端输入校验）
    │  └─ 会话 Cookie + CSRF；错误处理器：4 类约束冲突 → 409
    ▼
-mysql2 连接池 · READ COMMITTED · 关键行 FOR UPDATE
+pg 连接池 · READ COMMITTED · 关键行 FOR UPDATE
    ▼
-MariaDB 11.8（25 张业务表 + 1 张迁移版本表）
+PostgreSQL 16（33 张业务表 + 1 张迁移版本表）
 ```
 
 生产部署以 Docker Compose 编排三个服务：
 
-- **db** — MariaDB 11.8，位于 `internal: true` 后端网络，端口不对外暴露；
+- **db** — PostgreSQL 16，位于 `internal: true` 后端网络，端口不对外暴露；
 - **migrate** — 一次性执行 `db/migrations` 迁移；
 - **app** — Fastify 应用，健康检查通过后对外提供 3000 端口。
 
@@ -68,8 +70,8 @@ MariaDB 11.8（25 张业务表 + 1 张迁移版本表）
 | 前端构建 | Vite（Rollup 产物由后端托管） | 7.3.7 |
 | 语言 | TypeScript | 5.9.3 |
 | 后端框架 | Fastify / @fastify/cookie / @fastify/static | 5.12.7 / 11.0.2 / 10.1.5 |
-| 数据访问 | mysql2 | 3.24.4 |
-| 数据库 | MariaDB | 11.8 |
+| 数据访问 | pg | 8.x |
+| 数据库 | PostgreSQL | 16 |
 | 安全 | argon2（Argon2id） | 0.44.0 |
 | 时区 | luxon（业务时区 America/Toronto） | 3.7.2 |
 | 测试 | Vitest / @playwright/test | 4.1.12 / 1.56.1 |
@@ -139,7 +141,7 @@ docker compose ps
 
 ## 开发与核验
 
-需要 Node 24、MariaDB 11.8 和 npm。复制 `.env.example` 为 `.env` 并填入仅用于本机开发的真实 DB 密码（不要提交/打包 `.env`）；迁移时数据库用户须有建表权限。执行 `npm ci`、`npm run db:migrate`。以私有进程环境设置 `OWNER_USERNAME` 和至少 16 字符的 `OWNER_PASSWORD`，再执行 `npm run owner:init`；随后 `npm run dev`。生产构建使用 `npm run build`。
+需要 Node 22.12+ 或 24、PostgreSQL 16 和 npm。复制 `.env.example` 为 `.env` 并填入仅用于本机开发的真实 DB 密码（不要提交/打包 `.env`）；迁移时数据库用户须有建表权限。执行 `npm ci`、`npm run db:migrate`。以私有进程环境设置 `OWNER_USERNAME` 和至少 16 字符的 `OWNER_PASSWORD`，再执行 `npm run owner:init`；随后 `npm run dev`。生产构建使用 `npm run build`。
 
 常用命令：
 
@@ -159,7 +161,7 @@ foxcore-retail/
 ├── apps/web/            # React + TS 前端（10 个页面模块）
 ├── apps/server/         # Fastify 后端（路由、会话、事务、错误处理）
 ├── db/
-│   ├── migrations/      # 可重建的 MariaDB 架构（25+1 表）
+│   ├── migrations/      # 可重建的 PostgreSQL 架构（33+1 表）
 │   └── check-invariants.sql  # 16 项数据完整性不变量核查
 ├── tests/               # unit / integration / e2e 三层测试
 ├── scripts/             # 迁移、初始化、种子、Vercel 云端迁移脚本

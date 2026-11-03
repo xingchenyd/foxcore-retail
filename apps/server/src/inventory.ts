@@ -1,25 +1,25 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
-import type { RowDataPacket } from 'mysql2/promise';
+import type { Row } from './db.js';
 import { pool, exec, first, rows, tx, type Db } from './db.js';
 import { actor, owner, writable } from './auth.js';
 import { audit, bad, body, command, conflict, id, missing, nonempty, positiveInt, requireKey } from './core.js';
 
 import { listPage } from './pagination.js';
 
-interface Balance extends RowDataPacket { on_hand: string; reserved: string; version: number }
-interface Location extends RowDataPacket { id: string; kind: string; active: number; booth_id: string | null }
+interface Balance extends Row { on_hand: string; reserved: string; version: number }
+interface Location extends Row { id: string; kind: string; active: number; booth_id: string | null }
 async function location(db: Db, value: string): Promise<Location> {
   const loc=await first<Location>(db,'SELECT * FROM stock_locations WHERE id=?',[value]); if(!loc||!loc.active) throw missing();if(!['WAREHOUSE','BOOTH'].includes(loc.kind))throw bad('在途和损坏库位只能通过对应业务单处理'); return loc;
 }
 async function lockLocationEvents(db: Db, locationIds: string[]): Promise<void> {
   const eventIds = new Set<string>();
   for (const locationId of locationIds) {
-    const row = await first<RowDataPacket>(db,'SELECT b.event_id FROM stock_locations l LEFT JOIN booths b ON b.id=l.booth_id WHERE l.id=?',[locationId]);
+    const row = await first<Row>(db,'SELECT b.event_id FROM stock_locations l LEFT JOIN booths b ON b.id=l.booth_id WHERE l.id=?',[locationId]);
     if (!row) throw missing();
     if (row.event_id) eventIds.add(row.event_id);
   }
   for (const eventId of [...eventIds].sort((a,b)=>BigInt(a)<BigInt(b)?-1:1)) {
-    const event = await first<RowDataPacket>(db,'SELECT status FROM events WHERE id=? FOR UPDATE',[eventId]);
+    const event = await first<Row>(db,'SELECT status FROM events WHERE id=? FOR UPDATE',[eventId]);
     if (!event || event.status==='CLOSED' || event.status==='CANCELLED') throw conflict('目标或来源活动已结束');
   }
 }
@@ -35,8 +35,8 @@ async function updateBalance(db: Db, locationId: string, productId: string, delt
   await exec(db,'UPDATE stock_balances SET on_hand=?,version=version+1 WHERE location_id=? AND product_id=?',[String(next),locationId,productId]);
 }
 async function document(db: Db, kind: string, from: string | null, to: string | null, reason: string, actorId: string, productId: string, quantity: number): Promise<string> {
-  const result=await exec(db,'INSERT INTO stock_documents(kind,from_location_id,to_location_id,reason,created_by) VALUES(?,?,?,?,?)',[kind,from,to,reason,actorId]);
-  const docId=String(result.insertId);
+  const result=await exec(db,'INSERT INTO stock_documents(kind,from_location_id,to_location_id,reason,created_by) VALUES(?,?,?,?,?) RETURNING id',[kind,from,to,reason,actorId]);
+  const docId=String(result.rows[0].id);
   await exec(db,'INSERT INTO stock_document_lines(document_id,line_no,product_id,quantity) VALUES(?,?,?,?)',[docId,1,productId,quantity]);
   return docId;
 }
@@ -65,7 +65,7 @@ export function registerInventory(app: FastifyInstance): void {
     const a=await actor(req); writable(req,a); const d=body(req.body,['productId','quantity','reason']); const k=requireKey(req.headers['idempotency-key']);
     return tx(db => command(db,a.id,'stock.receive',k,d,async () => {
       const productId=id(d.productId),qty=positiveInt(d.quantity,1_000_000),reason=nonempty(d.reason,500);
-      const product=await first<RowDataPacket>(db,'SELECT id FROM products WHERE id=? AND active=TRUE FOR UPDATE',[productId]); if(!product) throw missing();
+      const product=await first<Row>(db,'SELECT id FROM products WHERE id=? AND active=TRUE FOR UPDATE',[productId]); if(!product) throw missing();
       const warehouse=await first<Location>(db,"SELECT * FROM stock_locations WHERE code='MAIN' FOR UPDATE"); if(!warehouse) throw new Error('Warehouse missing');
       await updateBalance(db,warehouse.id,productId,BigInt(qty));
       const docId=await document(db,'RECEIVE',null,warehouse.id,reason,a.id,productId,qty);
@@ -80,7 +80,7 @@ export function registerInventory(app: FastifyInstance): void {
       if(from===to) throw bad('调拨起点和终点不能相同'); if(d.handoverConfirmed!==true) throw bad('请确认实物已经交接');
       await lockLocationEvents(db,[from,to]);
       for(const locId of [from,to].sort((x,y)=>BigInt(x)<BigInt(y)?-1:1)) await location(db,locId);
-      const legacyProduct=await first<RowDataPacket>(db,'SELECT currency FROM products WHERE id=? FOR UPDATE',[productId]);if(legacyProduct?.currency!=='CAD')throw conflict('请使用在途调拨：先发货，再签收');
+      const legacyProduct=await first<Row>(db,'SELECT currency FROM products WHERE id=? FOR UPDATE',[productId]);if(legacyProduct?.currency!=='CAD')throw conflict('请使用在途调拨：先发货，再签收');
       for(const locId of [from,to].sort((x,y)=>BigInt(x)<BigInt(y)?-1:1)) await balance(db,locId,productId);
       await updateBalance(db,from,productId,-BigInt(qty)); await updateBalance(db,to,productId,BigInt(qty));
       const docId=await document(db,'TRANSFER',from,to,reason,a.id,productId,qty);
@@ -97,7 +97,7 @@ export function registerInventory(app: FastifyInstance): void {
       await location(db,locId);
       // Serialize a missing-row count with receipt/transfer by locking the product.
       // Version 0 means the caller observed NO balance row, not an existing v1 row.
-      const product=await first<RowDataPacket>(db,'SELECT id FROM products WHERE id=? FOR UPDATE',[productId]);if(!product)throw missing();
+      const product=await first<Row>(db,'SELECT id FROM products WHERE id=? FOR UPDATE',[productId]);if(!product)throw missing();
       const observed=await first<Balance>(db,'SELECT * FROM stock_balances WHERE location_id=? AND product_id=? FOR UPDATE',[locId,productId]);
       if(observed?observed.version!==expected:expected!==0)throw conflict('库存已变化，请重新盘点');
       const old=observed??await balance(db,locId,productId);
@@ -109,7 +109,7 @@ export function registerInventory(app: FastifyInstance): void {
   });
   app.get('/api/v1/stock/documents',async req=>{await actor(req);return listPage('SELECT d.*,dl.quantity,p.name AS product_name,f.name AS from_name,t.name AS to_name FROM stock_documents d JOIN stock_document_lines dl ON dl.document_id=d.id JOIN products p ON p.id=dl.product_id LEFT JOIN stock_locations f ON f.id=d.from_location_id LEFT JOIN stock_locations t ON t.id=d.to_location_id ORDER BY d.id DESC,dl.line_no',[],req.query as Record<string,unknown>,20);});
   app.get('/api/v1/stock/documents/:id', async req => {
-    const a=await actor(req); const docId=id(params(req).id); const db=await pool.getConnection();
-    try {const doc=await first<RowDataPacket>(db,'SELECT * FROM stock_documents WHERE id=?',[docId]); if(!doc) throw missing(); return {document:doc,lines:await rows<RowDataPacket>(db,'SELECT * FROM stock_document_lines WHERE document_id=? ORDER BY line_no',[docId])};} finally {db.release();}
+    const a=await actor(req); const docId=id(params(req).id); const db=await pool.connect();
+    try {const doc=await first<Row>(db,'SELECT * FROM stock_documents WHERE id=?',[docId]); if(!doc) throw missing(); return {document:doc,lines:await rows<Row>(db,'SELECT * FROM stock_document_lines WHERE document_id=? ORDER BY line_no',[docId])};} finally {db.release();}
   });
 }

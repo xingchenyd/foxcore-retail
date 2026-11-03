@@ -1,3 +1,5 @@
+> **2026-11-03**：当前任务仅在 PostgreSQL 分支 codex/workbuddy-deploy-pg-20261103。本地目标 PostgreSQL 16，云端待实例验证；原 MariaDB 条款属历史。当前证据见 docs/workbuddy/verification.json。
+
 # Foxcore 本地交付任务入口
 
 > 2026-10-31 当前任务授权：用户明确要求将此前最终版本合入 main，并依照其 WorkBuddy 指南在独立分支做部署适配。PR #4 已合并为 ef6fd92；新分支 codex/workbuddy-deploy-20261031 不自动合入 main。以下“本地交付/不处理 GitHub”是历史范围，本轮以用户的新要求为准。账号扫码、开通计费、迁移真实业务数据及正式发布仍需对应账号/环境和验收，不继承本机测试结论。

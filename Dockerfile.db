@@ -1,4 +1,6 @@
-FROM mariadb:11.8.9
+FROM postgres:16-alpine
 COPY scripts/db-entrypoint.sh /usr/local/bin/foxcore-db-entrypoint.sh
-RUN chmod 755 /usr/local/bin/foxcore-db-entrypoint.sh
+COPY scripts/db-create-role.sh /docker-entrypoint-initdb.d/10-foxcore-role.sh
+RUN chmod 755 /usr/local/bin/foxcore-db-entrypoint.sh /docker-entrypoint-initdb.d/10-foxcore-role.sh
 ENTRYPOINT ["/usr/local/bin/foxcore-db-entrypoint.sh"]
+CMD ["postgres"]

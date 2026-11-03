@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
-import type { RowDataPacket } from 'mysql2/promise';
+import type { Row } from './db.js';
 import { exec, first, type Db } from './db.js';
 import { parseMoney } from './amounts.js';
 export { moneyText, halfUp } from './amounts.js';
@@ -48,7 +48,7 @@ export function requireKey(value: unknown): string {
   if (typeof value !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)) throw bad('缺少有效 Idempotency-Key');
   return value;
 }
-interface CommandRow extends RowDataPacket { request_hash: string; response_json: string }
+interface CommandRow extends Row { request_hash: string; response_json: string }
 function canonical(value: unknown): string {
   if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']';
   if (value && typeof value === 'object') return '{' + Object.entries(value as Record<string, unknown>).sort(([a],[b]) => a.localeCompare(b)).map(([k,v]) => JSON.stringify(k)+':'+canonical(v)).join(',') + '}';
@@ -57,8 +57,8 @@ function canonical(value: unknown): string {
 export async function command<T>(db: Db, actorId: string, operation: string, commandKey: string, payload: unknown, run: () => Promise<T>): Promise<T> {
   const digest = hash(canonical(payload));
   // The unique insert is the serialization point. A concurrent retry waits for the first transaction.
-  const claim = await exec(db, 'INSERT IGNORE INTO idempotency_keys(actor_id,operation,command_key,request_hash,response_json) VALUES(?,?,?,?,?)', [actorId, operation, commandKey, digest, 'null']);
-  if (claim.affectedRows === 0) {
+  const claim = await exec(db, 'INSERT INTO idempotency_keys(actor_id,operation,command_key,request_hash,response_json) VALUES(?,?,?,?,?) ON CONFLICT (actor_id,operation,command_key) DO NOTHING', [actorId, operation, commandKey, digest, 'null']);
+  if (claim.rowCount === 0) {
     const old = await first<CommandRow>(db, 'SELECT request_hash,response_json FROM idempotency_keys WHERE actor_id=? AND operation=? AND command_key=?', [actorId, operation, commandKey]);
     if (!old || old.request_hash !== digest) throw conflict('幂等键已用于不同请求');
     return JSON.parse(old.response_json) as T;
