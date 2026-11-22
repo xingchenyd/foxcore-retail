@@ -1,3 +1,5 @@
+> **2026-10-31**：用户已授权并完成 PR #4 合入 main（ef6fd92）；合并前 main 备份为 backup/main-before-operations-merge-20261031。WorkBuddy 部署适配在 codex/workbuddy-deploy-20261031 独立交付；当前增量证据见 docs/workbuddy/verification.json，云端和微信验收未完成。下方是历史记录。
+
 > **当前版本：2026-10-28**。本轮已修复历史三项缺陷并扩展中国业务。请以[经营流程与设计v2](docs/retail-operations/README.md)、[可视化说明](docs/retail-operations/index.html)和当前验证JSON为准；以下日期段落是保留的历史基线。
 
 > **2026-10-26 工作人员小程序**：用户已授权合并上次网页 PR #1 到 main（744c36a）；旧版远端备份为 `backup/main-before-web-review-20261026`（3393bc3）。本轮小程序仅在 `codex/staff-miniprogram-20261026`；当前结果以 `docs/miniprogram/README.md` 和 `verification.json` 为准，微信编译/真机/上传待用户账号与环境。以下均为历史记录。

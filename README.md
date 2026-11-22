@@ -1,3 +1,5 @@
+> **2026-10-31 当前交付**：此前经营流程最终版本已通过 PR #4 合入 main（ef6fd92），合并前备份为 backup/main-before-operations-merge-20261031。本分支只做 [WorkBuddy 部署适配](docs/workbuddy/README.md)，变更与验收见 [CHANGELOG-workbuddy.md](CHANGELOG-workbuddy.md)。公网、TiDB、微信发布尚未执行。以下日期段落保留历史语境。
+
 > **当前版本：2026-10-28**。本轮已修复历史三项缺陷并扩展中国业务。请以[经营流程与设计v2](docs/retail-operations/README.md)、[可视化说明](docs/retail-operations/index.html)和当前验证JSON为准；以下日期段落是保留的历史基线。
 
 > **2026-10-27 Spec Kit 复核**：查看 [复核与对比报告](docs/spec-kit-review/README.md)、[可视化报告](docs/spec-kit-review/index.html) 和 [重建规格](specs/001-retail-reassessment/spec.md)。原回归通过，但新增边界验收为 **3 FAIL + 1 PASS**，已复现网页重载重复收货、首次盘点版本冲突及已有草稿本机恢复失败。本轮只交付复核、设计与失败用例，未修业务代码，main 与原小程序分支不变；不是发布验收通过。

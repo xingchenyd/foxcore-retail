@@ -2,9 +2,9 @@ import mysql, { type PoolConnection, type RowDataPacket, type ResultSetHeader } 
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
 
-if (process.env.APP_ENV !== 'production') {
-  try { process.loadEnvFile(fileURLToPath(new URL('../../../.env', import.meta.url))); } catch { /* environment may already be provided */ }
-}
+// Real process variables take precedence; an optional repository .env is a fallback.
+try { process.loadEnvFile(fileURLToPath(new URL('../../../.env', import.meta.url))); }
+catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
 
 const required = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'] as const;
 if (!process.env.DB_PASSWORD && process.env.DB_PASSWORD_FILE) process.env.DB_PASSWORD = readFileSync(process.env.DB_PASSWORD_FILE, 'utf8').trim();

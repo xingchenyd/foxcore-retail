@@ -1,6 +1,9 @@
 node_modules/
 .env
 .env.*.local
+.env.workbuddy
+.env.workbuddy.*
+!.env.workbuddy.example
 apps/*/dist/
 artifacts/
 *.log
