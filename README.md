@@ -8,6 +8,7 @@
 | 管理员账号 / 密码 | `owner` / `Foxcore2026!retail` |
 | 小程序码 | 见下方图片（体验版，有效期至 **2026-11-28**，到期后联系仓库所有者重新生成） |
 | 小程序账号 / 密码 | `demo` / `Demo2026!foxcore-retail` |
+| **分析设计文档** | [docs/](./docs/) —— 全套 8 篇：[愿景与业务建模](./docs/01-vision-business.md) · [需求规格 SRS](./docs/02-SRS.md) · [软件设计 SDD](./docs/03-SDD.md) · [数据库设计](./docs/04-database.md) · [测试报告](./docs/05-STD.md) · [用户手册](./docs/06-user-operations.md)（另附同名 PDF 版） |
 
 > ⚠️ 体验者请勿修改以上账号的密码或删除业务数据，谢谢配合。
 
